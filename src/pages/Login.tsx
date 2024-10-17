@@ -3,9 +3,9 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButt
 import { auth } from '../configurations/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useHistory } from 'react-router';
-import './Login.css';
+import './LogIn.css';
 
-const Login: React.FC = () => {
+const LogIn: React.FC = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
@@ -48,4 +48,4 @@ const Login: React.FC = () => {
     );
   };
   
-  export default Login;
+  export default LogIn;

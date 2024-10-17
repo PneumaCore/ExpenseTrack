@@ -16,7 +16,7 @@ import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
 import Tab4 from './pages/Tab4';
-import Login from './pages/Login';
+import LogIn from './pages/LogIn';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -54,7 +54,7 @@ import { auth } from './configurations/firebase';
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // Estado de autenticación
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -108,7 +108,7 @@ const App: React.FC = () => {
             </IonTabs>
           )}
 
-          <Route exact path="/login" component={Login} />
+          <Route exact path="/login" component={LogIn} />
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
