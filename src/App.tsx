@@ -17,6 +17,7 @@ import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
 import Tab4 from './pages/Tab4';
 import LogIn from './pages/LogIn';
+import SignUp from './pages/SignUp';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -77,7 +78,10 @@ const App: React.FC = () => {
       <IonReactRouter>
         <IonRouterOutlet>
           {!isAuthenticated ? (
-            <Route exact path="/" render={() => <Redirect to="/login" />} />
+            <>
+              <Route exact path="/signup" component={SignUp} />
+              <Route exact path="/" render={() => <Redirect to="/login" />} />
+            </>
           ) : (
             <IonTabs>
               <IonRouterOutlet>
@@ -107,7 +111,6 @@ const App: React.FC = () => {
               </IonTabBar>
             </IonTabs>
           )}
-
           <Route exact path="/login" component={LogIn} />
         </IonRouterOutlet>
       </IonReactRouter>

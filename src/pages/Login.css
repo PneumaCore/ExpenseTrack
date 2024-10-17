@@ -1,12 +1,25 @@
 .login-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  .login-content ion-item {
-    width: 90%;
-  }
-  
+  padding: 20px;
+}
+
+.login-row {
+  margin-top: 20px;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.signup-link {
+  text-align: center;
+  display: block;
+  margin-top: 15px;
+  cursor: pointer;
+  color: blue;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}

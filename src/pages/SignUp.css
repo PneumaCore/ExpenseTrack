@@ -1,0 +1,13 @@
+.signup-content {
+  padding: 20px;
+}
+
+.signup-row {
+  margin-top: 20px;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  margin-bottom: 15px;
+}
