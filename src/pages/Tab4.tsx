@@ -12,7 +12,6 @@ const Tab4: React.FC = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      localStorage.removeItem('isAuthenticated');
       history.push('/login');
     } catch (error) {
       console.error("Error cerrando sesión: ", error);

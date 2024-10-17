@@ -3,6 +3,7 @@ import {
   IonApp,
   IonIcon,
   IonLabel,
+  IonLoading,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
@@ -46,44 +47,72 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './configurations/firebase';
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/login" component={Login} />
-        <IonTabs>
-          <IonRouterOutlet>
-            <Route exact path="/tab1" component={Tab1} />
-            <Route exact path="/tab2" component={Tab2} />
-            <Route path="/tab3" component={Tab3} />
-            <Route path="/tab4" component={Tab4} />
-            <Route exact path="/" render={() => <Redirect to="/tab1" />} />
-          </IonRouterOutlet>
-          <IonTabBar slot="bottom">
-            <IonTabButton tab="tab1" href="/tab1">
-              <IonIcon aria-hidden="true" icon={triangle} />
-              <IonLabel>Tab 1</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="tab2" href="/tab2">
-              <IonIcon aria-hidden="true" icon={ellipse} />
-              <IonLabel>Tab 2</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="tab3" href="/tab3">
-              <IonIcon aria-hidden="true" icon={square} />
-              <IonLabel>Tab 3</IonLabel>
-            </IonTabButton>
-            <IonTabButton tab="tab4" href="/tab4">
-              <IonIcon aria-hidden="true" icon={diamond} />
-              <IonLabel>Tab 4</IonLabel>
-            </IonTabButton>
-          </IonTabBar>
-        </IonTabs>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // Estado de autenticación
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (isAuthenticated === null) {
+    return <IonLoading isOpen={true} message={'Verificando autenticación...'} />;
+  }
+
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          {!isAuthenticated ? (
+            <Route exact path="/" render={() => <Redirect to="/login" />} />
+          ) : (
+            <IonTabs>
+              <IonRouterOutlet>
+                <Route exact path="/tab1" component={Tab1} />
+                <Route exact path="/tab2" component={Tab2} />
+                <Route path="/tab3" component={Tab3} />
+                <Route path="/tab4" component={Tab4} />
+                <Route exact path="/" render={() => <Redirect to="/tab1" />} />
+              </IonRouterOutlet>
+              <IonTabBar slot="bottom">
+                <IonTabButton tab="tab1" href="/tab1">
+                  <IonIcon aria-hidden="true" icon={triangle} />
+                  <IonLabel>Tab 1</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="tab2" href="/tab2">
+                  <IonIcon aria-hidden="true" icon={ellipse} />
+                  <IonLabel>Tab 2</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="tab3" href="/tab3">
+                  <IonIcon aria-hidden="true" icon={square} />
+                  <IonLabel>Tab 3</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="tab4" href="/tab4">
+                  <IonIcon aria-hidden="true" icon={diamond} />
+                  <IonLabel>Tab 4</IonLabel>
+                </IonTabButton>
+              </IonTabBar>
+            </IonTabs>
+          )}
+
+          <Route exact path="/login" component={Login} />
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </IonApp>
+  );
+};
 
 export default App;

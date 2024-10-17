@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonLoading } from '@ionic/react';
 import { auth } from '../configurations/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useHistory } from 'react-router';
 import './Login.css';
 
 const Login: React.FC = () => {
@@ -9,13 +10,13 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
+    const history = useHistory();
   
     const handleLogin = async () => {
       setLoading(true);
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        localStorage.setItem('isAuthenticated', 'true');
-        window.location.href = '/tab1';
+        history.push('/tab1');
       } catch (err: any) {
         setError(err.message);
       } finally {
