@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import './SignUp.css';
 import { useHistory } from 'react-router';
-import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonLoading, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol } from '@ionic/react';
+import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonLoading, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonIcon } from '@ionic/react';
+import { chevronBack } from 'ionicons/icons';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../configurations/firebase';
 
@@ -32,10 +33,17 @@ const SignUp: React.FC = () => {
         }
     };
 
+    const handleGoBack = () => {
+        history.goBack();
+    };
+
     return (
         <IonPage>
             <IonHeader>
                 <IonToolbar>
+                    <IonButton slot="start" onClick={handleGoBack} fill='clear'>
+                        <IonIcon icon={chevronBack}></IonIcon>
+                    </IonButton>
                     <IonTitle>Registrarse</IonTitle>
                 </IonToolbar>
             </IonHeader>
