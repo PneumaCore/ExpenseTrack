@@ -11,13 +11,15 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle, diamond } from 'ionicons/icons';
+import { ellipse, square, triangle, diamond, addCircle } from 'ionicons/icons';
 import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
 import Tab4 from './pages/Tab4';
 import LogIn from './pages/LogIn';
 import SignUp from './pages/SignUp';
+
+import AddTransaction from './components/AddTransaction';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -56,6 +58,7 @@ setupIonicReact();
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -72,6 +75,14 @@ const App: React.FC = () => {
   if (isAuthenticated === null) {
     return <IonLoading isOpen={true} message={'Verificando autenticación...'} />;
   }
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <IonApp>
@@ -100,6 +111,9 @@ const App: React.FC = () => {
                   <IonIcon aria-hidden="true" icon={ellipse} />
                   <IonLabel>Tab 2</IonLabel>
                 </IonTabButton>
+                <IonTabButton>
+                  <IonIcon icon={addCircle} onClick={openModal}></IonIcon>
+                </IonTabButton>
                 <IonTabButton tab="tab3" href="/tab3">
                   <IonIcon aria-hidden="true" icon={square} />
                   <IonLabel>Tab 3</IonLabel>
@@ -114,6 +128,7 @@ const App: React.FC = () => {
           <Route exact path="/login" component={LogIn} />
         </IonRouterOutlet>
       </IonReactRouter>
+      <AddTransaction isOpen={isModalOpen} onClose={closeModal}></AddTransaction>
     </IonApp>
   );
 };
