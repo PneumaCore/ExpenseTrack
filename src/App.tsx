@@ -78,15 +78,6 @@ const App: React.FC = () => {
     return <IonLoading isOpen={true} message={'Verificando autenticación...'} />;
   }
 
-  /* Abrir y cerrar el modal para añadir transacciones */
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <IonApp>
       <IonReactRouter>
@@ -117,7 +108,9 @@ const App: React.FC = () => {
                   <IonLabel>Tab 2</IonLabel>
                 </IonTabButton>
                 <IonTabButton>
-                  <IonIcon icon={addCircle} onClick={openModal}></IonIcon>
+
+                  {/* Abrir el modal para añadir transacciones */}
+                  <IonIcon icon={addCircle} onClick={() => setIsModalOpen(true)}></IonIcon>
                 </IonTabButton>
                 <IonTabButton tab="tab3" href="/tab3">
                   <IonIcon aria-hidden="true" icon={square} />
@@ -135,7 +128,8 @@ const App: React.FC = () => {
       </IonReactRouter>
 
       {/* Modal para añadir transacciones */}
-      <AddTransaction isOpen={isModalOpen} onClose={closeModal}></AddTransaction>
+      {/* Cerrar el modal para añadir transacciones */}
+      <AddTransaction isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}></AddTransaction>
     </IonApp>
   );
 };

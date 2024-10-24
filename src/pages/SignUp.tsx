@@ -36,16 +36,13 @@ const SignUp: React.FC = () => {
         }
     };
 
-    /* Si el usuario desea no registrarse, se le redirige nuevamente a la página de inicio de sesión */
-    const handleGoBack = () => {
-        history.goBack();
-    };
-
     return (
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonButton slot="start" onClick={handleGoBack} fill='clear'>
+
+                    {/* Si el usuario desea no registrarse, se le redirige nuevamente a la página de inicio de sesión */}
+                    <IonButton slot="start" onClick={() => history.goBack()} fill='clear'>
                         <IonIcon icon={chevronBack}></IonIcon>
                     </IonButton>
                     <IonTitle>Registrarse</IonTitle>

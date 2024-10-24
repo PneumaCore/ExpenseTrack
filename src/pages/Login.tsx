@@ -24,12 +24,7 @@ const LogIn: React.FC = () => {
       setLoading(false);
     }
   };
-
-  /* Si el usuario desea registrarse, se le redirige a la página de registro */
-  const handleSignUp = () => {
-    history.push('/signup');
-  }
-
+  
   return (
     <IonPage>
       <IonHeader>
@@ -53,7 +48,9 @@ const LogIn: React.FC = () => {
                 <IonInput type="password" value={password} onIonChange={(e) => setPassword(e.detail.value!)} required />
               </IonItem>
               <IonButton expand="full" onClick={handleLogIn}>Iniciar Sesión</IonButton>
-              <IonLabel className="signup-link" onClick={handleSignUp}>¿Aún no tienes una cuenta? Regístrate</IonLabel>
+              
+              {/* Si el usuario desea registrarse, se le redirige a la página de registro */}
+              <IonLabel className="signup-link" onClick={() => history.push('/signup')}>¿Aún no tienes una cuenta? Regístrate</IonLabel>
             </IonCol>
           </IonRow>
         </IonGrid>
