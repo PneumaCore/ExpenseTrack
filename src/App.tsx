@@ -60,6 +60,7 @@ const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  /* Se comprueba que haya un usuario autenticado en la aplicación */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -72,10 +73,12 @@ const App: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  /* Mientras se comprueba la autenticación del usuario, se le informa mediante un aviso de carga */
   if (isAuthenticated === null) {
     return <IonLoading isOpen={true} message={'Verificando autenticación...'} />;
   }
 
+  /* Abrir y cerrar el modal para añadir transacciones */
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -88,6 +91,8 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
+
+          {/* Si el usuario no está autenticado, se le redirige a la pantalla de inicio de sesión, si lo está, le lleva al menú principal de la aplicación */}
           {!isAuthenticated ? (
             <>
               <Route exact path="/signup" component={SignUp} />
@@ -128,6 +133,8 @@ const App: React.FC = () => {
           <Route exact path="/login" component={LogIn} />
         </IonRouterOutlet>
       </IonReactRouter>
+
+      {/* Modal para añadir transacciones */}
       <AddTransaction isOpen={isModalOpen} onClose={closeModal}></AddTransaction>
     </IonApp>
   );

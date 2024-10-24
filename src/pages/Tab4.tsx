@@ -9,6 +9,7 @@ import './Tab4.css';
 const Tab4: React.FC = () => {
   const history = useHistory();
 
+  /* Se cierra la sesión actual del usuario y se le redirige a la pantalla de inicio de sesión */
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -32,9 +33,7 @@ const Tab4: React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <ExploreContainer name="Tab 4 page" />
-        <IonButton expand="full" onClick={handleLogout} style={{ margin: '16px' }}>
-          Cerrar Sesión
-        </IonButton>
+        <IonButton expand="full" onClick={handleLogout}>Cerrar Sesión</IonButton>
       </IonContent>
     </IonPage>
   );

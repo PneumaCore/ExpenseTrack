@@ -12,6 +12,7 @@ const LogIn: React.FC = () => {
   const [error, setError] = useState<string>('');
   const history = useHistory();
 
+  /* Se inicia sesión con el correo y la contraseña proporcionados por el usuario, si el usuario existe en Firebase, se le redirige al menú principal de la aplicación */
   const handleLogIn = async () => {
     setLoading(true);
     try {
@@ -24,6 +25,7 @@ const LogIn: React.FC = () => {
     }
   };
 
+  /* Si el usuario desea registrarse, se le redirige a la página de registro */
   const handleSignUp = () => {
     history.push('/signup');
   }

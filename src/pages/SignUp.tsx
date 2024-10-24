@@ -14,7 +14,10 @@ const SignUp: React.FC = () => {
     const [error, setError] = useState<string>('');
     const history = useHistory();
 
+    /* Se registra con el correo y las contraseñas proporcionadas por el usuario, si el registro es exitoso, se le redirige a la pantalla de inicio de sesión */
     const handleSignUp = async () => {
+        
+        /* Se comprueba que ambas contraseñas coincidan */
         if (password !== repeatPassword) {
             setError('Las contraseñas no coinciden');
             return;
@@ -33,6 +36,7 @@ const SignUp: React.FC = () => {
         }
     };
 
+    /* Si el usuario desea no registrarse, se le redirige nuevamente a la página de inicio de sesión */
     const handleGoBack = () => {
         history.goBack();
     };
