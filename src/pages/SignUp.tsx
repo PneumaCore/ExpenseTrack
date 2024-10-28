@@ -56,16 +56,13 @@ const SignUp: React.FC = () => {
                         <IonCol size="12" size-md="8" offset-md="2">
                             {error && <p className="error-message">{error}</p>}
                             <IonItem>
-                                <IonLabel position="floating">Correo electrónico</IonLabel>
-                                <IonInput type="email" value={email} onIonChange={(e) => setEmail(e.detail.value!)} required />
+                                <IonInput label='Correo electrónico' labelPlacement='floating' placeholder='Correo electrónico' type="email" value={email} onIonChange={(e) => setEmail(e.detail.value!)} required />
                             </IonItem>
                             <IonItem>
-                                <IonLabel position="floating">Contraseña</IonLabel>
-                                <IonInput type="password" value={password} onIonChange={(e) => setPassword(e.detail.value!)} required />
+                                <IonInput label='Contraseña' labelPlacement='floating' placeholder='Contraseña' type="password" value={password} onIonChange={(e) => setPassword(e.detail.value!)} required />
                             </IonItem>
                             <IonItem>
-                                <IonLabel position="floating">Repetir contraseña</IonLabel>
-                                <IonInput type="password" value={repeatPassword} onIonChange={(e) => setRepeatPassword(e.detail.value!)} required />
+                                <IonInput label='Repetir contraseña' labelPlacement='floating' placeholder='Repetir contraseña' type="password" value={repeatPassword} onIonChange={(e) => setRepeatPassword(e.detail.value!)} required />
                             </IonItem>
                             <IonButton expand="full" onClick={handleSignUp}>Registrarse</IonButton>
                         </IonCol>
