@@ -1,4 +1,3 @@
-import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
   IonIcon,
@@ -11,15 +10,14 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle, diamond, addCircle } from 'ionicons/icons';
+import { diamond, ellipse, square, triangle } from 'ionicons/icons';
+import { Redirect, Route } from 'react-router-dom';
+import LogIn from './pages/LogIn';
+import SignUp from './pages/SignUp';
 import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
 import Tab4 from './pages/Tab4';
-import LogIn from './pages/LogIn';
-import SignUp from './pages/SignUp';
-
-import AddTransaction from './components/AddTransaction';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -30,12 +28,12 @@ import '@ionic/react/css/structure.css';
 import '@ionic/react/css/typography.css';
 
 /* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css';
+import '@ionic/react/css/display.css';
+import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/float-elements.css';
+import '@ionic/react/css/padding.css';
 import '@ionic/react/css/text-alignment.css';
 import '@ionic/react/css/text-transformation.css';
-import '@ionic/react/css/flex-utils.css';
-import '@ionic/react/css/display.css';
 
 /**
  * Ionic Dark Mode
@@ -49,16 +47,15 @@ import '@ionic/react/css/display.css';
 /* import '@ionic/react/css/palettes/dark.system.css'; */
 
 /* Theme variables */
-import './theme/variables.css';
-import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
+import { useEffect, useState } from 'react';
 import { auth } from './configurations/firebase';
+import './theme/variables.css';
 
 setupIonicReact();
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   /* Se comprueba que haya un usuario autenticado en la aplicación */
   useEffect(() => {
@@ -107,11 +104,6 @@ const App: React.FC = () => {
                   <IonIcon aria-hidden="true" icon={ellipse} />
                   <IonLabel>Tab 2</IonLabel>
                 </IonTabButton>
-                <IonTabButton>
-
-                  {/* Abrir el modal para añadir transacciones */}
-                  <IonIcon icon={addCircle} onClick={() => setIsModalOpen(true)}></IonIcon>
-                </IonTabButton>
                 <IonTabButton tab="tab3" href="/tab3">
                   <IonIcon aria-hidden="true" icon={square} />
                   <IonLabel>Tab 3</IonLabel>
@@ -126,10 +118,6 @@ const App: React.FC = () => {
           <Route exact path="/login" component={LogIn} />
         </IonRouterOutlet>
       </IonReactRouter>
-
-      {/* Modal para añadir transacciones */}
-      {/* Cerrar el modal para añadir transacciones */}
-      <AddTransaction isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}></AddTransaction>
     </IonApp>
   );
 };
