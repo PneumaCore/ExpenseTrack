@@ -2,7 +2,6 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, I
 import { signOut } from 'firebase/auth';
 import React from 'react';
 import { useHistory } from 'react-router';
-import ExploreContainer from '../components/ExploreContainer';
 import SideMenu from '../components/SideMenu';
 import { auth } from '../configurations/firebase';
 import './Tab4.css';
@@ -38,7 +37,6 @@ const Tab4: React.FC = () => {
               <IonTitle size="large">Tab 4</IonTitle>
             </IonToolbar>
           </IonHeader>
-          <ExploreContainer name="Tab 4 page" />
           <IonButton expand="full" onClick={handleLogout}>Cerrar Sesión</IonButton>
         </IonContent>
       </IonPage>

@@ -2,7 +2,6 @@ import { IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonMe
 import { add } from 'ionicons/icons';
 import { useState } from 'react';
 import AddTransaction from '../components/AddTransaction';
-import ExploreContainer from '../components/ExploreContainer';
 import SideMenu from '../components/SideMenu';
 import './Tab1.css';
 
@@ -27,7 +26,6 @@ const Tab1: React.FC = () => {
               <IonTitle size="large">Tab 1</IonTitle>
             </IonToolbar>
           </IonHeader>
-          <ExploreContainer name="Tab 1 page" />
           <IonFab slot="fixed" vertical="bottom" horizontal="center">
 
             {/* Abrir el modal para añadir transacciones */}
