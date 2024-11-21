@@ -2,7 +2,6 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, I
 import { signOut } from 'firebase/auth';
 import React from 'react';
 import { useHistory } from 'react-router';
-import SideMenu from '../components/SideMenu';
 import { auth } from '../configurations/firebase';
 import './Tab4.css';
 
@@ -20,27 +19,24 @@ const Tab4: React.FC = () => {
   };
 
   return (
-    <>
-      <SideMenu />
-      <IonPage id="main-content">
-        <IonHeader>
+    <IonPage id="main-content">
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonMenuButton></IonMenuButton>
+          </IonButtons>
+          <IonTitle>Tab 4</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        <IonHeader collapse="condense">
           <IonToolbar>
-            <IonButtons slot="start">
-              <IonMenuButton></IonMenuButton>
-            </IonButtons>
-            <IonTitle>Tab 4</IonTitle>
+            <IonTitle size="large">Tab 4</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent fullscreen>
-          <IonHeader collapse="condense">
-            <IonToolbar>
-              <IonTitle size="large">Tab 4</IonTitle>
-            </IonToolbar>
-          </IonHeader>
-          <IonButton expand="full" onClick={handleLogout}>Cerrar Sesión</IonButton>
-        </IonContent>
-      </IonPage>
-    </>
+        <IonButton expand="full" onClick={handleLogout}>Cerrar Sesión</IonButton>
+      </IonContent>
+    </IonPage>
   );
 };
 

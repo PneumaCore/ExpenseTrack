@@ -1,13 +1,8 @@
 import {
-  IonApp,
-  IonIcon,
-  IonLabel,
-  IonLoading,
-  IonRouterOutlet,
+  IonApp, IonIcon, IonLabel, IonLoading, IonRouterOutlet,
   IonTabBar,
   IonTabButton,
-  IonTabs,
-  setupIonicReact
+  IonTabs, setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { diamond, ellipse, square, triangle } from 'ionicons/icons';
@@ -49,7 +44,9 @@ import '@ionic/react/css/text-transformation.css';
 /* Theme variables */
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+import SideMenu from './components/SideMenu';
 import { auth } from './configurations/firebase';
+import Categories from './pages/Categories';
 import './theme/variables.css';
 
 setupIonicReact();
@@ -78,44 +75,54 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <IonReactRouter>
-        <IonRouterOutlet>
 
-          {/* Si el usuario no está autenticado, se le redirige a la pantalla de inicio de sesión, si lo está, le lleva al menú principal de la aplicación */}
+        {/* Si el usuario está autenticado, aparecerá el menú deslizante solamente en el menú principal de la aplicación */}
+        {isAuthenticated && <SideMenu />}
+
+        {/* Si el usuario no está autenticado, se le redirige a la pantalla de inicio de sesión, si lo está, le lleva al menú principal de la aplicación */}
+        <IonRouterOutlet id="main-content">
           {!isAuthenticated ? (
             <>
               <Route exact path="/signup" component={SignUp} />
               <Route exact path="/" render={() => <Redirect to="/login" />} />
             </>
           ) : (
-            <IonTabs>
-              <IonRouterOutlet>
-                <Route exact path="/tab1" component={Tab1} />
-                <Route exact path="/tab2" component={Tab2} />
-                <Route path="/tab3" component={Tab3} />
-                <Route path="/tab4" component={Tab4} />
-                <Route exact path="/" render={() => <Redirect to="/tab1" />} />
-              </IonRouterOutlet>
-              <IonTabBar slot="bottom">
-                <IonTabButton tab="tab1" href="/tab1">
-                  <IonIcon aria-hidden="true" icon={triangle} />
-                  <IonLabel>Tab 1</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="tab2" href="/tab2">
-                  <IonIcon aria-hidden="true" icon={ellipse} />
-                  <IonLabel>Tab 2</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="tab3" href="/tab3">
-                  <IonIcon aria-hidden="true" icon={square} />
-                  <IonLabel>Tab 3</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="tab4" href="/tab4">
-                  <IonIcon aria-hidden="true" icon={diamond} />
-                  <IonLabel>Tab 4</IonLabel>
-                </IonTabButton>
-              </IonTabBar>
-            </IonTabs>
+            <>
+
+              {/* Rutas para la botonera principal de la aplicación */}
+              <IonTabs>
+                <IonRouterOutlet>
+                  <Route exact path="/tab1" component={Tab1} />
+                  <Route exact path="/tab2" component={Tab2} />
+                  <Route path="/tab3" component={Tab3} />
+                  <Route path="/tab4" component={Tab4} />
+                  <Route exact path="/" render={() => <Redirect to="/tab1" />} />
+                </IonRouterOutlet>
+                <IonTabBar slot="bottom">
+                  <IonTabButton tab="tab1" href="/tab1">
+                    <IonIcon aria-hidden="true" icon={triangle} />
+                    <IonLabel>Tab 1</IonLabel>
+                  </IonTabButton>
+                  <IonTabButton tab="tab2" href="/tab2">
+                    <IonIcon aria-hidden="true" icon={ellipse} />
+                    <IonLabel>Tab 2</IonLabel>
+                  </IonTabButton>
+                  <IonTabButton tab="tab3" href="/tab3">
+                    <IonIcon aria-hidden="true" icon={square} />
+                    <IonLabel>Tab 3</IonLabel>
+                  </IonTabButton>
+                  <IonTabButton tab="tab4" href="/tab4">
+                    <IonIcon aria-hidden="true" icon={diamond} />
+                    <IonLabel>Tab 4</IonLabel>
+                  </IonTabButton>
+                </IonTabBar>
+              </IonTabs>
+
+              {/* Rutas independientes */}
+              <Route exact path="/login" component={LogIn} />
+              <Route path="/categories" component={Categories} />
+            </>
           )}
-          <Route exact path="/login" component={LogIn} />
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
