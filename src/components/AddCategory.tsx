@@ -14,33 +14,33 @@ interface AddCategoryProps {
 }
 
 const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
-  const [categoryType, setCategoryType] = useState('gasto');
+  const [type, setType] = useState('gasto');
   const [name, setName] = useState('');
   const [icon, setIcon] = useState(faDollarSign);
   const [color, setColor] = useState('#000000');
 
   const handleSaveCategory = async () => {
 
-    /* Obtenemos el ID del usuario */
+    /* Obtenemos los datos del usuario autenticado */
     const auth = getAuth();
     const currentUser = auth.currentUser;
 
     /* Generamos un ID automático con Firestore */
-    const categoryRef = doc(collection(database, 'categories'));
-    const categoryId = categoryRef.id;
+    const categoriesRef = doc(collection(database, 'categories'));
+    const categoryId = categoriesRef.id;
 
     const newCategory = {
       category_id: categoryId,
       user_id: currentUser?.uid,
       name: name,
-      type: categoryType,
+      type: type,
       icon: icon.iconName,
       color: color
     }
 
     /* Guardamos la categoría en la base de datos */
     try {
-      await setDoc(categoryRef, newCategory);
+      await setDoc(categoriesRef, newCategory);
     } catch (error) {
       console.error("Error al añadir la categoría: ", error);
     }
@@ -62,7 +62,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
       <IonContent>
 
         {/* Seleccionamos el tipo de categoría */}
-        <IonSegment value={categoryType} onIonChange={(e: CustomEvent) => { setCategoryType(e.detail.value); setName(''); setIcon(faDollarSign); setColor('#000000'); }}>
+        <IonSegment value={type} onIonChange={(e: CustomEvent) => { setType(e.detail.value); setName(''); setIcon(faDollarSign); setColor('#000000'); }}>
           <IonSegmentButton value="gasto">
             <IonLabel>Gasto</IonLabel>
           </IonSegmentButton>
@@ -72,7 +72,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
         </IonSegment>
 
         {/* Pantalla para los gastos */}
-        {categoryType === 'gasto' ? (
+        {type === 'gasto' ? (
           <IonGrid>
 
             {/* Campo para añadir el nombre de la categoría */}
