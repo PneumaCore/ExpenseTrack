@@ -1,16 +1,18 @@
 import { IonButton, IonCol, IonContent, IonDatetime, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
-import { addDoc, collection, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, setDoc, Timestamp, where } from 'firebase/firestore';
 import { calendar, chevronBack } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
 import './AddTransaction.css';
 
 interface Category {
-  id: string;
-  name: string;
-  icon: string;
-  type: string;
+  category_id: string,
+  user_id: string,
+  name: string,
+  type: string,
+  icon: string,
+  color: string
 }
 
 interface AddTransactionProps {
@@ -19,7 +21,7 @@ interface AddTransactionProps {
 }
 
 const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
-  const [transactionType, setTransactionType] = useState('gasto');
+  const [type, setType] = useState('gasto');
   const [amount, setAmount] = useState(0);
   const [selectedDate, setSelectedDate] = useState('');
   const [isDatePickerOpen, setDatePickerOpen] = useState(false);
@@ -29,16 +31,33 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
 
   /* Leemos las categorías de las transacciones de la base de datos */
   useEffect(() => {
-    const fetchCategories = async () => {
-      const querySnapshot = await getDocs(collection(database, 'categories'));
-      const categoriesList: Category[] = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Category[];
-      setCategories(categoriesList);
-    };
+    const fetchCategories = () => {
+      try {
 
-    fetchCategories();
+        /* Obtenemos los datos del usuario autenticado */
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
+        /* Obtenemos las categorías asociadas al usuario autenticado */
+        const categoriesRef = collection(database, 'categories');
+        const q = query(categoriesRef, where('user_id', '==', currentUser?.uid));
+
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const fetchedCategories = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            category_id: doc.id,
+          })) as Category[];
+          setCategories(fetchedCategories);
+        });
+        return unsubscribe;
+      } catch (error) {
+        console.error("Error al obtener las categorías: ", error);
+      }
+    };
+    const unsubscribe = fetchCategories();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   /* Guardamos la fecha en el formato por defecto */
@@ -49,32 +68,42 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
 
   /* Guardamos la transacción en la base de datos */
   const handleSaveTransaction = async () => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-
-    if (!currentUser) {
-      console.error("El usuario no ha iniciado sesión");
-      return;
-    }
 
     try {
+
+      /* Obtenemos los datos del usuario autenticado */
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+
+      /* Generamos un ID automático con Firestore */
+      const transactionsRef = doc(collection(database, 'transactions'));
+      const transactionId = transactionsRef.id;
 
       /* Pasamos la fecha a Timestamp, ya que así la acepta Firestore */
       const dateObject = new Date(selectedDate);
       const dateTimestamp = Timestamp.fromDate(dateObject);
 
-      await addDoc(collection(database, 'transactions'), {
-        user_id: currentUser.uid,
-        type: transactionType,
-        amount: amount,
+      const newTransaction = {
+        transaction_id: transactionId,
+        user_id: currentUser?.uid,
+        type: type,
         category_id: selectedCategory,
+        account_id: null,
+        amount: amount,
+        currency: null,
         date: dateTimestamp,
-        note: note
-      });
-      onClose();
+        note: note,
+        created_at: null
+      }
+
+      /* Guardamos la transacción en la base de datos */
+      await setDoc(transactionsRef, newTransaction);
     } catch (error) {
       console.error("Error al añadir la transacción:", error);
     }
+
+    /* Cerramos el modal automáticamente al guardar la transacción */
+    onClose();
   };
 
   return (
@@ -90,7 +119,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
       <IonContent>
 
         {/* Seleccionamos el tipo de transacción */}
-        <IonSegment value={transactionType} onIonChange={(e: CustomEvent) => setTransactionType(e.detail.value)}>
+        <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
           <IonSegmentButton value="gasto">
             <IonLabel>Gasto</IonLabel>
           </IonSegmentButton>
@@ -100,7 +129,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
         </IonSegment>
 
         {/* Pantalla para los gastos */}
-        {transactionType === 'gasto' ? (
+        {type === 'gasto' ? (
           <IonGrid>
 
             {/* Campo para añadir el monto de la transacción */}
@@ -118,9 +147,9 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
                 <IonItem>
                   <IonSelect interface='popover' label='Categoría' labelPlacement='floating' placeholder="Selecciona una categoría" value={selectedCategory} onIonChange={(e) => setSelectedCategory(e.detail.value)}>
                     {categories
-                      .filter(category => category.type === transactionType)
+                      .filter(category => category.type === type)
                       .map(category => (
-                        <IonSelectOption key={category.id} value={category.id}>
+                        <IonSelectOption key={category.category_id} value={category.category_id}>
                           {category.name}
                         </IonSelectOption>
                       ))}
