@@ -85,6 +85,7 @@ const App: React.FC = () => {
             <>
               <Route exact path="/signup" component={SignUp} />
               <Route exact path="/" render={() => <Redirect to="/login" />} />
+              <Route exact path="/login" component={LogIn} />
             </>
           ) : (
             <>
@@ -119,7 +120,6 @@ const App: React.FC = () => {
               </IonTabs>
 
               {/* Rutas independientes */}
-              <Route exact path="/login" component={LogIn} />
               <Route path="/categories" component={Categories} />
             </>
           )}
