@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'ionic.expensetrack',
-  appName: 'expensetrack',
+  appName: 'ExpenseTrack',
   webDir: 'dist'
 };
 
