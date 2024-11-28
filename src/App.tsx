@@ -118,6 +118,7 @@ const App: React.FC = () => {
                   </IonTabButton>
                 </IonTabBar>
               </IonTabs>
+              <Route exact path="/login" component={LogIn} />
 
               {/* Rutas independientes */}
               <Route path="/categories" component={Categories} />
