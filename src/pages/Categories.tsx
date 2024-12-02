@@ -156,13 +156,11 @@ const Categories: React.FC = () => {
                                 </IonCol>
                             ) : (
                                 filteredCategories.map((category) => (
-                                    <IonCol key={category.category_id} size="3" className="category-col">
-                                        <div className="category-icon" onClick={() => setIsAddModalOpen(true)}>
-                                            <div className="category-circle" style={{ backgroundColor: category.color }}>
-                                                <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
-                                            </div>
-                                            <IonLabel className="category-label">{category.name}</IonLabel>
+                                    <IonCol key={category.category_id} size="3" className="category-col" onClick={() => setIsEditModalOpen(true)}>
+                                        <div className="category-circle" style={{ backgroundColor: category.color }}>
+                                            <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
                                         </div>
+                                        <IonLabel className="category-label">{category.name}</IonLabel>
                                     </IonCol>
                                 ))
                             )}
