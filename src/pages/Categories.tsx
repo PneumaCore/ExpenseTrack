@@ -1,6 +1,6 @@
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IonButton, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonLabel, IonPage, IonRow, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonLabel, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth } from "firebase/auth";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { add, chevronBack } from "ionicons/icons";
@@ -22,7 +22,11 @@ interface Category {
 const Categories: React.FC = () => {
     const history = useHistory();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [categories, setCategories] = useState<Category[]>([])
+    const [type, setType] = useState('gasto');
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    {/* Filtramos las categorías según el tipo de la transacción */ }
+    const filteredCategories = categories.filter(category => category.type === type);
 
     useEffect(() => {
         const fetchCategories = () => {
@@ -107,26 +111,60 @@ const Categories: React.FC = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonGrid>
-                    <IonRow>
 
-                        {/* Se mapean las categorías, si no hay, se muestra */}
-                        {categories.length === 0 ? (
-                            <IonCol>
-                                <IonLabel>No hay categorías</IonLabel>
-                            </IonCol>
-                        ) : (
-                            categories.map((category) => (
-                                <IonCol key={category.category_id} size="3" className="category-col">
-                                    <div className="category-circle" style={{ backgroundColor: category.color }}>
-                                        <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
-                                    </div>
-                                    <IonLabel className="category-label">{category.name}</IonLabel>
+                {/* Seleccionamos el tipo de transacción */}
+                <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
+                    <IonSegmentButton value="gasto">
+                        <IonLabel>Gasto</IonLabel>
+                    </IonSegmentButton>
+                    <IonSegmentButton value="ingreso">
+                        <IonLabel>Ingreso</IonLabel>
+                    </IonSegmentButton>
+                </IonSegment>
+
+                {type === 'gasto' ? (
+                    <IonGrid>
+                        <IonRow>
+
+                            {/* Se mapean las categorías, si no hay, se muestra que no hay categorías */}
+                            {categories.length === 0 ? (
+                                <IonCol>
+                                    <IonLabel>No hay categorías</IonLabel>
                                 </IonCol>
-                            ))
-                        )}
-                    </IonRow>
-                </IonGrid>
+                            ) : (
+                                filteredCategories.map((category) => (
+                                    <IonCol key={category.category_id} size="3" className="category-col">
+                                        <div className="category-circle" style={{ backgroundColor: category.color }}>
+                                            <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
+                                        </div>
+                                        <IonLabel className="category-label">{category.name}</IonLabel>
+                                    </IonCol>
+                                ))
+                            )}
+                        </IonRow>
+                    </IonGrid>
+                ) : (
+                    <IonGrid>
+                        <IonRow>
+
+                            {/* Se mapean las categorías, si no hay, se muestra que no hay categorías */}
+                            {categories.length === 0 ? (
+                                <IonCol>
+                                    <IonLabel>No hay categorías</IonLabel>
+                                </IonCol>
+                            ) : (
+                                filteredCategories.map((category) => (
+                                    <IonCol key={category.category_id} size="3" className="category-col">
+                                        <div className="category-circle" style={{ backgroundColor: category.color }}>
+                                            <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
+                                        </div>
+                                        <IonLabel className="category-label">{category.name}</IonLabel>
+                                    </IonCol>
+                                ))
+                            )}
+                        </IonRow>
+                    </IonGrid>
+                )}
                 <IonFab slot="fixed" vertical="bottom" horizontal="center">
 
                     {/* Abrir el modal para añadir categorías */}
