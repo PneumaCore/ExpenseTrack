@@ -9,6 +9,7 @@ import { useHistory } from "react-router";
 import AddCategory from "../components/AddCategory";
 import { database } from "../configurations/firebase";
 import "./Categories.css";
+import EditCategory from "../components/EditCategory";
 
 interface Category {
     category_id: string,
@@ -21,7 +22,8 @@ interface Category {
 
 const Categories: React.FC = () => {
     const history = useHistory();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [type, setType] = useState('gasto');
     const [categories, setCategories] = useState<Category[]>([]);
 
@@ -133,7 +135,7 @@ const Categories: React.FC = () => {
                                 </IonCol>
                             ) : (
                                 filteredCategories.map((category) => (
-                                    <IonCol key={category.category_id} size="3" className="category-col">
+                                    <IonCol key={category.category_id} size="3" className="category-col" onClick={() => setIsEditModalOpen(true)}>
                                         <div className="category-circle" style={{ backgroundColor: category.color }}>
                                             <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
                                         </div>
@@ -155,10 +157,12 @@ const Categories: React.FC = () => {
                             ) : (
                                 filteredCategories.map((category) => (
                                     <IonCol key={category.category_id} size="3" className="category-col">
-                                        <div className="category-circle" style={{ backgroundColor: category.color }}>
-                                            <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
+                                        <div className="category-icon" onClick={() => setIsAddModalOpen(true)}>
+                                            <div className="category-circle" style={{ backgroundColor: category.color }}>
+                                                <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
+                                            </div>
+                                            <IonLabel className="category-label">{category.name}</IonLabel>
                                         </div>
-                                        <IonLabel className="category-label">{category.name}</IonLabel>
                                     </IonCol>
                                 ))
                             )}
@@ -168,13 +172,14 @@ const Categories: React.FC = () => {
                 <IonFab slot="fixed" vertical="bottom" horizontal="center">
 
                     {/* Abrir el modal para añadir categorías */}
-                    <IonFabButton onClick={() => setIsModalOpen(true)}>
+                    <IonFabButton onClick={() => setIsAddModalOpen(true)}>
                         <IonIcon icon={add}></IonIcon>
                     </IonFabButton>
                 </IonFab>
 
                 {/* Modal para añadir categorías */}
-                <AddCategory isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}></AddCategory>
+                <EditCategory isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}></EditCategory>
+                <AddCategory isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}></AddCategory>
             </IonContent>
         </IonPage>
     );
