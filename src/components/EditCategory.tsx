@@ -1,10 +1,9 @@
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faDollarSign, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
-import { getAuth } from 'firebase/auth';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { doc, updateDoc } from 'firebase/firestore';
 import { chevronBack } from 'ionicons/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
 import './AddCategory.css';
 import GlobalToast from './GlobalToast';
@@ -12,13 +11,22 @@ import GlobalToast from './GlobalToast';
 interface AddCategoryProps {
     isOpen: boolean;
     onClose: () => void;
+    category: Category | null;
 }
 
-const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
-    const [type, setType] = useState('gasto');
-    const [name, setName] = useState('');
-    const [icon, setIcon] = useState(faHome);
-    const [color, setColor] = useState('#000000');
+interface Category {
+    category_id: string,
+    user_id: string,
+    name: string,
+    type: string,
+    icon: string,
+    color: string
+}
+
+const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category }) => {
+    const [type, setType] = useState(category?.type || 'gasto');
+    const [name, setName] = useState(category?.name || '');
+    const [color, setColor] = useState(category?.color || '#000000');
 
     /* Notificación global */
     const [toastConfig, setToastConfig] = useState<{
@@ -27,38 +35,88 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
         type: 'success' | 'error';
     }>({ isOpen: false, message: '', type: 'error' });
 
+    /* Actualizamos los campos con la información de la categoría seleccionada */
+    useEffect(() => {
+        if (category) {
+            setType(category.type);
+            setName(category.name);
+            setIcon(getFontAwesomeIcon(category.icon));
+            setColor(category.color);
+        }
+    }, [category]);
+
     const handleSaveCategory = async () => {
         try {
 
-            /* Obtenemos los datos del usuario autenticado */
-            const auth = getAuth();
-            const currentUser = auth.currentUser;
+            if (!category?.category_id) {
+                throw new Error("El ID de la categoría no está definido");
+            }
 
-            /* Generamos un ID automático con Firestore */
-            const categoriesRef = doc(collection(database, 'categories'));
-            const categoryId = categoriesRef.id;
+            const categoriesRef = doc(database, 'categories', category.category_id);
 
-            const newCategory = {
-                category_id: categoryId,
-                user_id: currentUser?.uid,
+            const updateCategory = {
                 name: name,
                 type: type,
                 icon: icon.iconName,
                 color: color
             }
 
-            /* Guardamos la categoría en la base de datos */
-            await setDoc(categoriesRef, newCategory);
+            /* Guardamos la categoría editada en la base de datos */
+            await updateDoc(categoriesRef, updateCategory);
 
-            setToastConfig({ isOpen: true, message: 'Categoría añadida con éxito', type: 'success' });
+            setToastConfig({ isOpen: true, message: 'Categoría editada con éxito', type: 'success' });
 
-            /* Cerramos el modal automáticamente al guardar la categoría */
+            /* Cerramos el modal automáticamente al editar la categoría */
             onClose();
 
         } catch (error) {
-            setToastConfig({ isOpen: true, message: 'No se pudo añadir la categoría', type: 'error' });
+            setToastConfig({ isOpen: true, message: 'No se pudo editar la categoría', type: 'error' });
         }
     };
+
+    /* Mapeamos todos los iconos de las categorías */
+    const getFontAwesomeIcon = (iconName: string) => {
+        const icons: { [key: string]: any } = {
+            'home': faHome,
+            'light-bulb': faLightbulb,
+            'tools': faTools,
+            'gas-pump': faGasPump,
+            'bus': faBus,
+            'wrench': faWrench,
+            'car': faCar,
+            'cart-shopping': faShoppingCart,
+            'utensils': faUtensils,
+            'briefcase-medical': faBriefcaseMedical,
+            'pills': faPills,
+            'user-md': faUserMd,
+            'film': faFilm,
+            'music': faMusic,
+            'puzzle-piece': faPuzzlePiece,
+            'graduation-cap': faGraduationCap,
+            'book': faBook,
+            'chalkboard-teacher': faChalkboardTeacher,
+            'credit-card': faCreditCard,
+            'money-bill-wave': faMoneyBillWave,
+            'piggy-bank': faPiggyBank,
+            'chart-line': faChartLine,
+            'gift': faGift,
+            'hand-holding-heart': faHandHoldingHeart,
+            'shopping-bag': faShoppingBag,
+            'briefcase': faBriefcase,
+            'hand-holding-usd': faHandHoldingUsd,
+            'laptop': faLaptop,
+            'shopping-basket': faShoppingBasket,
+            'coins': faCoins,
+            'chart-bar': faChartBar,
+            'building': faBuilding,
+            'sync-alt': faSyncAlt,
+            'trophy': faTrophy,
+            'receipt': faReceipt
+        };
+        return icons[iconName] || faHome;
+    }
+
+    const [icon, setIcon] = useState(getFontAwesomeIcon(category?.icon || 'home'));
 
     return (
         <>
@@ -72,16 +130,6 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
                     </IonToolbar>
                 </IonHeader>
                 <IonContent>
-
-                    {/* Seleccionamos el tipo de categoría */}
-                    <IonSegment value={type} onIonChange={(e: CustomEvent) => { setType(e.detail.value); setName(''); setIcon(faDollarSign); setColor('#000000'); }}>
-                        <IonSegmentButton value="gasto">
-                            <IonLabel>Gasto</IonLabel>
-                        </IonSegmentButton>
-                        <IonSegmentButton value="ingreso">
-                            <IonLabel>Ingreso</IonLabel>
-                        </IonSegmentButton>
-                    </IonSegment>
 
                     {/* Pantalla para los gastos */}
                     {type === 'gasto' ? (

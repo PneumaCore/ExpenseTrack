@@ -26,6 +26,7 @@ const Categories: React.FC = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [type, setType] = useState('gasto');
     const [categories, setCategories] = useState<Category[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
     {/* Filtramos las categorías según el tipo de la transacción */ }
     const filteredCategories = categories.filter(category => category.type === type);
@@ -102,6 +103,11 @@ const Categories: React.FC = () => {
         return icons[iconName] || faHome;
     }
 
+    const handleEditCategory = (category: Category) => {
+        setSelectedCategory(category);
+        setIsEditModalOpen(true);
+    };
+
     return (
         <IonPage id="main-content">
             <IonHeader>
@@ -135,7 +141,7 @@ const Categories: React.FC = () => {
                                 </IonCol>
                             ) : (
                                 filteredCategories.map((category) => (
-                                    <IonCol key={category.category_id} size="3" className="category-col" onClick={() => setIsEditModalOpen(true)}>
+                                    <IonCol key={category.category_id} size="3" className="category-col" onClick={() => handleEditCategory(category)}>
                                         <div className="category-circle" style={{ backgroundColor: category.color }}>
                                             <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
                                         </div>
@@ -156,7 +162,7 @@ const Categories: React.FC = () => {
                                 </IonCol>
                             ) : (
                                 filteredCategories.map((category) => (
-                                    <IonCol key={category.category_id} size="3" className="category-col" onClick={() => setIsEditModalOpen(true)}>
+                                    <IonCol key={category.category_id} size="3" className="category-col" onClick={() => handleEditCategory(category)}>
                                         <div className="category-circle" style={{ backgroundColor: category.color }}>
                                             <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
                                         </div>
@@ -176,7 +182,7 @@ const Categories: React.FC = () => {
                 </IonFab>
 
                 {/* Modal para añadir categorías */}
-                <EditCategory isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}></EditCategory>
+                <EditCategory isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} category={selectedCategory}></EditCategory>
                 <AddCategory isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}></AddCategory>
             </IonContent>
         </IonPage>
