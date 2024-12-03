@@ -1,7 +1,7 @@
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
-import { doc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { chevronBack } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
@@ -73,6 +73,29 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
             setToastConfig({ isOpen: true, message: 'No se pudo editar la categoría', type: 'error' });
         }
     };
+
+    const handleDeleteCategory = async () => {
+        try {
+
+            if (!category?.category_id) {
+                throw new Error("El ID de la categoría no está definido");
+            }
+
+            const categoryRef = doc(database, 'categories', category.category_id);
+
+            /* Eliminamos la categoría editada en la base de datos */
+            await deleteDoc(categoryRef);
+
+            setToastConfig({ isOpen: true, message: 'Categoría eliminada con éxito', type: 'success' });
+
+            /* Cerramos el modal automáticamente al editar la categoría */
+            onClose();
+
+        } catch (error) {
+            setToastConfig({ isOpen: true, message: 'No se pudo eliminar la categoría', type: 'error' });
+        }
+    };
+
 
     /* Mapeamos todos los iconos de las categorías */
     const getFontAwesomeIcon = (iconName: string) => {
@@ -224,6 +247,13 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                                     <IonButton expand='full' onClick={handleSaveCategory}>Guardar categoría</IonButton>
                                 </IonCol>
                             </IonRow>
+
+                            {/* Botón para eliminar la categoría */}
+                            <IonRow>
+                                <IonCol>
+                                    <IonButton className='handle-delete-button' expand='full' color='danger' onClick={handleDeleteCategory}>Eliminar categoría</IonButton>
+                                </IonCol>
+                            </IonRow>
                         </IonGrid>
                     ) : (
                         <IonGrid>
@@ -301,6 +331,13 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                             <IonRow>
                                 <IonCol>
                                     <IonButton className='handle-category-button' expand='full' onClick={handleSaveCategory}>Guardar categoría</IonButton>
+                                </IonCol>
+                            </IonRow>
+
+                            {/* Botón para eliminar la categoría */}
+                            <IonRow>
+                                <IonCol>
+                                    <IonButton className='handle-delete-button' expand='full' color='danger' onClick={handleDeleteCategory}>Eliminar categoría</IonButton>
                                 </IonCol>
                             </IonRow>
                         </IonGrid>
