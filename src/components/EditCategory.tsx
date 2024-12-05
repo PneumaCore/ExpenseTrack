@@ -1,3 +1,4 @@
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
@@ -14,6 +15,28 @@ interface AddCategoryProps {
     category: Category | null;
 }
 
+const icons: { gasto: IconDefinition[]; ingreso: IconDefinition[] } = {
+    gasto: [
+        faHome, faLightbulb, faTools, faGasPump, faBus, faWrench, faCar,
+        faShoppingCart, faUtensils, faBriefcaseMedical, faPills, faUserMd,
+        faFilm, faMusic, faPuzzlePiece, faGraduationCap, faBook, faChalkboardTeacher,
+        faCreditCard, faMoneyBillWave, faPiggyBank, faChartLine, faGift,
+        faHandHoldingHeart, faShoppingBag
+    ],
+    ingreso: [
+        faBriefcase, faHandHoldingUsd, faLaptop, faShoppingBasket, faCoins,
+        faChartBar, faBuilding, faGift, faSyncAlt, faTrophy, faReceipt
+    ]
+};
+
+type CategoryType = keyof typeof icons;
+
+const colors = [
+    '#ff6347', '#3b82f6', '#34d399', '#f59e0b', '#e11d48', '#6366f1',
+    '#9c27b0', '#4caf50', '#ff9800', '#2196f3', '#f44336', '#9e9e9e',
+    '#00bcd4', '#8bc34a'
+];
+
 interface Category {
     category_id: string,
     user_id: string,
@@ -24,7 +47,7 @@ interface Category {
 }
 
 const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category }) => {
-    const [type, setType] = useState(category?.type || 'gasto');
+    const [type, setType] = useState<CategoryType>(category?.type === 'gasto' || category?.type === 'ingreso' ? category.type : 'gasto');
     const [name, setName] = useState(category?.name || '');
     const [color, setColor] = useState(category?.color || '#000000');
 
@@ -38,7 +61,7 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
     /* Actualizamos los campos con la información de la categoría seleccionada */
     useEffect(() => {
         if (category) {
-            setType(category.type);
+            setType(category.type === 'gasto' || category.type === 'ingreso' ? category.type : 'gasto');
             setName(category.name);
             setIcon(getFontAwesomeIcon(category.icon));
             setColor(category.color);
@@ -153,195 +176,75 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                     </IonToolbar>
                 </IonHeader>
                 <IonContent>
+                    <IonGrid>
 
-                    {/* Pantalla para los gastos */}
-                    {type === 'gasto' ? (
-                        <IonGrid>
+                        {/* Campo para añadir el nombre de la categoría */}
+                        <IonRow>
+                            <IonCol size="12" size-md="8" offset-md="2">
+                                <IonItem>
+                                    <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonChange={(e) => setName(e.detail.value!)} required />
+                                </IonItem>
+                            </IonCol>
+                        </IonRow>
 
-                            {/* Campo para añadir el nombre de la categoría */}
-                            <IonRow>
-                                <IonCol size="12" size-md="8" offset-md="2">
-                                    <IonItem>
-                                        <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonChange={(e) => setName(e.detail.value!)} required />
-                                    </IonItem>
-                                </IonCol>
-                            </IonRow>
-
-                            {/* Campo para la selección de icono de la categoría */}
-                            <IonRow>
-                                <IonCol size="12" size-md="8" offset-md="2">
-                                    <IonItem>
-                                        <div className="icon-picker-container">
-                                            <IonLabel>Selecciona un icono</IonLabel>
-                                            <div>
-                                                {[
-                                                    faHome,
-                                                    faLightbulb,
-                                                    faTools,
-                                                    faGasPump,
-                                                    faBus,
-                                                    faWrench,
-                                                    faCar,
-                                                    faShoppingCart,
-                                                    faUtensils,
-                                                    faBriefcaseMedical,
-                                                    faPills,
-                                                    faUserMd,
-                                                    faFilm,
-                                                    faMusic,
-                                                    faPuzzlePiece,
-                                                    faGraduationCap,
-                                                    faBook,
-                                                    faChalkboardTeacher,
-                                                    faCreditCard,
-                                                    faMoneyBillWave,
-                                                    faPiggyBank,
-                                                    faChartLine,
-                                                    faGift,
-                                                    faHandHoldingHeart,
-                                                    faShoppingBag
-                                                ].map((faIcon, index) => (
-                                                    <div
-                                                        key={index}
-                                                        onClick={() => setIcon(faIcon)}
-                                                        className={`icon-container ${icon === faIcon ? 'selected' : ''}`}
-                                                    >
-                                                        <FontAwesomeIcon icon={faIcon} />
-                                                    </div>
-                                                ))}
-                                            </div>
+                        {/* Campo para la selección de icono de la categoría */}
+                        <IonRow>
+                            <IonCol size="12" size-md="8" offset-md="2">
+                                <IonItem>
+                                    <div className="icon-picker-container">
+                                        <IonLabel>Selecciona un icono</IonLabel>
+                                        <div>
+                                            {icons[type].map((faIcon, index) => (
+                                                <div
+                                                    key={index}
+                                                    onClick={() => setIcon(faIcon)}
+                                                    className={`icon-container ${icon === faIcon ? 'selected' : ''}`}
+                                                >
+                                                    <FontAwesomeIcon icon={faIcon} />
+                                                </div>
+                                            ))}
                                         </div>
+                                    </div>
 
-                                    </IonItem>
-                                </IonCol>
-                            </IonRow>
+                                </IonItem>
+                            </IonCol>
+                        </IonRow>
 
-                            {/* Campo para la selección de color de la categoría */}
-                            <IonRow>
-                                <IonCol size="12" size-md="8" offset-md="2">
-                                    <IonItem>
-                                        <div className="color-picker-container">
-                                            <IonLabel>Selecciona un color</IonLabel>
-                                            <div>
-                                                {['#ff6347', '#3b82f6', '#34d399', '#f59e0b', '#e11d48', '#6366f1', '#9c27b0', '#4caf50', '#ff9800', '#2196f3', '#f44336', '#9e9e9e', '#00bcd4', '#8bc34a'].map(
-                                                    (colorOption, index) => (
-                                                        <div
-                                                            key={index}
-                                                            onClick={() => setColor(colorOption)}
-                                                            className={`color-container ${color === colorOption ? 'selected' : ''
-                                                                }`}
-                                                            style={{ backgroundColor: colorOption }}
-                                                        />
-                                                    )
-                                                )}
-                                            </div>
+                        {/* Campo para la selección de color de la categoría */}
+                        <IonRow>
+                            <IonCol size="12" size-md="8" offset-md="2">
+                                <IonItem>
+                                    <div className="color-picker-container">
+                                        <IonLabel>Selecciona un color</IonLabel>
+                                        <div>
+                                            {colors.map((colorOption, index) => (
+                                                <div
+                                                    key={index}
+                                                    onClick={() => setColor(colorOption)}
+                                                    className={`color-container ${color === colorOption ? 'selected' : ''}`}
+                                                    style={{ backgroundColor: colorOption }}
+                                                />
+                                            ))}
                                         </div>
+                                    </div>
+                                </IonItem>
+                            </IonCol>
+                        </IonRow>
 
-                                    </IonItem>
-                                </IonCol>
-                            </IonRow>
+                        {/* Botón para guardar la categoría */}
+                        <IonRow>
+                            <IonCol>
+                                <IonButton expand='full' onClick={handleSaveCategory}>Guardar categoría</IonButton>
+                            </IonCol>
+                        </IonRow>
 
-                            {/* Botón para guardar la categoría */}
-                            <IonRow>
-                                <IonCol>
-                                    <IonButton expand='full' onClick={handleSaveCategory}>Guardar categoría</IonButton>
-                                </IonCol>
-                            </IonRow>
-
-                            {/* Botón para eliminar la categoría */}
-                            <IonRow>
-                                <IonCol>
-                                    <IonButton className='handle-delete-button' expand='full' color='danger' onClick={handleDeleteCategory}>Eliminar categoría</IonButton>
-                                </IonCol>
-                            </IonRow>
-                        </IonGrid>
-                    ) : (
-                        <IonGrid>
-
-                            {/* Campo para añadir el nombre de la categoría */}
-                            <IonRow>
-                                <IonCol size="12" size-md="8" offset-md="2">
-                                    <IonItem>
-                                        <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonChange={(e) => setName(e.detail.value!)} required />
-                                    </IonItem>
-                                </IonCol>
-                            </IonRow>
-
-                            {/* Campo para la selección de icono de la categoría */}
-                            <IonRow>
-                                <IonCol size="12" size-md="8" offset-md="2">
-                                    <IonItem>
-                                        <div className="icon-picker-container">
-                                            <IonLabel>Selecciona un icono</IonLabel>
-                                            <div>
-                                                {[
-                                                    faBriefcase,
-                                                    faHandHoldingUsd,
-                                                    faLaptop,
-                                                    faShoppingBasket,
-                                                    faCoins,
-                                                    faChartBar,
-                                                    faBuilding,
-                                                    faGift,
-                                                    faSyncAlt,
-                                                    faTrophy,
-                                                    faReceipt
-                                                ].map((faIcon, index) => (
-                                                    <div
-                                                        key={index}
-                                                        onClick={() => setIcon(faIcon)}
-                                                        className={`icon-container ${icon === faIcon ? 'selected' : ''}`}
-                                                    >
-                                                        <FontAwesomeIcon icon={faIcon} />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                    </IonItem>
-                                </IonCol>
-                            </IonRow>
-
-                            {/* Campo para la selección de color de la categoría */}
-                            <IonRow>
-                                <IonCol size="12" size-md="8" offset-md="2">
-                                    <IonItem>
-                                        <div className="color-picker-container">
-                                            <IonLabel>Selecciona un color</IonLabel>
-                                            <div>
-                                                {['#ff6347', '#3b82f6', '#34d399', '#f59e0b', '#e11d48', '#6366f1', '#9c27b0', '#4caf50', '#ff9800', '#2196f3', '#f44336', '#9e9e9e', '#00bcd4', '#8bc34a'].map(
-                                                    (colorOption, index) => (
-                                                        <div
-                                                            key={index}
-                                                            onClick={() => setColor(colorOption)}
-                                                            className={`color-container ${color === colorOption ? 'selected' : ''
-                                                                }`}
-                                                            style={{ backgroundColor: colorOption }}
-                                                        />
-                                                    )
-                                                )}
-                                            </div>
-                                        </div>
-
-                                    </IonItem>
-                                </IonCol>
-                            </IonRow>
-
-                            {/* Botón para guardar la categoría */}
-                            <IonRow>
-                                <IonCol>
-                                    <IonButton className='handle-category-button' expand='full' onClick={handleSaveCategory}>Guardar categoría</IonButton>
-                                </IonCol>
-                            </IonRow>
-
-                            {/* Botón para eliminar la categoría */}
-                            <IonRow>
-                                <IonCol>
-                                    <IonButton className='handle-delete-button' expand='full' color='danger' onClick={handleDeleteCategory}>Eliminar categoría</IonButton>
-                                </IonCol>
-                            </IonRow>
-                        </IonGrid>
-                    )}
+                        {/* Botón para eliminar la categoría */}
+                        <IonRow>
+                            <IonCol>
+                                <IonButton className='handle-delete-button' expand='full' color='danger' onClick={handleDeleteCategory}>Eliminar categoría</IonButton>
+                            </IonCol>
+                        </IonRow>
+                    </IonGrid>
                 </IonContent>
             </IonModal>
             <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
