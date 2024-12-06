@@ -161,19 +161,19 @@ const Tab1: React.FC = () => {
             <IonCol>
               <IonList>
                 {transactions.length === 0 ? (
-                  <IonItem>
+                  <IonItem className="transaction-message">
                     <IonLabel>No hay transacciones</IonLabel>
                   </IonItem>
                 ) : (
                   transactions.map((transaction) => {
                     const category = categories.find(cat => cat.category_id === transaction.category_id);
                     return (
-                      <IonItem key={transaction.transaction_id}>
+                      <IonItem key={transaction.transaction_id} className="transaction-item">
                         <div className="transaction-category-circle" slot='start' style={{ backgroundColor: category?.color }}>
                           <FontAwesomeIcon icon={getFontAwesomeIcon(category?.icon || 'default')} className="transaction-category-icon" />
                         </div>
-                        <IonLabel> {category?.name} </IonLabel>
-                        <IonLabel slot='end'> {transaction.amount} $</IonLabel>
+                        <IonLabel className="transaction-label"> {category?.name} </IonLabel>
+                        <IonLabel className="transaction-amount" slot='end'> {transaction.amount} $</IonLabel>
                       </IonItem>
                     );
                   })
