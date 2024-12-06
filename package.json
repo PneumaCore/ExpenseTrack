@@ -31,9 +31,11 @@
     "@ionic/react-router": "^8.4.0",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
+    "chart.js": "^4.4.7",
     "firebase": "^11.0.2",
     "ionicons": "^7.4.0",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
     "react-router": "^5.1.0",
     "react-router-dom": "^5.1.0"

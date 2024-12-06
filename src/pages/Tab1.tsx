@@ -1,13 +1,16 @@
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
 import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
 import { add } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
+import { Pie } from 'react-chartjs-2';
 import AddTransaction from '../components/AddTransaction';
 import { database } from '../configurations/firebase';
 import './Tab1.css';
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 interface Transaction {
   transaction_id: string,
@@ -31,14 +34,71 @@ interface Category {
   color: string
 }
 
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 const Tab1: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [type, setType] = useState('gasto');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month'>('today');
 
   {/* Filtramos las transacciones según el tipo de la transacción */ }
   const filteredTransactions = transactions.filter(transaction => transaction.type === type);
+
+  {/* Filtramos las transacciones según el dia, la semana y el mes */}
+  const now = new Date();
+  const filteredByRange = filteredTransactions.filter((transaction) => {
+    const transactionDate = transaction.date.toDate();
+    if (timeRange === 'today') {
+      return transactionDate.toDateString() === now.toDateString();
+    } else if (timeRange === 'week') {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      return transactionDate >= startOfWeek;
+    } else if (timeRange === 'month') {
+      return transactionDate.getMonth() === now.getMonth() && transactionDate.getFullYear() === now.getFullYear();
+    }
+    return false;
+  });
+
+  {/* Representamos el gasto o ingreso total de las categorías en el gráfico */}
+  const categoryTotals = filteredByRange.reduce((totals: any, transaction) => {
+    totals[transaction.category_id] = (totals[transaction.category_id] || 0) + transaction.amount;
+    return totals;
+  }, {});
+
+  {/* Datos para el gráfico */}
+  const hasData = Object.keys(categoryTotals).length > 0;
+
+  {/* Si hay datos, se muestran, si no, se muestra el gráfico en gris indicando que no hay transacciones */}
+  const pieData = hasData
+    ? {
+      labels: categories
+        .filter(cat => categoryTotals[cat.category_id])
+        .map(cat => cat.name),
+      datasets: [
+        {
+          data: categories
+            .filter(cat => categoryTotals[cat.category_id])
+            .map(cat => categoryTotals[cat.category_id]),
+          backgroundColor: categories
+            .filter(cat => categoryTotals[cat.category_id])
+            .map(cat => cat.color || '#CCCCCC'),
+          borderWidth: 1,
+        },
+      ],
+    }
+    : {
+      labels: ['Sin datos'],
+      datasets: [
+        {
+          data: [1],
+          backgroundColor: ['#E0E0E0'],
+          borderWidth: 1,
+        },
+      ],
+    };
 
   useEffect(() => {
     const fetchTransactions = () => {
@@ -172,16 +232,38 @@ const Tab1: React.FC = () => {
 
         <IonGrid>
 
+          <IonRow>
+            <IonCol size="12">
+              <IonSegment value={timeRange} onIonChange={(e: CustomEvent) => setTimeRange(e.detail.value)}>
+                <IonSegmentButton value="today">
+                  <IonLabel>Hoy</IonLabel>
+                </IonSegmentButton>
+                <IonSegmentButton value="week">
+                  <IonLabel>Semana</IonLabel>
+                </IonSegmentButton>
+                <IonSegmentButton value="month">
+                  <IonLabel>Mes</IonLabel>
+                </IonSegmentButton>
+              </IonSegment>
+            </IonCol>
+          </IonRow>
+
+          <IonRow>
+            <IonCol size="12">
+              <Pie data={pieData} />
+            </IonCol>
+          </IonRow>
+
           {/* Listado de transacciones */}
           <IonRow>
             <IonCol>
               <IonList>
-                {filteredTransactions.length === 0 ? (
+                {filteredByRange.length === 0 ? (
                   <IonItem className="transaction-message">
                     <IonLabel>No hay transacciones</IonLabel>
                   </IonItem>
                 ) : (
-                  filteredTransactions.map((transaction) => {
+                  filteredByRange.map((transaction) => {
                     const category = categories.find(cat => cat.category_id === transaction.category_id);
                     return (
                       <IonItem key={transaction.transaction_id} className="transaction-item">
