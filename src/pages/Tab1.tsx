@@ -1,13 +1,13 @@
-import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { getAuth } from 'firebase/auth';
+import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
 import { add } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import AddTransaction from '../components/AddTransaction';
-import './Tab1.css';
-import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
 import { database } from '../configurations/firebase';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
+import './Tab1.css';
 
 interface Transaction {
   transaction_id: string,
@@ -33,8 +33,12 @@ interface Category {
 
 const Tab1: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [type, setType] = useState('gasto');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+
+  {/* Filtramos las transacciones según el tipo de la transacción */ }
+  const filteredTransactions = transactions.filter(transaction => transaction.type === type);
 
   useEffect(() => {
     const fetchTransactions = () => {
@@ -156,16 +160,28 @@ const Tab1: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
+        {/* Seleccionamos el tipo de transacción */}
+        <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
+          <IonSegmentButton value="gasto">
+            <IonLabel>Gasto</IonLabel>
+          </IonSegmentButton>
+          <IonSegmentButton value="ingreso">
+            <IonLabel>Ingreso</IonLabel>
+          </IonSegmentButton>
+        </IonSegment>
+
         <IonGrid>
+
+          {/* Listado de transacciones */}
           <IonRow>
             <IonCol>
               <IonList>
-                {transactions.length === 0 ? (
+                {filteredTransactions.length === 0 ? (
                   <IonItem className="transaction-message">
                     <IonLabel>No hay transacciones</IonLabel>
                   </IonItem>
                 ) : (
-                  transactions.map((transaction) => {
+                  filteredTransactions.map((transaction) => {
                     const category = categories.find(cat => cat.category_id === transaction.category_id);
                     return (
                       <IonItem key={transaction.transaction_id} className="transaction-item">
