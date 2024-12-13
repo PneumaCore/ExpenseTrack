@@ -1,0 +1,14 @@
+.account-grid {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.account-row {
+    text-align: center;
+}
+
+.account-image {
+    width: 128px;
+}

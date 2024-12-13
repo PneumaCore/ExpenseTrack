@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButton, IonItem, IonLabel, IonLoading, IonGrid, IonRow, IonCol } from '@ionic/react';
-import { auth } from '../configurations/firebase';
+import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonLoading, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router';
+import { auth, database } from '../configurations/firebase';
 import './LogIn.css';
 
 const LogIn: React.FC = () => {
@@ -16,8 +17,28 @@ const LogIn: React.FC = () => {
   const handleLogIn = async () => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      history.push('/tab1');
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      /* Comprobamos que el usuario que acaba de iniciar sesión, haya realizado el formulario inicial para configurar la cuenta principal para las transacciones */
+      const userDocRef = doc(database, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+
+        /* Si el usuario ha realizado el formulario inicial, se le redirige a la página principal de la aplicación, si no, se le redirige al formulario inicial */
+        if (userData.isAccountSetup) {
+          history.push('/tab1');
+        } else {
+          history.push('/account_setup');
+        }
+      } else {
+
+        /* En caso de no existir el campo para realizar la comprobación, lo creamos y le redirigimos al formulario inicial */
+        await setDoc(userDocRef, { uid: user.uid, isAccountSetup: false });
+        history.push('/account_setup');
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {

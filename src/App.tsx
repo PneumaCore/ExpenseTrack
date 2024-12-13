@@ -43,9 +43,11 @@ import '@ionic/react/css/text-transformation.css';
 
 /* Theme variables */
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import SideMenu from './components/SideMenu';
-import { auth } from './configurations/firebase';
+import { auth, database } from './configurations/firebase';
+import AccountSetup from './pages/AccountSetup';
 import Categories from './pages/Categories';
 import './theme/variables.css';
 
@@ -53,12 +55,28 @@ setupIonicReact();
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAccountSetup, setIsAccountSetup] = useState<boolean | null>(null);
 
   /* Se comprueba que haya un usuario autenticado en la aplicación */
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setIsAuthenticated(true);
+
+        const userDocRef = doc(database, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+
+          /* Comprobamos que el usuario haya realizado el formulario inicial para configurar la cuenta principal para las transacciones */
+          const userData = userDoc.data();
+          setIsAccountSetup(userData.isAccountSetup);
+        } else {
+
+          /* En caso de no existir el campo para realizar la comprobación, lo creamos */
+          await setDoc(userDocRef, { uid: user.uid, isAccountSetup: false });
+          setIsAccountSetup(false);
+        }
       } else {
         setIsAuthenticated(false);
       }
@@ -89,6 +107,8 @@ const App: React.FC = () => {
             </>
           ) : (
             <>
+              {/* Si el usuario no configurado una cuenta principal para las transacciones, se le redirige al formulario inicial para crear la cuenta principal */}
+              {isAccountSetup === false && <Redirect to="/account_setup" />}
 
               {/* Rutas para la botonera principal de la aplicación */}
               <IonTabs>
@@ -122,6 +142,7 @@ const App: React.FC = () => {
 
               {/* Rutas independientes */}
               <Route path="/categories" component={Categories} />
+              <Route path="/account_setup" component={AccountSetup} />
             </>
           )}
         </IonRouterOutlet>
