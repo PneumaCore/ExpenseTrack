@@ -1,14 +1,39 @@
-.account-grid {
+.account-setup-grid {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.account-row {
+.account-setup-row {
+    width: 100%;
     text-align: center;
 }
 
-.account-image {
+.account-setup-image {
     width: 128px;
+}
+
+.selected {
+    background-color: #d1e7ff;
+    border-left: 4px solid #007bff;
+}
+
+.account-setup-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.account-setup-currency {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    
+}
+
+.account-setup-balance-input {
+    width: 50vw;
 }
