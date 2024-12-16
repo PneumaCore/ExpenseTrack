@@ -24,6 +24,8 @@ const AccountSetup: React.FC = () => {
   useEffect(() => {
     const fetchCurrencies = async () => {
       try {
+
+        /* Obtenemos las divisas */
         const currenciesRef = await getDocs(collection(database, 'currencies'));
         const currencyList: Currency[] = currenciesRef.docs.map((doc) => doc.data() as Currency);
 
@@ -39,6 +41,7 @@ const AccountSetup: React.FC = () => {
     fetchCurrencies();
   }, []);
 
+  /* Barra de búsqueda para las divisas */
   const handleSearch = (e: any) => {
     const value = e.detail.value!;
     setSearchText(value);
@@ -100,6 +103,8 @@ const AccountSetup: React.FC = () => {
           <IonTitle>Account Setup</IonTitle>
         </IonToolbar>
       </IonHeader>
+
+      {/* Pantalla con descripción y presentación breve sobre la aplicación */}
       {page === 1 && (
         <>
           <IonContent>
@@ -130,6 +135,8 @@ const AccountSetup: React.FC = () => {
           </IonFooter>
         </>
       )}
+
+      {/* Pantalla para seleccionar la divisa de la cuenta principal */}
       {page === 2 && (
         <>
           <IonContent>
@@ -177,6 +184,8 @@ const AccountSetup: React.FC = () => {
           </IonFooter>
         </>
       )}
+
+      {/* Pantalla para seleccionar el balance de la cuenta principal */}
       {page === 3 && (
         <>
           <IonContent>
