@@ -1,7 +1,7 @@
 import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, onSnapshot, query, setDoc, Timestamp, where } from 'firebase/firestore';
-import { calendar, chevronBack, imageOutline } from 'ionicons/icons';
+import { addOutline, calendar, chevronBack, closeCircle } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
 import './AddTransaction.css';
@@ -29,8 +29,8 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
   const [note, setNote] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   /* Notificación global */
   const [toastConfig, setToastConfig] = useState<{
@@ -81,14 +81,34 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
 
   /* Guardamos la dirección de la imagen */
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setSelectedImage(file);
-      setPreviewUrl(URL.createObjectURL(file));
+
+    /* Almacenamos las imagenes de la galería del usuario */
+    const files = event.target.files;
+    if (files) {
+
+      /* Pasamos la lista de imágenes a un array */
+      const newImages = Array.from(files);
+
+      /* Impedimos que el usuario introduzca más de cinco imágenes, ya que realmente no son necesarias tantas */
+      if (images.length + newImages.length > 5) {
+        setToastConfig({ isOpen: true, message: 'No puedes añadir más de cinco fotos', type: 'error' });
+        return;
+      }
+      setImages((prev) => [...prev, ...newImages]);
+
+      /* Generamos las URL para las vistas previas */
+      const newPreviews = newImages.map((file) => URL.createObjectURL(file));
+      setImagePreviews((prev) => [...prev, ...newPreviews]);
     }
   };
 
-  /* Leemos la imagen en base64 */
+  /* Funcionalidad para eliminar una fotos que el usuario ha cargado de la galería */
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  /* Funcionalidad para convertir una imagen a base64 */
   const handleImageToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -115,11 +135,12 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
       const dateObject = new Date(selectedDate);
       const dateTimestamp = Timestamp.fromDate(dateObject);
 
-      /* Pasamos la imagen a base64, ya que así lo acepta Firestore */
-      let base64Image = null;
-      if (selectedImage) {
-        base64Image = await handleImageToBase64(selectedImage);
-      }
+      /* Pasamos todas las imágenes a base64 */
+      const imageBase64List = await Promise.all(
+        images.map((image) =>
+          handleImageToBase64(image)
+        )
+      );
 
       const newTransaction = {
         transaction_id: transactionId,
@@ -131,8 +152,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
         currency: null,
         date: dateTimestamp,
         note: note,
-        created_at: null,
-        image: base64Image
+        image: imageBase64List
       }
 
       /* Guardamos la transacción en la base de datos */
@@ -221,23 +241,22 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
           {/* Campo añadir foto de la galería */}
           <IonRow>
             <IonCol size="12" size-md="8" offset-md="2">
-              <IonItem>
-                <IonLabel>Subir foto</IonLabel>
-                <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} id="upload-photo" />
-                <IonIcon slot="end" icon={imageOutline} onClick={() => document.getElementById('upload-photo')?.click()}></IonIcon>
-              </IonItem>
+              <div className="image-container">
+                {imagePreviews.map((src, index) => (
+                  <div key={index} className="image-preview">
+                    <img src={src} alt={`preview-${index}`} />
+                    <IonIcon icon={closeCircle} className="close-icon" onClick={() => removeImage(index)} />
+                  </div>
+                ))}
+                {images.length < 5 && (
+                  <label htmlFor="upload-photo" className="add-image-button">
+                    <IonIcon icon={addOutline} />
+                    <input id="upload-photo" type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={handleImageChange} />
+                  </label>
+                )}
+              </div>
             </IonCol>
           </IonRow>
-
-          {previewUrl && (
-            <IonRow>
-              <IonCol size="12" size-md="8" offset-md="2">
-                <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                  <img src={previewUrl} alt="Vista previa" style={{ maxWidth: '100%', borderRadius: '8px' }} />
-                </div>
-              </IonCol>
-            </IonRow>
-          )}
 
           {/* Popover para seleccionar la fecha de la transacción */}
           {/* Cerrar el popover para seleccionar la fecha de la transacción */}
