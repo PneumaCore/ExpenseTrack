@@ -1,7 +1,7 @@
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { chevronBack } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
@@ -230,22 +230,20 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                                 </IonItem>
                             </IonCol>
                         </IonRow>
-
-                        {/* Botón para guardar la categoría */}
-                        <IonRow>
-                            <IonCol>
-                                <IonButton expand='full' onClick={handleSaveCategory}>Guardar categoría</IonButton>
-                            </IonCol>
-                        </IonRow>
-
-                        {/* Botón para eliminar la categoría */}
-                        <IonRow>
-                            <IonCol>
-                                <IonButton className='handle-delete-button' expand='full' color='danger' onClick={handleDeleteCategory}>Eliminar categoría</IonButton>
-                            </IonCol>
-                        </IonRow>
                     </IonGrid>
                 </IonContent>
+                <IonFooter>
+                    <IonToolbar>
+                        <div className='edit-category-footer'>
+
+                            {/* Botón para guardar la categoría */}
+                            <IonButton onClick={handleSaveCategory}>Guardar categoría</IonButton>
+
+                            {/* Botón para eliminar la categoría */}
+                            <IonButton className='handle-delete-button' color='danger' onClick={handleDeleteCategory}>Eliminar categoría</IonButton>
+                        </div>
+                    </IonToolbar>
+                </IonFooter>
             </IonModal>
             <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
         </>

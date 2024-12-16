@@ -1,0 +1,56 @@
+.icon-picker-container {
+    margin-top: 15px;
+}
+
+.icon-picker-container div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.icon-container {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.icon-container.selected {
+    border: 3px solid #007bff;
+}
+
+.color-picker-container {
+    margin-top: 15px;
+}
+
+.color-picker-container div {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.color-container {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.color-container.selected {
+    border: 3px solid #007bff;
+    transform: scale(1.1);
+}
+
+.edit-category-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
