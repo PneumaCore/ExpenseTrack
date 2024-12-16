@@ -1,4 +1,4 @@
-import { IonButton, IonCol, IonContent, IonDatetime, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, onSnapshot, query, setDoc, Timestamp, where } from 'firebase/firestore';
 import { calendar, chevronBack } from 'ionicons/icons';
@@ -142,118 +142,53 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
             </IonSegmentButton>
           </IonSegment>
 
-          {/* Pantalla para los gastos */}
-          {type === 'gasto' ? (
-            <IonGrid>
+          <IonGrid>
 
-              {/* Campo para añadir el monto de la transacción */}
-              <IonRow>
-                <IonCol size="12" size-md="8" offset-md="2">
-                  <IonItem>
-                    <IonInput label='Monto' labelPlacement='floating' placeholder='Monto' type="number" value={amount} onIonChange={(e) => setAmount(parseFloat(e.detail.value!))} required />
-                  </IonItem>
-                </IonCol>
-              </IonRow>
+            {/* Campo para añadir el monto de la transacción */}
+            <IonRow>
+              <IonCol size="12" size-md="8" offset-md="2">
+                <IonItem>
+                  <IonInput label='Monto' labelPlacement='floating' placeholder='Monto' type="number" value={amount} onIonChange={(e) => setAmount(parseFloat(e.detail.value!))} required />
+                </IonItem>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
 
-              {/* Campo para seleccionar la categoría de la transacción */}
-              <IonRow>
-                <IonCol size="12" size-md="8" offset-md="2">
-                  <IonItem>
-                    <IonSelect interface="popover" label="Categoría" labelPlacement="floating" placeholder="Selecciona una categoría" value={selectedCategory} onIonChange={(e) => setSelectedCategory(e.detail.value)}>
-                      {filteredCategories.map(category => (
-                        <IonSelectOption key={category.category_id} value={category.category_id}>
-                          {category.name}
-                        </IonSelectOption>
-                      ))}
-                    </IonSelect>
-                  </IonItem>
-                </IonCol>
-              </IonRow>
+          {/* Campo para seleccionar la categoría de la transacción */}
+          <IonRow>
+            <IonCol size="12" size-md="8" offset-md="2">
+              <IonItem>
+                <IonSelect interface="popover" label="Categoría" labelPlacement="floating" placeholder="Selecciona una categoría" value={selectedCategory} onIonChange={(e) => setSelectedCategory(e.detail.value)}>
+                  {filteredCategories.map(category => (
+                    <IonSelectOption key={category.category_id} value={category.category_id}>
+                      {category.name}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonItem>
+            </IonCol>
+          </IonRow>
 
-              {/* Campo para seleccionar la fecha de la transacción */}
-              <IonRow>
-                <IonCol size="12" size-md="8" offset-md="2">
-                  <IonItem>
-                    <IonInput label='Fecha' labelPlacement='floating' placeholder='Selecciona una fecha' readonly value={selectedDate}></IonInput>
+          {/* Campo para seleccionar la fecha de la transacción */}
+          <IonRow>
+            <IonCol size="12" size-md="8" offset-md="2">
+              <IonItem>
+                <IonInput label='Fecha' labelPlacement='floating' placeholder='Selecciona una fecha' readonly value={selectedDate}></IonInput>
 
-                    {/* Abrir el popover para seleccionar la fecha de la transacción */}
-                    <IonIcon slot='end' icon={calendar} onClick={() => setDatePickerOpen(true)}></IonIcon>
-                  </IonItem>
-                </IonCol>
-              </IonRow>
+                {/* Abrir el popover para seleccionar la fecha de la transacción */}
+                <IonIcon slot='end' icon={calendar} onClick={() => setDatePickerOpen(true)}></IonIcon>
+              </IonItem>
+            </IonCol>
+          </IonRow>
 
-              {/* Campo para añadir una nota o descripción de la transacción */}
-              <IonRow>
-                <IonCol size="12" size-md="8" offset-md="2">
-                  <IonItem>
-                    <IonTextarea label='Nota' labelPlacement='floating' placeholder='Introduce una descripción' value={note} onIonChange={(e) => setNote(e.detail.value!)}></IonTextarea>
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-
-              {/* Botón para guardar la transacción */}
-              <IonRow>
-                <IonCol>
-                  <IonButton expand='full' onClick={handleSaveTransaction}>Guardar transacción</IonButton>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          ) : (
-            <IonGrid>
-              {/* Pantalla para los ingresos */}
-              {/* Campo para añadir el monto de la transacción */}
-              <IonRow>
-                <IonCol size="12" size-md="8" offset-md="2">
-                  <IonItem>
-                    <IonInput label='Monto' labelPlacement='floating' placeholder='Monto' type="number" value={amount} onIonChange={(e) => setAmount(parseFloat(e.detail.value!))} required />
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-
-              {/* Campo para seleccionar la categoría de la transacción */}
-              <IonRow>
-                <IonCol size="12" size-md="8" offset-md="2">
-                  <IonItem>
-                    <IonSelect interface="popover" label="Categoría" labelPlacement="floating" placeholder="Selecciona una categoría" value={selectedCategory} onIonChange={(e) => setSelectedCategory(e.detail.value)}>
-                      {filteredCategories.map(category => (
-                        <IonSelectOption key={category.category_id} value={category.category_id}>
-                          {category.name}
-                        </IonSelectOption>
-                      ))}
-                    </IonSelect>
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-
-              {/* Campo para seleccionar la fecha de la transacción */}
-              <IonRow>
-                <IonCol size="12" size-md="8" offset-md="2">
-                  <IonItem>
-                    <IonInput label='Fecha' labelPlacement='floating' placeholder='Selecciona una fecha' readonly value={selectedDate}></IonInput>
-
-                    {/* Abrir el popover para seleccionar la fecha de la transacción */}
-                    <IonIcon slot='end' icon={calendar} onClick={() => setDatePickerOpen(true)}></IonIcon>
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-
-              {/* Campo para añadir una nota o descripción de la transacción */}
-              <IonRow>
-                <IonCol size="12" size-md="8" offset-md="2">
-                  <IonItem>
-                    <IonTextarea label='Nota' labelPlacement='floating' placeholder='Introduce una descripción' value={note} onIonChange={(e) => setNote(e.detail.value!)}></IonTextarea>
-                  </IonItem>
-                </IonCol>
-              </IonRow>
-
-              {/* Botón para guardar la transacción */}
-              <IonRow>
-                <IonCol>
-                  <IonButton expand='full' onClick={handleSaveTransaction}>Guardar transacción</IonButton>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          )}
+          {/* Campo para añadir una nota o descripción de la transacción */}
+          <IonRow>
+            <IonCol size="12" size-md="8" offset-md="2">
+              <IonItem>
+                <IonTextarea label='Nota' labelPlacement='floating' placeholder='Introduce una descripción' value={note} onIonChange={(e) => setNote(e.detail.value!)}></IonTextarea>
+              </IonItem>
+            </IonCol>
+          </IonRow>
 
           {/* Popover para seleccionar la fecha de la transacción */}
           {/* Cerrar el popover para seleccionar la fecha de la transacción */}
@@ -262,6 +197,15 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
             <IonButton expand="block" onClick={() => setDatePickerOpen(false)}>Cerrar</IonButton>
           </IonPopover>
         </IonContent>
+        <IonFooter>
+          <IonToolbar>
+            <div className='add-transaction-footer'>
+
+              {/* Botón para guardar la transacción */}
+              <IonButton onClick={handleSaveTransaction}>Guardar transacción</IonButton>
+            </div>
+          </IonToolbar>
+        </IonFooter>
       </IonModal>
       <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
     </>
