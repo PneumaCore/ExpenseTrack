@@ -1,7 +1,7 @@
 import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, onSnapshot, query, setDoc, Timestamp, where } from 'firebase/firestore';
-import { calendar, chevronBack } from 'ionicons/icons';
+import { calendar, chevronBack, imageOutline } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
 import './AddTransaction.css';
@@ -29,6 +29,8 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
   const [note, setNote] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   /* Notificación global */
   const [toastConfig, setToastConfig] = useState<{
@@ -77,6 +79,25 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
     setDatePickerOpen(false);
   };
 
+  /* Guardamos la dirección de la imagen */
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setSelectedImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  /* Leemos la imagen en base64 */
+  const handleImageToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file);
+    });
+  };
+
   /* Guardamos la transacción en la base de datos */
   const handleSaveTransaction = async () => {
 
@@ -94,6 +115,12 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
       const dateObject = new Date(selectedDate);
       const dateTimestamp = Timestamp.fromDate(dateObject);
 
+      /* Pasamos la imagen a base64, ya que así lo acepta Firestore */
+      let base64Image = null;
+      if (selectedImage) {
+        base64Image = await handleImageToBase64(selectedImage);
+      }
+
       const newTransaction = {
         transaction_id: transactionId,
         user_id: currentUser?.uid,
@@ -104,7 +131,8 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
         currency: null,
         date: dateTimestamp,
         note: note,
-        created_at: null
+        created_at: null,
+        image: base64Image
       }
 
       /* Guardamos la transacción en la base de datos */
@@ -189,6 +217,27 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
               </IonItem>
             </IonCol>
           </IonRow>
+
+          {/* Campo añadir foto de la galería */}
+          <IonRow>
+            <IonCol size="12" size-md="8" offset-md="2">
+              <IonItem>
+                <IonLabel>Subir foto</IonLabel>
+                <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} id="upload-photo" />
+                <IonIcon slot="end" icon={imageOutline} onClick={() => document.getElementById('upload-photo')?.click()}></IonIcon>
+              </IonItem>
+            </IonCol>
+          </IonRow>
+
+          {previewUrl && (
+            <IonRow>
+              <IonCol size="12" size-md="8" offset-md="2">
+                <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                  <img src={previewUrl} alt="Vista previa" style={{ maxWidth: '100%', borderRadius: '8px' }} />
+                </div>
+              </IonCol>
+            </IonRow>
+          )}
 
           {/* Popover para seleccionar la fecha de la transacción */}
           {/* Cerrar el popover para seleccionar la fecha de la transacción */}
