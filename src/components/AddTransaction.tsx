@@ -1,11 +1,22 @@
 import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
-import { collection, doc, onSnapshot, query, setDoc, Timestamp, where } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, runTransaction, Timestamp, where } from 'firebase/firestore';
 import { addOutline, calendar, chevronBack, closeCircle } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
+import ImageCompression from 'browser-image-compression';
 import { database } from '../configurations/firebase';
 import './AddTransaction.css';
 import GlobalToast from './GlobalToast';
+
+interface Account {
+  account_id: string,
+  user_id: string,
+  name: string,
+  currency: string,
+  balance: number,
+  icon: string,
+  color: string
+}
 
 interface Category {
   category_id: string,
@@ -23,6 +34,8 @@ interface AddTransactionProps {
 
 const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
   const [type, setType] = useState('gasto');
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selectedAccount, setSelectedAccount] = useState<string | undefined>();
   const [amount, setAmount] = useState(0);
   const [selectedDate, setSelectedDate] = useState('');
   const [isDatePickerOpen, setDatePickerOpen] = useState(false);
@@ -39,7 +52,39 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
     type: 'success' | 'error';
   }>({ isOpen: false, message: '', type: 'error' });
 
-  {/* Filtramos las categorías según el tipo de la transacción */ }
+  /* Leemos las cuentas asociadas al usuario de la base de datos */
+  useEffect(() => {
+    const fetchAccounts = () => {
+      try {
+
+        /* Obtenemos los datos del usuario autenticado */
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
+        /* Obtenemos las categorías asociadas al usuario autenticado */
+        const accountsRef = collection(database, 'accounts');
+        const q = query(accountsRef, where('user_id', '==', currentUser?.uid));
+
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const fetchedAccounts = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            account_id: doc.id,
+          })) as Account[];
+          setAccounts(fetchedAccounts);
+        });
+        return unsubscribe;
+
+      } catch (error) {
+        console.error("Error al obtener las transacciones: ", error);
+      }
+    };
+    const unsubscribe = fetchAccounts();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  /* Filtramos las categorías según el tipo de la transacción */
   const filteredCategories = categories.filter(category => category.type === type);
 
   /* Leemos las categorías de las transacciones de la base de datos */
@@ -80,7 +125,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
   };
 
   /* Guardamos la dirección de la imagen */
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 
     /* Almacenamos las imagenes de la galería del usuario */
     const files = event.target.files;
@@ -94,10 +139,18 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
         setToastConfig({ isOpen: true, message: 'No puedes añadir más de cinco fotos', type: 'error' });
         return;
       }
-      setImages((prev) => [...prev, ...newImages]);
+
+      /* Comprimimos todas las imágenes */
+      const compressedImages = await Promise.all(
+        newImages.map(async (image) => {
+          const compressedImage = await compressImage(image);
+          return compressedImage;
+        })
+      );
 
       /* Generamos las URL para las vistas previas */
-      const newPreviews = newImages.map((file) => URL.createObjectURL(file));
+      const newPreviews = compressedImages.map((file) => URL.createObjectURL(file));
+      setImages((prev) => [...prev, ...compressedImages]);
       setImagePreviews((prev) => [...prev, ...newPreviews]);
     }
   };
@@ -106,6 +159,23 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  /* Funcionalidad para comprimir la imagen */
+  const compressImage = async (file: File) => {
+    try {
+      const options = {
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await ImageCompression(file, options);
+      return compressedFile;
+    } catch (error) {
+      console.error('Error al comprimir la imagen:', error);
+      return file;
+    }
   };
 
   /* Funcionalidad para convertir una imagen a base64 */
@@ -131,6 +201,13 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
       const transactionsRef = doc(collection(database, 'transactions'));
       const transactionId = transactionsRef.id;
 
+      /* Buscamos la cuenta seleccionada, para posteriormente acceder a su id y su divisa */
+      const account = accounts.find((acc) => acc.account_id === selectedAccount);
+      if (!account) {
+        setToastConfig({ isOpen: true, message: 'La cuenta seleccionada no es válida', type: 'error' });
+        return;
+      }
+
       /* Pasamos la fecha a Timestamp, ya que así la acepta Firestore */
       const dateObject = new Date(selectedDate);
       const dateTimestamp = Timestamp.fromDate(dateObject);
@@ -147,16 +224,39 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
         user_id: currentUser?.uid,
         type: type,
         category_id: selectedCategory,
-        account_id: null,
+        account_id: account.account_id,
         amount: amount,
-        currency: null,
+        currency: account.currency,
         date: dateTimestamp,
         note: note,
         image: imageBase64List
       }
 
-      /* Guardamos la transacción en la base de datos */
-      await setDoc(transactionsRef, newTransaction);
+      /* Buscamos la referencia en la base de datos de la cuenta seleccionada */
+      const accountRef = doc(database, 'accounts', account.account_id);
+
+      /* Guardamos la transacción en la base de datos y actualizamos el balance de la cuenta utilizada en la transacción */
+      await runTransaction(database, async (transaction) => {
+        const accountDoc = await transaction.get(accountRef);
+
+        if (!accountDoc.exists()) {
+          throw new Error('La cuenta seleccionada no existe.');
+        }
+
+        /* Obtenemos el balance actual de la cuenta */
+        const currentBalance = accountDoc.data().balance;
+
+        /* Calculamos el nuevo balance según si la transacción es de tipo gasto o ingreso */
+        const newBalance = type === 'gasto'
+          ? Number(currentBalance) - Number(amount)
+          : Number(currentBalance) + Number(amount);
+
+        /* Actualizamos el balance de la cuenta en la base de datos */
+        transaction.update(accountRef, { balance: newBalance });
+
+        /* Guardamos la transacción en la base de datos */
+        transaction.set(transactionsRef, newTransaction);
+      });
 
       setToastConfig({ isOpen: true, message: 'Transacción añadida con éxito', type: 'success' });
 
@@ -191,6 +291,21 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
           </IonSegment>
 
           <IonGrid>
+
+            {/* Campo para seleccionar la cuenta de la transacción */}
+            <IonRow>
+              <IonCol size="12" size-md="8" offset-md="2">
+                <IonItem>
+                  <IonSelect interface="popover" label="Cuenta" labelPlacement="floating" placeholder="Selecciona una cuenta" value={selectedAccount} onIonChange={(e) => setSelectedAccount(e.detail.value)}>
+                    {accounts.map(account => (
+                      <IonSelectOption key={account.account_id} value={account.account_id}>
+                        {account.name}
+                      </IonSelectOption>
+                    ))}
+                  </IonSelect>
+                </IonItem>
+              </IonCol>
+            </IonRow>
 
             {/* Campo para añadir el monto de la transacción */}
             <IonRow>
