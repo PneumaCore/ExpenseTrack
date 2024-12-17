@@ -65,6 +65,11 @@ const AccountSetup: React.FC = () => {
       const auth = getAuth();
       const currentUser = auth.currentUser;
 
+      /* Verificamos si el usuario está autenticado */
+      if (!currentUser || !currentUser.uid) {
+        throw new Error("El usuario no está autenticado.");
+      }
+
       /* Generamos un ID automático con Firestore */
       const accountsRef = doc(collection(database, 'accounts'));
       const accountId = accountsRef.id;
