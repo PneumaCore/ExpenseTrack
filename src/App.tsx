@@ -47,6 +47,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import SideMenu from './components/SideMenu';
 import { auth, database } from './configurations/firebase';
+import Accounts from './pages/Accounts';
 import AccountSetup from './pages/AccountSetup';
 import Categories from './pages/Categories';
 import './theme/variables.css';
@@ -141,6 +142,7 @@ const App: React.FC = () => {
               <Route exact path="/login" component={LogIn} />
 
               {/* Rutas independientes */}
+              <Route path="/accounts" component={Accounts} />
               <Route path="/categories" component={Categories} />
               <Route path="/account_setup" component={AccountSetup} />
             </>
