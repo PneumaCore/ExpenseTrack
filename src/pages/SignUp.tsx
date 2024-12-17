@@ -3,7 +3,7 @@ import './SignUp.css';
 import { useHistory } from 'react-router';
 import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonLoading, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonIcon } from '@ionic/react';
 import { chevronBack } from 'ionicons/icons';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from '../configurations/firebase';
 
 const SignUp: React.FC = () => {
@@ -28,6 +28,10 @@ const SignUp: React.FC = () => {
 
         try {
             await createUserWithEmailAndPassword(auth, email, password);
+
+            /* Cerramos la sesión del usuario que acaba de ser creado, ya que quiero forzarlo a pasar por la pantalla de inicio de sesión */
+            await signOut(auth);
+
             history.push('/login');
         } catch (err: any) {
             setError(err.message);
