@@ -2,7 +2,7 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
-import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { chevronBack } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
@@ -103,6 +103,21 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
             if (!category?.category_id) {
                 throw new Error("El ID de la categoría no está definido");
             }
+
+            /* Buscamos en la base de datos las transacciones que estuvieran asociadas a la categoría  */
+            const newCategoryId = category.type === "gasto" ? 'EXiE4r05NMlvrcSEWNxf' : 'lTeToQA1ctbmQKdIiPKA';
+            const transactionsRef = collection(database, "transactions");
+            const q = query(transactionsRef, where("category_id", "==", category.category_id));
+
+            const querySnapshot = await getDocs(q);
+
+            /* Actualizamos las categorías de las transacciones a una genérica para que no desaparezcan el icono y el nombre de la categoría de las transacciones*/
+            const updatePromises = querySnapshot.docs.map(docSnapshot => {
+                const transactionRef = doc(database, "transactions", docSnapshot.id);
+                return updateDoc(transactionRef, { category_id: newCategoryId });
+            });
+
+            await Promise.all(updatePromises);
 
             const categoryRef = doc(database, 'categories', category.category_id);
 
