@@ -1,0 +1,14 @@
+.account-icon-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+}
+
+.account-icon-font {
+    font-size: 25px;
+    color: white;
+}
