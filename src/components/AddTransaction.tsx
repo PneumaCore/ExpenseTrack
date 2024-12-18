@@ -1,6 +1,6 @@
 import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
-import { collection, doc, onSnapshot, query, runTransaction, Timestamp, where } from 'firebase/firestore';
+import { collection, doc, onSnapshot, or, query, runTransaction, Timestamp, where } from 'firebase/firestore';
 import { addOutline, calendar, chevronBack, closeCircle } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import ImageCompression from 'browser-image-compression';
@@ -98,7 +98,13 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
 
         /* Obtenemos las categorías asociadas al usuario autenticado */
         const categoriesRef = collection(database, 'categories');
-        const q = query(categoriesRef, where('user_id', '==', currentUser?.uid));
+        const q = query(
+          categoriesRef,
+          or(
+            where('user_id', '==', currentUser?.uid),
+            where('user_id', '==', '')
+          )
+        );
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
           const fetchedCategories = querySnapshot.docs.map((doc) => ({

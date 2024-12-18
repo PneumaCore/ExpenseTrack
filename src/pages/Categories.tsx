@@ -1,8 +1,8 @@
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IonButton, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonLabel, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth } from "firebase/auth";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, or, query, where } from "firebase/firestore";
 import { add, chevronBack } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
@@ -39,9 +39,15 @@ const Categories: React.FC = () => {
                 const auth = getAuth();
                 const currentUser = auth.currentUser;
 
-                /* Obtenemos las categorías asociadas al usuario autenticado */
+                /* Obtenemos las categorías asociadas al usuario autenticado y los globales */
                 const categoriesRef = collection(database, 'categories');
-                const q = query(categoriesRef, where('user_id', '==', currentUser?.uid));
+                const q = query(
+                    categoriesRef,
+                    or(
+                        where('user_id', '==', currentUser?.uid),
+                        where('user_id', '==', '')
+                    )
+                );
 
                 const unsubscribe = onSnapshot(q, (querySnapshot) => {
                     const fetchedCategories = querySnapshot.docs.map((doc) => ({
@@ -98,12 +104,16 @@ const Categories: React.FC = () => {
             'building': faBuilding,
             'sync-alt': faSyncAlt,
             'trophy': faTrophy,
-            'receipt': faReceipt
+            'receipt': faReceipt,
+            'question': faQuestion
         };
         return icons[iconName] || faHome;
     }
 
     const handleEditCategory = (category: Category) => {
+        if (category.name === 'Otros') {
+            return;
+        }
         setSelectedCategory(category);
         setIsEditModalOpen(true);
     };

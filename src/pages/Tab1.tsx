@@ -1,9 +1,9 @@
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
-import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
+import { collection, onSnapshot, or, query, Timestamp, where } from 'firebase/firestore';
 import { add } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
@@ -141,7 +141,13 @@ const Tab1: React.FC = () => {
 
         /* Obtenemos las categorías asociadas al usuario autenticado */
         const categoriesRef = collection(database, 'categories');
-        const q = query(categoriesRef, where('user_id', '==', currentUser?.uid));
+        const q = query(
+          categoriesRef,
+          or(
+            where('user_id', '==', currentUser?.uid),
+            where('user_id', '==', '')
+          )
+        );
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
           const fetchedCategories = querySnapshot.docs.map((doc) => ({
@@ -198,7 +204,8 @@ const Tab1: React.FC = () => {
       'building': faBuilding,
       'sync-alt': faSyncAlt,
       'trophy': faTrophy,
-      'receipt': faReceipt
+      'receipt': faReceipt,
+      'question': faQuestion
     };
     return icons[iconName] || faHome;
   }
