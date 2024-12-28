@@ -207,8 +207,10 @@ const AccountSetup: React.FC = () => {
               </IonRow>
               <IonRow className='account-setup-row'>
                 <IonCol size="12" size-md="8" offset-md="2" className='account-setup-currency'>
-                  <IonInput className='account-setup-balance-input' placeholder='0' type="number" value={balance} onIonChange={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
-                  <IonLabel>{selectedCurrency}</IonLabel>
+                  <IonItem>
+                    <IonInput placeholder='0' type="number" value={balance} onIonChange={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
+                    <IonLabel slot='end' className='account-setup-balance-label'>{selectedCurrency}</IonLabel>
+                  </IonItem>
                 </IonCol>
               </IonRow>
             </IonGrid>
