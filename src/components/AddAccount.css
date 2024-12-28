@@ -2,6 +2,12 @@
     margin-top: 15px;
 }
 
+.account-icon-picker-container div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .account-icon-container {
     width: 50px;
     height: 50px;
@@ -17,6 +23,29 @@
 
 .account-icon-container.selected {
     border: 3px solid #007bff;
+}
+
+.account-color-picker-container {
+    margin-top: 15px;
+}
+
+.account-color-picker-container div {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.account-color-container {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.account-color-container.selected {
+    border: 3px solid #007bff;
+    transform: scale(1.1);
 }
 
 .add-account-footer {

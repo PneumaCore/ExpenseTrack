@@ -1,11 +1,13 @@
 import { IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { chevronBack } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { database } from "../configurations/firebase";
 import "./AddAccount.css";
-import { faWallet } from "@fortawesome/free-solid-svg-icons";
+import { faCoins, faCreditCard, faHandHoldingDollar, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
+import { getAuth } from "firebase/auth";
 
 interface AddAccountProps {
     isOpen: boolean;
@@ -18,7 +20,7 @@ interface Currency {
 }
 
 const icons = [
-    faWallet
+    faWallet, faCoins, faMoneyBill, faLandmark, faVault, faPiggyBank, faHandHoldingDollar, faSackDollar, faCreditCard, faBitcoin, faEthereum, faReceipt, faStamp, faScaleBalanced
 ];
 
 const colors = [
@@ -30,9 +32,17 @@ const colors = [
 const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
     const [name, setName] = useState('');
     const [currencies, setCurrencies] = useState<Currency[]>([]);
-    const [selectedAccount, setSelectedAccount] = useState<string | undefined>();
+    const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>();
     const [balance, setBalance] = useState(0);
     const [icon, setIcon] = useState(faWallet);
+    const [color, setColor] = useState('#000000');
+
+    /* Notificación global */
+    const [toastConfig, setToastConfig] = useState<{
+        isOpen: boolean;
+        message: string;
+        type: 'success' | 'error';
+    }>({ isOpen: false, message: '', type: 'error' });
 
     useEffect(() => {
         const fetchCurrencies = async () => {
@@ -52,8 +62,38 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
     }, []);
 
     const handleSaveAccount = async () => {
-        null;
-    }
+        try {
+
+            /* Obtenemos los datos del usuario autenticado */
+            const auth = getAuth();
+            const currentUser = auth.currentUser;
+
+            /* Generamos un ID automático con Firestore */
+            const accountsRef = doc(collection(database, 'accounts'));
+            const accountId = accountsRef.id;
+
+            const newAccount = {
+                account_id: accountId,
+                user_id: currentUser?.uid,
+                name: name,
+                currency: selectedCurrency,
+                balance: balance,
+                icon: icon.iconName,
+                color: color
+            }
+
+            /* Guardamos la cuenta en la base de datos */
+            await setDoc(accountsRef, newAccount);
+
+            setToastConfig({ isOpen: true, message: 'Cuenta añadida con éxito', type: 'success' });
+
+            /* Cerramos el modal automáticamente al guardar la cuenta */
+            onClose();
+
+        } catch (error) {
+            setToastConfig({ isOpen: true, message: 'No se pudo añadir la cuenta', type: 'error' });
+        }
+    };
 
     return (
         <IonModal isOpen={isOpen} onDidDismiss={onClose}>
@@ -81,7 +121,7 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
                     <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
                             <IonItem>
-                                <IonSelect interface="popover" label="Cuenta" labelPlacement="floating" placeholder="Selecciona una cuenta" value={selectedAccount} onIonChange={(e) => setSelectedAccount(e.detail.value)}>
+                                <IonSelect interface="popover" label="Divisa" labelPlacement="floating" placeholder="Selecciona una divisa" value={selectedCurrency} onIonChange={(e) => setSelectedCurrency(e.detail.value)}>
                                     {currencies.map(currency => (
                                         <IonSelectOption key={currency.code} value={currency.code}>
                                             <IonLabel>{currency.name} ({currency.code})</IonLabel>
@@ -95,11 +135,13 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
                     {/* Campo para introducir el balance de la cuenta */}
                     <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2" className='account-setup-currency'>
-                            <IonInput placeholder='0' type="number" value={balance} onIonChange={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
+                            <IonItem style={{ width: '100%' }}>
+                                <IonInput placeholder='0' type="number" value={balance} onIonChange={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
+                            </IonItem>
                         </IonCol>
                     </IonRow>
 
-                    {/* Campo para la selección de icono de la categoría */}
+                    {/* Campo para la selección de icono de la cuenta */}
                     <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
                             <IonItem>
@@ -122,6 +164,26 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
                         </IonCol>
                     </IonRow>
 
+                    {/* Campo para la selección de color de la cuenta */}
+                    <IonRow>
+                        <IonCol size="12" size-md="8" offset-md="2">
+                            <IonItem>
+                                <div className="account-color-picker-container">
+                                    <IonLabel>Selecciona un color</IonLabel>
+                                    <div>
+                                        {colors.map((colorOption, index) => (
+                                            <div
+                                                key={index}
+                                                onClick={() => setColor(colorOption)}
+                                                className={`account-color-container ${color === colorOption ? 'selected' : ''}`}
+                                                style={{ backgroundColor: colorOption }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </IonItem>
+                        </IonCol>
+                    </IonRow>
                 </IonGrid>
             </IonContent>
             <IonFooter>
