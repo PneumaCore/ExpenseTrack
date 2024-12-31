@@ -10,6 +10,7 @@ import { Pie } from 'react-chartjs-2';
 import AddTransaction from '../components/AddTransaction';
 import { database } from '../configurations/firebase';
 import './Tab1.css';
+import EditTransaction from '../components/EditTransaction';
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 interface Transaction {
@@ -38,6 +39,8 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Tab1: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [type, setType] = useState('gasto');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -46,7 +49,7 @@ const Tab1: React.FC = () => {
   {/* Filtramos las transacciones según el tipo de la transacción */ }
   const filteredTransactions = transactions.filter(transaction => transaction.type === type);
 
-  {/* Filtramos las transacciones según el dia, la semana y el mes */}
+  {/* Filtramos las transacciones según el dia, la semana y el mes */ }
   const now = new Date();
   const filteredByRange = filteredTransactions.filter((transaction) => {
     const transactionDate = transaction.date.toDate();
@@ -62,16 +65,16 @@ const Tab1: React.FC = () => {
     return false;
   });
 
-  {/* Representamos el gasto o ingreso total de las categorías en el gráfico */}
+  {/* Representamos el gasto o ingreso total de las categorías en el gráfico */ }
   const categoryTotals = filteredByRange.reduce((totals: any, transaction) => {
     totals[transaction.category_id] = (totals[transaction.category_id] || 0) + transaction.amount;
     return totals;
   }, {});
 
-  {/* Datos para el gráfico */}
+  {/* Datos para el gráfico */ }
   const hasData = Object.keys(categoryTotals).length > 0;
 
-  {/* Si hay datos, se muestran, si no, se muestra el gráfico en gris indicando que no hay transacciones */}
+  {/* Si hay datos, se muestran, si no, se muestra el gráfico en gris indicando que no hay transacciones */ }
   const pieData = hasData
     ? {
       labels: categories
@@ -210,6 +213,11 @@ const Tab1: React.FC = () => {
     return icons[iconName] || faHome;
   }
 
+  const handleEditTransaction = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsEditModalOpen(true);
+  };
+
   return (
     <IonPage id="main-content">
       <IonHeader>
@@ -273,7 +281,7 @@ const Tab1: React.FC = () => {
                   filteredByRange.map((transaction) => {
                     const category = categories.find(cat => cat.category_id === transaction.category_id);
                     return (
-                      <IonItem key={transaction.transaction_id} className="transaction-item">
+                      <IonItem key={transaction.transaction_id} className="transaction-item" onClick={() => handleEditTransaction(transaction)}>
                         <div className="transaction-category-circle" slot='start' style={{ backgroundColor: category?.color }}>
                           <FontAwesomeIcon icon={getFontAwesomeIcon(category?.icon || 'default')} className="transaction-category-icon" />
                         </div>
@@ -298,6 +306,9 @@ const Tab1: React.FC = () => {
 
         {/* Modal para añadir transacciones */}
         <AddTransaction isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}></AddTransaction>
+
+        {/* Modal para editar o eliminar transacciones */}
+        <EditTransaction isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} transaction={selectedTransaction}></EditTransaction>
       </IonContent>
     </IonPage>
   );
