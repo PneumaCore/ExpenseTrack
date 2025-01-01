@@ -23,7 +23,7 @@ interface Transaction {
   currency: string,
   date: Timestamp,
   note: string,
-  created_at: Timestamp
+  image: string[]
 }
 
 interface Category {
@@ -286,7 +286,7 @@ const Tab1: React.FC = () => {
                           <FontAwesomeIcon icon={getFontAwesomeIcon(category?.icon || 'default')} className="transaction-category-icon" />
                         </div>
                         <IonLabel className="transaction-label"> {category?.name} </IonLabel>
-                        <IonLabel className="transaction-amount" slot='end'> {transaction.amount} $</IonLabel>
+                        <IonLabel className="transaction-amount" slot='end'> {transaction.amount} {transaction.currency}</IonLabel>
                       </IonItem>
                     );
                   })
