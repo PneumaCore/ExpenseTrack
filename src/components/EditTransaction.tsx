@@ -6,6 +6,7 @@ import { addOutline, calendar, chevronBack, closeCircle } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
 import './EditTransaction.css';
+import GlobalToast from './GlobalToast';
 
 interface EditTransactionProps {
     isOpen: boolean;
@@ -436,6 +437,7 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
                     </IonToolbar>
                 </IonFooter>
             </IonModal>
+            <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
         </>
     );
 }
