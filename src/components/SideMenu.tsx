@@ -19,6 +19,9 @@ const SideMenu: React.FC = () => {
                         <IonItem onClick={() => history.push('/categories', { from: window.location.pathname })}>
                             <IonLabel>Categorías</IonLabel>
                         </IonItem>
+                        <IonItem onClick={() => history.push('/notifications', { from: window.location.pathname })}>
+                            <IonLabel>Recordatorios</IonLabel>
+                        </IonItem>
                     </IonMenuToggle>
                 </IonList>
             </IonContent>

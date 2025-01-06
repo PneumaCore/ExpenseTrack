@@ -5,7 +5,7 @@ import {
   IonTabs, setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { diamond, ellipse, square, triangle } from 'ionicons/icons';
+import { diamond, ellipse, notifications, square, triangle } from 'ionicons/icons';
 import { Redirect, Route } from 'react-router-dom';
 import LogIn from './pages/LogIn';
 import SignUp from './pages/SignUp';
@@ -51,6 +51,7 @@ import Accounts from './pages/Accounts';
 import AccountSetup from './pages/AccountSetup';
 import Categories from './pages/Categories';
 import './theme/variables.css';
+import Notifications from './pages/Notifications';
 
 setupIonicReact();
 
@@ -145,6 +146,7 @@ const App: React.FC = () => {
               <Route path="/accounts" component={Accounts} />
               <Route path="/categories" component={Categories} />
               <Route path="/account_setup" component={AccountSetup} />
+              <Route path="/notifications" component={Notifications} />
             </>
           )}
         </IonRouterOutlet>
