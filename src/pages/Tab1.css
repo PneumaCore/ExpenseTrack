@@ -1,3 +1,10 @@
+.date-period-picker-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
 .transaction-item {
     display: flex;
     align-items: center;

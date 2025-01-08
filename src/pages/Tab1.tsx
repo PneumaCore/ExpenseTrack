@@ -1,10 +1,10 @@
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
 import { collection, onSnapshot, or, query, Timestamp, where } from 'firebase/firestore';
-import { add } from 'ionicons/icons';
+import { add, chevronBack } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import AddTransaction from '../components/AddTransaction';
@@ -50,6 +50,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const Tab1: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDateOpen, setIsDateModalOpen] = useState(false);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const selectedAccount = accounts.find(account => account.account_id === selectedAccountId);
@@ -58,7 +59,9 @@ const Tab1: React.FC = () => {
   const [type, setType] = useState('gasto');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month'>('today');
+  const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('today');
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
 
   /* Leemos las cuentas del usuario de la base de datos */
   useEffect(() => {
@@ -103,6 +106,7 @@ const Tab1: React.FC = () => {
   const now = new Date();
   const filteredByRange = filteredTransactions.filter((transaction) => {
     const transactionDate = transaction.date.toDate();
+
     if (timeRange === 'today') {
       return transactionDate.toDateString() === now.toDateString();
     } else if (timeRange === 'week') {
@@ -111,6 +115,15 @@ const Tab1: React.FC = () => {
       return transactionDate >= startOfWeek;
     } else if (timeRange === 'month') {
       return transactionDate.getMonth() === now.getMonth() && transactionDate.getFullYear() === now.getFullYear();
+    } else if (timeRange === 'year') {
+      return transactionDate.getFullYear() === now.getFullYear();
+    } else if (timeRange === 'custom') {
+      if (!startDate || !endDate) {
+        return false;
+      }
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return transactionDate >= start && transactionDate <= end;
     }
     return false;
   });
@@ -316,6 +329,7 @@ const Tab1: React.FC = () => {
 
         <IonGrid>
 
+          {/* Filtramos el tipo de transacción según el período */}
           <IonRow>
             <IonCol size="12">
               <IonSegment value={timeRange} onIonChange={(e: CustomEvent) => setTimeRange(e.detail.value)}>
@@ -328,10 +342,72 @@ const Tab1: React.FC = () => {
                 <IonSegmentButton value="month">
                   <IonLabel>Mes</IonLabel>
                 </IonSegmentButton>
+                <IonSegmentButton value="year">
+                  <IonLabel>Año</IonLabel>
+                </IonSegmentButton>
+                <IonSegmentButton value="custom" onClick={() => setIsDateModalOpen(true)}>
+                  <IonLabel>Período</IonLabel>
+                </IonSegmentButton>
               </IonSegment>
             </IonCol>
           </IonRow>
 
+          {/* Selector de rango de fechas para "Período" */}
+          {timeRange === 'custom' && (
+            <div>
+              <IonModal isOpen={isDateOpen} onDidDismiss={() => setIsDateModalOpen(false)}>
+                <IonHeader>
+                  <IonToolbar>
+                    <IonTitle>Período</IonTitle>
+                    <IonButton slot="start" onClick={() => (setIsDateModalOpen(false))} fill='clear'>
+                      <IonIcon icon={chevronBack}></IonIcon>
+                    </IonButton>
+                  </IonToolbar>
+                </IonHeader>
+                <IonContent>
+                  <IonGrid>
+                    <IonRow>
+                      <IonCol size="12" size-md="8" offset-md="2">
+                        <IonItem>
+                          <IonDatetime presentation="date" value={startDate || new Date().toISOString()}
+                            onIonChange={(e) => {
+                              if (typeof e.detail.value === 'string') {
+                                setStartDate(e.detail.value);
+                              }
+                            }}
+                          />
+                        </IonItem>
+                      </IonCol>
+                    </IonRow>
+                    <IonRow>
+                      <IonCol size="12" size-md="8" offset-md="2">
+                        <IonItem>
+                          <IonDatetime presentation="date" value={endDate || new Date().toISOString()}
+                            onIonChange={(e) => {
+                              if (typeof e.detail.value === 'string') {
+                                setEndDate(e.detail.value);
+                              }
+                            }}
+                          />
+                        </IonItem>
+                      </IonCol>
+                    </IonRow>
+                  </IonGrid>
+                </IonContent>
+                <IonFooter>
+                  <IonToolbar>
+                    <div className='date-period-picker-footer'>
+
+                      {/* Botón para aplicar el filtro */}
+                      <IonButton onClick={() => setIsDateModalOpen(false)}>Aplicar</IonButton>
+                    </div>
+                  </IonToolbar>
+                </IonFooter>
+              </IonModal>
+            </div>
+          )}
+
+          {/* Gráfico de transacciones */}
           <IonRow>
             <IonCol size="12">
               <Pie data={pieData} />
