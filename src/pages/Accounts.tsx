@@ -30,7 +30,7 @@ const Accounts: React.FC = () => {
     const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
 
     useEffect(() => {
-        const fetchTransactions = () => {
+        const fetchAccounts = () => {
             try {
 
                 /* Obtenemos los datos del usuario autenticado */
@@ -42,11 +42,11 @@ const Accounts: React.FC = () => {
                 const q = query(transactionsRef, where('user_id', '==', currentUser?.uid));
 
                 const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                    const fetchedTransactions = querySnapshot.docs.map((doc) => ({
+                    const fetchedAccounts = querySnapshot.docs.map((doc) => ({
                         ...doc.data(),
                         account_id: doc.id,
                     })) as Account[];
-                    setAccounts(fetchedTransactions);
+                    setAccounts(fetchedAccounts);
                 });
                 return unsubscribe;
 
@@ -54,7 +54,7 @@ const Accounts: React.FC = () => {
                 console.error("Error al obtener las transacciones: ", error);
             }
         };
-        const unsubscribe = fetchTransactions();
+        const unsubscribe = fetchAccounts();
         return () => {
             if (unsubscribe) unsubscribe();
         };
