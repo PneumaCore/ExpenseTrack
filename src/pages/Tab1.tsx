@@ -1,6 +1,6 @@
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
 import { collection, onSnapshot, or, query, Timestamp, where } from 'firebase/firestore';
@@ -8,10 +8,20 @@ import { add } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import AddTransaction from '../components/AddTransaction';
+import EditTransaction from '../components/EditTransaction';
 import { database } from '../configurations/firebase';
 import './Tab1.css';
-import EditTransaction from '../components/EditTransaction';
 ChartJS.register(ArcElement, Tooltip, Legend)
+
+interface Account {
+  account_id: string,
+  user_id: string,
+  name: string,
+  currency: string,
+  balance: number,
+  icon: string,
+  color: string
+}
 
 interface Transaction {
   transaction_id: string,
@@ -40,14 +50,54 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const Tab1: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
+  const selectedAccount = accounts.find(account => account.account_id === selectedAccountId);
+  const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [type, setType] = useState('gasto');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month'>('today');
 
+  /* Leemos las cuentas del usuario de la base de datos */
+  useEffect(() => {
+    const fetchAccounts = () => {
+      try {
+
+        /* Obtenemos los datos del usuario autenticado */
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
+        /* Obtenemos las cuentas asociadas al usuario autenticado */
+        const transactionsRef = collection(database, 'accounts');
+        const q = query(transactionsRef, where('user_id', '==', currentUser?.uid));
+
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const fetchedAccounts = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            account_id: doc.id,
+          })) as Account[];
+          setAccounts(fetchedAccounts);
+        });
+        return unsubscribe;
+
+      } catch (error) {
+        console.error("Error al obtener las transacciones: ", error);
+      }
+    };
+    const unsubscribe = fetchAccounts();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
   {/* Filtramos las transacciones según el tipo de la transacción */ }
-  const filteredTransactions = transactions.filter(transaction => transaction.type === type);
+  const filteredTransactions = transactions.filter(transaction =>
+    transaction.type === type &&
+    (!selectedAccountId || transaction.account_id === selectedAccountId)
+  );
+
 
   {/* Filtramos las transacciones según el dia, la semana y el mes */ }
   const now = new Date();
@@ -66,7 +116,7 @@ const Tab1: React.FC = () => {
   });
 
   {/* Representamos el gasto o ingreso total de las categorías en el gráfico */ }
-  const categoryTotals = filteredByRange.reduce((totals: any, transaction) => {
+  const categoryTotals = filteredTransactions.reduce((totals: any, transaction) => {
     totals[transaction.category_id] = (totals[transaction.category_id] || 0) + transaction.amount;
     return totals;
   }, {});
@@ -75,7 +125,7 @@ const Tab1: React.FC = () => {
   const hasData = Object.keys(categoryTotals).length > 0;
 
   {/* Si hay datos, se muestran, si no, se muestra el gráfico en gris indicando que no hay transacciones */ }
-  const pieData = hasData
+  const pieData = Object.keys(categoryTotals).length > 0
     ? {
       labels: categories
         .filter(cat => categoryTotals[cat.category_id])
@@ -103,6 +153,7 @@ const Tab1: React.FC = () => {
       ],
     };
 
+  /* Leemos las transacciones realizadas por el usuario de la base de datos */
   useEffect(() => {
     const fetchTransactions = () => {
       try {
@@ -234,6 +285,24 @@ const Tab1: React.FC = () => {
             <IonTitle size="large">Tab 1</IonTitle>
           </IonToolbar>
         </IonHeader>
+
+        {/* Seleccionamos la cuenta de las transacciones */}
+        <IonSelect labelPlacement="floating" onIonChange={(e) => setSelectedAccountId(e.detail.value)} value={selectedAccountId}>
+          <IonSelectOption value={null}>Total</IonSelectOption>
+          {accounts.map(account => (
+            <IonSelectOption key={account.account_id} value={account.account_id}>
+              {account.name}
+            </IonSelectOption>
+          ))}
+        </IonSelect>
+
+        {/* Mostramos el saldo total de la cuenta seleccionada por el usuario */}
+        <IonLabel>
+          {selectedAccountId
+            ? `${selectedAccount?.balance} ${selectedAccount?.currency}`
+            : `${totalBalance}`
+          }
+        </IonLabel>
 
         {/* Seleccionamos el tipo de transacción */}
         <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
