@@ -1,18 +1,11 @@
 import {
-  IonApp, IonIcon, IonLabel, IonLoading, IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs, setupIonicReact
+  IonApp, IonLoading, IonRouterOutlet, setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { diamond, ellipse, notifications, square, triangle } from 'ionicons/icons';
 import { Redirect, Route } from 'react-router-dom';
 import LogIn from './pages/LogIn';
 import SignUp from './pages/SignUp';
 import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
-import Tab4 from './pages/Tab4';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -50,8 +43,9 @@ import { auth, database } from './configurations/firebase';
 import Accounts from './pages/Accounts';
 import AccountSetup from './pages/AccountSetup';
 import Categories from './pages/Categories';
-import './theme/variables.css';
 import Notifications from './pages/Notifications';
+import './theme/variables.css';
+import Charts from './pages/Charts';
 
 setupIonicReact();
 
@@ -121,6 +115,7 @@ const App: React.FC = () => {
               <Route path="/categories" component={Categories} />
               <Route path="/account_setup" component={AccountSetup} />
               <Route path="/notifications" component={Notifications} />
+              <Route path="/charts" component={Charts} />
             </>
           )}
         </IonRouterOutlet>

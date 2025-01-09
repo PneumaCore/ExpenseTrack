@@ -1,4 +1,4 @@
-import { faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faChartColumn, faCreditCard, faCreditCardAlt, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IonButton, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonTitle, IonToolbar } from "@ionic/react";
 import { signOut } from "firebase/auth";
@@ -23,7 +23,7 @@ const SideMenu: React.FC = () => {
             <IonHeader>
                 <IonToolbar>
                     <IonTitle>ExpenseTrack</IonTitle>
-                    <IonButton slot="end" onClick={handleLogout} fill='clear'>
+                    <IonButton slot="end" onClick={handleLogout} size="default" fill='clear'>
                         <FontAwesomeIcon icon={faSignOut}></FontAwesomeIcon>
                     </IonButton>
                 </IonToolbar>
@@ -32,12 +32,27 @@ const SideMenu: React.FC = () => {
                 <IonList>
                     <IonMenuToggle auto-hide="true">
                         <IonItem onClick={() => history.push('/accounts', { from: window.location.pathname })}>
+                            <div slot="start">
+                                <FontAwesomeIcon icon={faSackDollar}></FontAwesomeIcon>
+                            </div>
                             <IonLabel>Cuentas</IonLabel>
                         </IonItem>
+                        <IonItem onClick={() => history.push('/charts', { from: window.location.pathname })}>
+                            <div slot="start">
+                                <FontAwesomeIcon icon={faChartColumn}></FontAwesomeIcon>
+                            </div>
+                            <IonLabel>Gráficos</IonLabel>
+                        </IonItem>
                         <IonItem onClick={() => history.push('/categories', { from: window.location.pathname })}>
+                            <div slot="start">
+                                <FontAwesomeIcon icon={faIcons}></FontAwesomeIcon>
+                            </div>
                             <IonLabel>Categorías</IonLabel>
                         </IonItem>
                         <IonItem onClick={() => history.push('/notifications', { from: window.location.pathname })}>
+                            <div slot="start">
+                                <FontAwesomeIcon icon={faBell}></FontAwesomeIcon>
+                            </div>
                             <IonLabel>Recordatorios</IonLabel>
                         </IonItem>
                     </IonMenuToggle>
