@@ -10,7 +10,7 @@ import { Pie } from 'react-chartjs-2';
 import AddTransaction from '../components/AddTransaction';
 import EditTransaction from '../components/EditTransaction';
 import { database } from '../configurations/firebase';
-import './Tab1.css';
+import './Home.css';
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 interface Account {
@@ -47,7 +47,7 @@ interface Category {
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const Tab1: React.FC = () => {
+const Home: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDateOpen, setIsDateModalOpen] = useState(false);
@@ -459,4 +459,4 @@ const Tab1: React.FC = () => {
   );
 };
 
-export default Tab1;
+export default Home;

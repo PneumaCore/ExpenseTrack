@@ -5,7 +5,6 @@ import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
 import LogIn from './pages/LogIn';
 import SignUp from './pages/SignUp';
-import Tab1 from './pages/Tab1';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -43,9 +42,10 @@ import { auth, database } from './configurations/firebase';
 import Accounts from './pages/Accounts';
 import AccountSetup from './pages/AccountSetup';
 import Categories from './pages/Categories';
+import Charts from './pages/Charts';
+import Home from './pages/Home';
 import Notifications from './pages/Notifications';
 import './theme/variables.css';
-import Charts from './pages/Charts';
 
 setupIonicReact();
 
@@ -107,8 +107,8 @@ const App: React.FC = () => {
               {isAccountSetup === false && <Redirect to="/account_setup" />}
 
               {/* Ruta principal de la aplicación */}
-              <Route exact path="/tab1" component={Tab1} />
-              <Route exact path="/" render={() => <Redirect to="/tab1" />} />
+              <Route exact path="/home" component={Home} />
+              <Route exact path="/" render={() => <Redirect to="/home" />} />
 
               {/* Rutas independientes */}
               <Route path="/accounts" component={Accounts} />
