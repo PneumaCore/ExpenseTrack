@@ -129,16 +129,16 @@ const Tab1: React.FC = () => {
   });
 
   {/* Representamos el gasto o ingreso total de las categorías en el gráfico */ }
-  const categoryTotals = filteredTransactions.reduce((totals: any, transaction) => {
+  const categoryTotals = filteredByRange.reduce((totals: any, transaction) => {
     totals[transaction.category_id] = (totals[transaction.category_id] || 0) + transaction.amount;
     return totals;
   }, {});
 
   {/* Datos para el gráfico */ }
-  const hasData = Object.keys(categoryTotals).length > 0;
+  const hasData = filteredByRange.length > 0;
 
   {/* Si hay datos, se muestran, si no, se muestra el gráfico en gris indicando que no hay transacciones */ }
-  const pieData = Object.keys(categoryTotals).length > 0
+  const pieData = hasData
     ? {
       labels: categories
         .filter(cat => categoryTotals[cat.category_id])
