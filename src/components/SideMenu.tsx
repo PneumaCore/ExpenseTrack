@@ -1,4 +1,4 @@
-import { faBell, faChartColumn, faCreditCard, faCreditCardAlt, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faChartColumn, faCreditCard, faCreditCardAlt, faHome, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IonButton, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonTitle, IonToolbar } from "@ionic/react";
 import { signOut } from "firebase/auth";
@@ -31,6 +31,12 @@ const SideMenu: React.FC = () => {
             <IonContent>
                 <IonList>
                     <IonMenuToggle auto-hide="true">
+                        <IonItem onClick={() => history.push('/home', { from: window.location.pathname })}>
+                            <div slot="start">
+                                <FontAwesomeIcon icon={faHome}></FontAwesomeIcon>
+                            </div>
+                            <IonLabel>Inicio</IonLabel>
+                        </IonItem>
                         <IonItem onClick={() => history.push('/accounts', { from: window.location.pathname })}>
                             <div slot="start">
                                 <FontAwesomeIcon icon={faSackDollar}></FontAwesomeIcon>

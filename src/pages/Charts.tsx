@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol, IonContent, IonHeader, IonToolbar, IonTitle, IonButton, IonIcon, IonPage } from '@ionic/react';
+import { IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol, IonContent, IonHeader, IonToolbar, IonTitle, IonButton, IonIcon, IonPage, IonButtons, IonMenuButton } from '@ionic/react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 import { collection, onSnapshot, query, where, Timestamp, or } from 'firebase/firestore';
@@ -160,10 +160,10 @@ const Charts: React.FC = () => {
         <IonPage id="main-content">
             <IonHeader>
                 <IonToolbar>
+                    <IonButtons slot="start">
+                        <IonMenuButton></IonMenuButton>
+                    </IonButtons>
                     <IonTitle>Gráficos</IonTitle>
-                    <IonButton slot="start" onClick={() => history.goBack()} fill='clear'>
-                        <IonIcon icon={chevronBack}></IonIcon>
-                    </IonButton>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>

@@ -1,6 +1,6 @@
 import { faCoins, faCreditCard, faHandHoldingDollar, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IonButton, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonPage, IonRow, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth } from "firebase/auth";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { add, chevronBack } from "ionicons/icons";
@@ -63,19 +63,19 @@ const Accounts: React.FC = () => {
     const getFontAwesomeIcon = (iconName: string) => {
         const icons: { [key: string]: any } = {
             'wallet': faWallet,
-            'coins' : faCoins,
-            'money-bill' : faMoneyBill,
-            'landmark' : faLandmark,
-            'vault' : faVault,
-            'piggy-bank' : faPiggyBank,
-            'hand-holding-dollar' : faHandHoldingDollar,
-            'sack-dollar' : faSackDollar,
-            'credit-card' : faCreditCard,
-            'bitcoin' : faBitcoin,
-            'ethereum' : faEthereum,
-            'receipt' : faReceipt,
-            'stamp' : faStamp,
-            'scale-balanced' : faScaleBalanced
+            'coins': faCoins,
+            'money-bill': faMoneyBill,
+            'landmark': faLandmark,
+            'vault': faVault,
+            'piggy-bank': faPiggyBank,
+            'hand-holding-dollar': faHandHoldingDollar,
+            'sack-dollar': faSackDollar,
+            'credit-card': faCreditCard,
+            'bitcoin': faBitcoin,
+            'ethereum': faEthereum,
+            'receipt': faReceipt,
+            'stamp': faStamp,
+            'scale-balanced': faScaleBalanced
         };
         return icons[iconName] || faWallet;
     }
@@ -89,10 +89,10 @@ const Accounts: React.FC = () => {
         <IonPage id="main-content">
             <IonHeader>
                 <IonToolbar>
+                    <IonButtons slot="start">
+                        <IonMenuButton></IonMenuButton>
+                    </IonButtons>
                     <IonTitle>Cuentas</IonTitle>
-                    <IonButton slot="start" onClick={() => history.goBack()} fill='clear'>
-                        <IonIcon icon={chevronBack}></IonIcon>
-                    </IonButton>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>

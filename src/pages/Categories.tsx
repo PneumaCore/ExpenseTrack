@@ -1,6 +1,6 @@
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IonButton, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonLabel, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonLabel, IonMenuButton, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth } from "firebase/auth";
 import { collection, onSnapshot, or, query, where } from "firebase/firestore";
 import { add, chevronBack } from "ionicons/icons";
@@ -122,10 +122,10 @@ const Categories: React.FC = () => {
         <IonPage id="main-content">
             <IonHeader>
                 <IonToolbar>
+                    <IonButtons slot="start">
+                        <IonMenuButton></IonMenuButton>
+                    </IonButtons>
                     <IonTitle>Categorías</IonTitle>
-                    <IonButton slot="start" onClick={() => history.goBack()} fill='clear'>
-                        <IonIcon icon={chevronBack}></IonIcon>
-                    </IonButton>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>

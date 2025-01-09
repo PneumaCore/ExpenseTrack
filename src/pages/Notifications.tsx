@@ -1,12 +1,12 @@
-import { IonButton, IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
-import './Notifications.css';
-import { add, chevronBack } from 'ionicons/icons';
-import { useHistory } from 'react-router';
-import { useEffect, useState } from 'react';
-import AddNotification from '../components/AddNotification';
+import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
+import { add } from 'ionicons/icons';
+import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
+import AddNotification from '../components/AddNotification';
 import { database } from '../configurations/firebase';
+import './Notifications.css';
 
 interface Notification {
     notification_id: string,
@@ -57,10 +57,10 @@ const Notifications: React.FC = () => {
         <IonPage id="main-content">
             <IonHeader>
                 <IonToolbar>
+                    <IonButtons slot="start">
+                        <IonMenuButton></IonMenuButton>
+                    </IonButtons>
                     <IonTitle>Recordatorios</IonTitle>
-                    <IonButton slot="start" onClick={() => history.goBack()} fill='clear'>
-                        <IonIcon icon={chevronBack}></IonIcon>
-                    </IonButton>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
