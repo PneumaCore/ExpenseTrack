@@ -1,13 +1,31 @@
-import { IonContent, IonHeader, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonTitle, IonToolbar } from "@ionic/react";
+import { faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IonButton, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonTitle, IonToolbar } from "@ionic/react";
+import { signOut } from "firebase/auth";
 import { useHistory } from "react-router";
+import { auth } from "../configurations/firebase";
 
 const SideMenu: React.FC = () => {
     const history = useHistory();
+
+    /* Se cierra la sesión actual del usuario y se le redirige a la pantalla de inicio de sesión */
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            history.push('/login');
+        } catch (error) {
+            console.error("Error cerrando sesión: ", error);
+        }
+    };
+
     return (
         <IonMenu contentId="main-content">
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>Menú</IonTitle>
+                    <IonTitle>ExpenseTrack</IonTitle>
+                    <IonButton slot="end" onClick={handleLogout} fill='clear'>
+                        <FontAwesomeIcon icon={faSignOut}></FontAwesomeIcon>
+                    </IonButton>
                 </IonToolbar>
             </IonHeader>
             <IonContent>

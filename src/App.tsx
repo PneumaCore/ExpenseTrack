@@ -112,35 +112,9 @@ const App: React.FC = () => {
               {/* Si el usuario no configurado una cuenta principal para las transacciones, se le redirige al formulario inicial para crear la cuenta principal */}
               {isAccountSetup === false && <Redirect to="/account_setup" />}
 
-              {/* Rutas para la botonera principal de la aplicación */}
-              <IonTabs>
-                <IonRouterOutlet>
-                  <Route exact path="/tab1" component={Tab1} />
-                  <Route exact path="/tab2" component={Tab2} />
-                  <Route path="/tab3" component={Tab3} />
-                  <Route path="/tab4" component={Tab4} />
-                  <Route exact path="/" render={() => <Redirect to="/tab1" />} />
-                </IonRouterOutlet>
-                <IonTabBar slot="bottom">
-                  <IonTabButton tab="tab1" href="/tab1">
-                    <IonIcon aria-hidden="true" icon={triangle} />
-                    <IonLabel>Tab 1</IonLabel>
-                  </IonTabButton>
-                  <IonTabButton tab="tab2" href="/tab2">
-                    <IonIcon aria-hidden="true" icon={ellipse} />
-                    <IonLabel>Tab 2</IonLabel>
-                  </IonTabButton>
-                  <IonTabButton tab="tab3" href="/tab3">
-                    <IonIcon aria-hidden="true" icon={square} />
-                    <IonLabel>Tab 3</IonLabel>
-                  </IonTabButton>
-                  <IonTabButton tab="tab4" href="/tab4">
-                    <IonIcon aria-hidden="true" icon={diamond} />
-                    <IonLabel>Tab 4</IonLabel>
-                  </IonTabButton>
-                </IonTabBar>
-              </IonTabs>
-              <Route exact path="/login" component={LogIn} />
+              {/* Ruta principal de la aplicación */}
+              <Route exact path="/tab1" component={Tab1} />
+              <Route exact path="/" render={() => <Redirect to="/tab1" />} />
 
               {/* Rutas independientes */}
               <Route path="/accounts" component={Accounts} />
