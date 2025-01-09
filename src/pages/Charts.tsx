@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol, IonContent, IonHeader, IonToolbar, IonTitle, IonButton, IonIcon, IonPage, IonButtons, IonMenuButton } from '@ionic/react';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
-import { collection, onSnapshot, query, where, Timestamp, or } from 'firebase/firestore';
+import { IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonLabel, IonMenuButton, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
-import { database } from '../configurations/firebase';
-import { chevronBack } from 'ionicons/icons';
+import { Timestamp, collection, onSnapshot, or, query, where } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2';
 import { useHistory } from 'react-router';
+import { database } from '../configurations/firebase';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 

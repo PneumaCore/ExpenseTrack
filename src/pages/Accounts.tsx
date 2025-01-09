@@ -1,16 +1,16 @@
+import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
 import { faCoins, faCreditCard, faHandHoldingDollar, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IonButton, IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth } from "firebase/auth";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { add, chevronBack } from "ionicons/icons";
+import { add } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import AddAccount from "../components/AddAccount";
 import EditAccount from "../components/EditAccount";
 import { database } from "../configurations/firebase";
 import "./Accounts.css";
-import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
 
 interface Account {
     account_id: string,
