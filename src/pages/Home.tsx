@@ -295,7 +295,7 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Tab 1</IonTitle>
+            <IonTitle size="large">Transacciones</IonTitle>
           </IonToolbar>
         </IonHeader>
 
@@ -313,7 +313,7 @@ const Home: React.FC = () => {
         <IonLabel>
           {selectedAccountId
             ? `${selectedAccount?.balance} ${selectedAccount?.currency}`
-            : `${totalBalance}`
+            : `${totalBalance.toFixed(2)}`
           }
         </IonLabel>
 
@@ -431,7 +431,7 @@ const Home: React.FC = () => {
                           <FontAwesomeIcon icon={getFontAwesomeIcon(category?.icon || 'default')} className="transaction-category-icon" />
                         </div>
                         <IonLabel className="transaction-label"> {category?.name} </IonLabel>
-                        <IonLabel className="transaction-amount" slot='end'> {transaction.amount} {transaction.currency}</IonLabel>
+                        <IonLabel className="transaction-amount" slot='end'> {transaction.amount.toFixed(2)} {transaction.currency}</IonLabel>
                       </IonItem>
                     );
                   })
