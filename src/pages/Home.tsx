@@ -1,9 +1,10 @@
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
+import axios from 'axios';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
-import { collection, onSnapshot, or, query, Timestamp, where } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot, or, query, Timestamp, where } from 'firebase/firestore';
 import { add, chevronBack } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
@@ -62,6 +63,61 @@ const Home: React.FC = () => {
   const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('today');
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
+  const [preferredCurrency, setPreferredCurrency] = useState<string>("EUR");
+  const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
+  const [totalBalanceInPreferredCurrency, setTotalBalanceInPreferredCurrency] = useState<number>(0);
+  const [selectedAccountBalanceInPreferredCurrency, setSelectedAccountBalanceInPreferredCurrency] = useState<number | null>(null);
+
+  /* Leemos las divisa preferida del usuario de la base de datos */
+  useEffect(() => {
+    const fetchUserCurrency = async () => {
+      try {
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
+        const usersRef = collection(database, 'users');
+        const q = query(usersRef, where('uid', '==', currentUser?.uid));
+        const snapshot = await getDocs(q);
+
+        if (!snapshot.empty) {
+          const userData = snapshot.docs[0].data();
+          setPreferredCurrency(userData.currency || "EUR");
+        }
+      } catch (error) {
+        console.error("Error al obtener la divisa preferida del usuario: ", error);
+      }
+    };
+
+    fetchUserCurrency();
+  }, []);
+
+  /* Utilizamos una API para consultar el valor de las divisas */
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${preferredCurrency}`);
+        setExchangeRates(response.data.rates);
+      } catch (error) {
+        console.error("Error al obtener las tasas de cambio: ", error);
+      }
+    };
+
+    if (preferredCurrency) {
+      fetchExchangeRates();
+    }
+  }, [preferredCurrency]);
+
+  /* Calculamos el total de saldo de las cuentas según la divisa preferida */
+  useEffect(() => {
+    if (accounts.length > 0 && Object.keys(exchangeRates).length > 0) {
+      const total = accounts.reduce((sum, account) => {
+        const rate = account.currency === preferredCurrency ? 1 : exchangeRates[account.currency];
+        return rate ? sum + account.balance / rate : sum;
+      }, 0);
+
+      setTotalBalanceInPreferredCurrency(total);
+    }
+  }, [accounts, exchangeRates, preferredCurrency]);
 
   /* Leemos las cuentas del usuario de la base de datos */
   useEffect(() => {
@@ -313,7 +369,7 @@ const Home: React.FC = () => {
         <IonLabel>
           {selectedAccountId
             ? `${selectedAccount?.balance} ${selectedAccount?.currency}`
-            : `${totalBalance.toFixed(2)}`
+            : `${totalBalanceInPreferredCurrency.toFixed(2)} ${preferredCurrency}`
           }
         </IonLabel>
 
