@@ -1,3 +1,9 @@
+.account-total-balance {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
 .account-item {
     display: flex;
     align-items: center;

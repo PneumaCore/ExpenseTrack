@@ -87,10 +87,11 @@ const AccountSetup: React.FC = () => {
       /* Guardamos la cuenta en la base de datos */
       await setDoc(accountsRef, newAccount);
 
-      /* Marcamos como completo el formulario que debe realizar el usuario para configurar la cuenta principal para las transacciones */
+      /* Marcamos como completo el formulario que debe realizar el usuario para configurar la cuenta principal para las transacciones y su divisa preferida */
       const usersRef = doc(database, "users", currentUser?.uid);
 
       await updateDoc(usersRef, {
+        currency: selectedCurrency,
         isAccountSetup: true,
       });
 

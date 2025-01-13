@@ -2,11 +2,11 @@ import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
 import { faCoins, faCreditCard, faHandHoldingDollar, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from "@ionic/react";
+import axios from "axios";
 import { getAuth } from "firebase/auth";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
 import { add } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
 import AddAccount from "../components/AddAccount";
 import EditAccount from "../components/EditAccount";
 import { database } from "../configurations/firebase";
@@ -23,12 +23,75 @@ interface Account {
 }
 
 const Accounts: React.FC = () => {
-    const history = useHistory();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+    const [preferredCurrency, setPreferredCurrency] = useState<string>("EUR");
+    const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
+    const [totalBalanceInPreferredCurrency, setTotalBalanceInPreferredCurrency] = useState<number>(0);
 
+    /* Leemos las divisa preferida del usuario de la base de datos */
+    useEffect(() => {
+        const fetchUserCurrency = async () => {
+            try {
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                const usersRef = collection(database, 'users');
+                const q = query(usersRef, where('uid', '==', currentUser?.uid));
+                const snapshot = await getDocs(q);
+
+                if (!snapshot.empty) {
+                    const userData = snapshot.docs[0].data();
+                    setPreferredCurrency(userData.currency || "EUR");
+                }
+            } catch (error) {
+                console.error("Error al obtener la divisa preferida del usuario: ", error);
+            }
+        };
+
+        fetchUserCurrency();
+    }, []);
+
+    /* Utilizamos una API para consultar el valor de las divisas */
+    useEffect(() => {
+        const fetchExchangeRates = async () => {
+            try {
+                const response = await axios.get(
+                    `https://api.exchangerate-api.com/v4/latest/${preferredCurrency}`
+                );
+                setExchangeRates(response.data.rates);
+            } catch (error) {
+                console.error("Error al obtener las tasas de cambio: ", error);
+            }
+        };
+
+        if (preferredCurrency) {
+            fetchExchangeRates();
+        }
+    }, [preferredCurrency]);
+
+    /* Calculamos el total de saldo de las cuentas según la divisa preferida */
+    useEffect(() => {
+        if (accounts.length > 0) {
+            const total = accounts.reduce((sum, account) => {
+                if (account.currency === preferredCurrency) {
+                    return sum + account.balance;
+                }
+
+                const rate = exchangeRates[account.currency];
+                if (rate) {
+                    return sum + account.balance / rate;
+                }
+                return sum;
+            }, 0);
+
+            setTotalBalanceInPreferredCurrency(total);
+        }
+    }, [accounts, exchangeRates, preferredCurrency]);
+
+    /* Leemos las cuentas del usuario de la base de datos */
     useEffect(() => {
         const fetchAccounts = () => {
             try {
@@ -97,6 +160,18 @@ const Accounts: React.FC = () => {
             </IonHeader>
             <IonContent fullscreen>
                 <IonGrid>
+
+                    {/* Mostramos el saldo total de todas las cuentas */}
+                    <IonRow>
+                        <IonCol>
+                            <div className="account-total-balance">
+                                <IonLabel>Total ({preferredCurrency}):</IonLabel>
+                                <IonLabel>
+                                    {totalBalanceInPreferredCurrency.toFixed(2)}
+                                </IonLabel>
+                            </div>
+                        </IonCol>
+                    </IonRow>
 
                     {/* Listado de cuentas */}
                     <IonRow>
