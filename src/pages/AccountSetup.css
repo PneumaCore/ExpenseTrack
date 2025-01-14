@@ -10,6 +10,12 @@
     text-align: center;
 }
 
+.account-setup-image-container {
+    display: flex;
+    justify-content: center;
+    height: 256px;
+}
+
 .account-setup-image {
     width: 128px;
 }

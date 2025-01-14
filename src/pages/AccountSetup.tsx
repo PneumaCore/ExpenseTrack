@@ -117,7 +117,9 @@ const AccountSetup: React.FC = () => {
             <IonGrid className='account-setup-grid'>
               <IonRow className='account-setup-row'>
                 <IonCol>
-                  <IonImg src='/assets/icon.png' className='account-setup-image'></IonImg>
+                  <div className='account-setup-image-container'>
+                    <IonImg src='/assets/icon.png' className='account-setup-image'></IonImg>
+                  </div>
                 </IonCol>
               </IonRow>
               <IonRow className='account-setup-row'>
