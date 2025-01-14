@@ -4,6 +4,24 @@
     flex-direction: column;
 }
 
+.account-historial-new-transfer-buttons {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.account-historial-transfer-button {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.account-new-transfer-button {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
 .account-item {
     display: flex;
     align-items: center;

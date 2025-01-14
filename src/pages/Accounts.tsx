@@ -1,7 +1,7 @@
 import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
-import { faCoins, faCreditCard, faHandHoldingDollar, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightArrowLeft, faCoins, faCreditCard, faHandHoldingDollar, faHistory, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from "@ionic/react";
 import axios from "axios";
 import { getAuth } from "firebase/auth";
 import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
@@ -165,10 +165,28 @@ const Accounts: React.FC = () => {
                     <IonRow>
                         <IonCol>
                             <div className="account-total-balance">
-                                <IonLabel>Total ({preferredCurrency}):</IonLabel>
-                                <IonLabel>
-                                    {totalBalanceInPreferredCurrency.toFixed(2)}
-                                </IonLabel>
+                                <IonLabel>Total:</IonLabel>
+                                <IonLabel>{totalBalanceInPreferredCurrency.toFixed(2)} {preferredCurrency}</IonLabel>
+                            </div>
+                        </IonCol>
+                    </IonRow>
+
+                    {/* Mostramos el saldo total de todas las cuentas */}
+                    <IonRow>
+                        <IonCol>
+                            <div className="account-historial-new-transfer-buttons">
+                                <div className="account-historial-transfer-button">
+                                    <IonButton>
+                                        <FontAwesomeIcon icon={faHistory}></FontAwesomeIcon>
+                                    </IonButton>
+                                    <IonLabel>Historial de transferencias</IonLabel>
+                                </div>
+                                <div className="account-new-transfer-button">
+                                    <IonButton>
+                                        <FontAwesomeIcon icon={faArrowRightArrowLeft}></FontAwesomeIcon>
+                                    </IonButton>
+                                    <IonLabel>Nueva transferencia</IonLabel>
+                                </div>
                             </div>
                         </IonCol>
                     </IonRow>
