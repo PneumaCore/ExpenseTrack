@@ -12,6 +12,7 @@ import EditAccount from "../components/EditAccount";
 import { database } from "../configurations/firebase";
 import "./Accounts.css";
 import AddTransfer from "../components/AddTransfer";
+import { useHistory } from "react-router";
 
 interface Account {
     account_id: string,
@@ -24,6 +25,7 @@ interface Account {
 }
 
 const Accounts: React.FC = () => {
+    const history = useHistory();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isAddTransferModalOpen, setIsAddTransferModalOpen] = useState(false);
@@ -173,12 +175,12 @@ const Accounts: React.FC = () => {
                         </IonCol>
                     </IonRow>
 
-                    {/* Mostramos el saldo total de todas las cuentas */}
+                    {/* Apartado transferencias */}
                     <IonRow>
                         <IonCol>
                             <div className="account-historial-new-transfer-buttons">
                                 <div className="account-historial-transfer-button">
-                                    <IonButton>
+                                    <IonButton onClick={() => history.push('/transfers', { from: window.location.pathname })}>
                                         <FontAwesomeIcon icon={faHistory}></FontAwesomeIcon>
                                     </IonButton>
                                     <IonLabel>Historial de transferencias</IonLabel>
