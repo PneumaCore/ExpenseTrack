@@ -4,7 +4,7 @@ import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabB
 import axios from 'axios';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
-import { collection, getDocs, onSnapshot, or, query, Timestamp, where } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot, or, orderBy, query, Timestamp, where } from 'firebase/firestore';
 import { add, chevronBack } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
@@ -233,7 +233,7 @@ const Home: React.FC = () => {
 
         /* Obtenemos las categorías asociadas al usuario autenticado */
         const transactionsRef = collection(database, 'transactions');
-        const q = query(transactionsRef, where('user_id', '==', currentUser?.uid));
+        const q = query(transactionsRef, where('user_id', '==', currentUser?.uid), orderBy('date', 'desc'));
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
           const fetchedTransactions = querySnapshot.docs.map((doc) => ({
@@ -481,14 +481,26 @@ const Home: React.FC = () => {
                 ) : (
                   filteredByRange.map((transaction) => {
                     const category = categories.find(cat => cat.category_id === transaction.category_id);
+                    const transferDate = transaction.date.toDate();
+                    const formattedDate = transferDate.toLocaleDateString("es-ES", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    });
+
                     return (
-                      <IonItem key={transaction.transaction_id} className="transaction-item" onClick={() => handleEditTransaction(transaction)}>
-                        <div className="transaction-category-circle" slot='start' style={{ backgroundColor: category?.color }}>
-                          <FontAwesomeIcon icon={getFontAwesomeIcon(category?.icon || 'default')} className="transaction-category-icon" />
+                      <>
+                        <div className='transfer-date-container'>
+                          <IonLabel>{formattedDate}</IonLabel>
                         </div>
-                        <IonLabel className="transaction-label"> {category?.name} </IonLabel>
-                        <IonLabel className="transaction-amount" slot='end'> {transaction.amount.toFixed(2)} {transaction.currency}</IonLabel>
-                      </IonItem>
+                        <IonItem key={transaction.transaction_id} className="transaction-item" onClick={() => handleEditTransaction(transaction)}>
+                          <div className="transaction-category-circle" slot='start' style={{ backgroundColor: category?.color }}>
+                            <FontAwesomeIcon icon={getFontAwesomeIcon(category?.icon || 'default')} className="transaction-category-icon" />
+                          </div>
+                          <IonLabel className="transaction-label"> {category?.name} </IonLabel>
+                          <IonLabel className="transaction-amount" slot='end'> {transaction.amount.toFixed(2)} {transaction.currency}</IonLabel>
+                        </IonItem>
+                      </>
                     );
                   })
                 )}

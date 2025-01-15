@@ -2,7 +2,7 @@ import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonButton, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonModal, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
-import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
+import { collection, onSnapshot, orderBy, query, Timestamp, where } from 'firebase/firestore';
 import { add, chevronBack } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -54,7 +54,7 @@ const Transfers: React.FC = () => {
 
                 /* Obtenemos las transferencias asociadas al usuario autenticado */
                 const transfersRef = collection(database, 'transfers');
-                const q = query(transfersRef, where('user_id', '==', currentUser?.uid));
+                const q = query(transfersRef, where('user_id', '==', currentUser?.uid), orderBy('date', 'desc'));
 
                 const unsubscribe = onSnapshot(q, (querySnapshot) => {
                     const fetchedTransfers = querySnapshot.docs.map((doc) => ({
