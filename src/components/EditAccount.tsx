@@ -43,7 +43,7 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
     const [name, setName] = useState(account?.name || '');
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [selectedCurrency, setSelectedCurrency] = useState(account?.currency || '');
-    const [balance, setBalance] = useState(account?.balance || '');
+    const [balance, setBalance] = useState(account?.balance || 0);
     const [color, setColor] = useState(account?.color || '#000000');
 
     /* Notificación global */
@@ -58,7 +58,7 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
         if (account) {
             setName(account.name);
             setSelectedCurrency(account.currency);
-            setBalance(account.balance);
+            setBalance(parseFloat(account.balance.toFixed(2)));
             setIcon(getFontAwesomeIcon(account.icon));
             setColor(account.color);
         }
@@ -115,7 +115,7 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
             const updateAccount = {
                 name: name,
                 currency: selectedCurrency,
-                balance: balance,
+                balance: parseFloat(balance.toFixed(2)),
                 icon: icon.iconName,
                 color: color
             }

@@ -77,7 +77,7 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
                 user_id: currentUser?.uid,
                 name: name,
                 currency: selectedCurrency,
-                balance: balance,
+                balance: parseFloat(balance.toFixed(2)),
                 icon: icon.iconName,
                 color: color
             }

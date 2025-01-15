@@ -71,7 +71,7 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
         if (transaction) {
             setType(transaction.type);
             setSelectedAccount(transaction.account_id);
-            setAmount(transaction.amount);
+            setAmount(parseFloat(transaction.amount.toFixed(2)));
             setSelectedDate(transaction.date.toDate().toISOString());
             setNote(transaction.note);
             setSelectedCategory(transaction.category_id);
@@ -253,7 +253,7 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
                 type: type,
                 category_id: selectedCategory,
                 account_id: selectedAccount,
-                amount: amount,
+                amount: parseFloat(amount.toFixed(2)),
                 date: Timestamp.fromDate(new Date(selectedDate)),
                 note: note,
                 image: await Promise.all(images.map(file => handleImageToBase64(file))),

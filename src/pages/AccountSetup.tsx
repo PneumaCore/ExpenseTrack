@@ -17,7 +17,7 @@ const AccountSetup: React.FC = () => {
   const [filteredCurrencies, setFilteredCurrencies] = useState<Currency[]>([]);
   const [searchText, setSearchText] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [selectedCurrency, setSelectedCurrency] = useState('EUR');
   const [balance, setBalance] = useState(0);
   const history = useHistory();
 
@@ -79,7 +79,7 @@ const AccountSetup: React.FC = () => {
         user_id: currentUser?.uid,
         name: 'Principal',
         currency: selectedCurrency,
-        balance: balance,
+        balance: parseFloat(balance.toFixed(2)),
         icon: 'wallet',
         color: '#ff6347'
       }

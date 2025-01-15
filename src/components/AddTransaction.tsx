@@ -231,7 +231,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
         type: type,
         category_id: selectedCategory,
         account_id: account.account_id,
-        amount: amount,
+        amount: parseFloat(amount.toFixed(2)),
         currency: account.currency,
         date: dateTimestamp,
         note: note,

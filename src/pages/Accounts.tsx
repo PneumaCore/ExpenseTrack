@@ -11,6 +11,7 @@ import AddAccount from "../components/AddAccount";
 import EditAccount from "../components/EditAccount";
 import { database } from "../configurations/firebase";
 import "./Accounts.css";
+import AddTransfer from "../components/AddTransfer";
 
 interface Account {
     account_id: string,
@@ -25,6 +26,7 @@ interface Account {
 const Accounts: React.FC = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isAddTransferModalOpen, setIsAddTransferModalOpen] = useState(false);
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
     const [preferredCurrency, setPreferredCurrency] = useState<string>("EUR");
@@ -182,7 +184,7 @@ const Accounts: React.FC = () => {
                                     <IonLabel>Historial de transferencias</IonLabel>
                                 </div>
                                 <div className="account-new-transfer-button">
-                                    <IonButton>
+                                    <IonButton onClick={() => setIsAddTransferModalOpen(true)}>
                                         <FontAwesomeIcon icon={faArrowRightArrowLeft}></FontAwesomeIcon>
                                     </IonButton>
                                     <IonLabel>Nueva transferencia</IonLabel>
@@ -207,7 +209,7 @@ const Accounts: React.FC = () => {
                                                     <FontAwesomeIcon icon={getFontAwesomeIcon(account.icon)} className="account-icon-font"></FontAwesomeIcon>
                                                 </div>
                                                 <IonLabel>{account.name}</IonLabel>
-                                                <IonLabel slot="end">{account.balance}</IonLabel>
+                                                <IonLabel slot="end">{account.balance.toFixed(2)}</IonLabel>
                                                 <IonLabel slot="end">{account.currency}</IonLabel>
                                             </IonItem>
                                         );
@@ -230,6 +232,9 @@ const Accounts: React.FC = () => {
 
                 {/* Modal para editar o eliminar cuentas */}
                 <EditAccount isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} account={selectedAccount}></EditAccount>
+
+                {/* Modal para añadir transferencias */}
+                <AddTransfer isOpen={isAddTransferModalOpen} onClose={() => setIsAddTransferModalOpen(false)}></AddTransfer>
             </IonContent>
         </IonPage>
     );
