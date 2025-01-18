@@ -138,7 +138,7 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
 
             const newTransfer = {
                 transfer_id: transfersRef.id,
-                user_id: getAuth().currentUser?.uid,
+                user_id: currentUser?.uid,
                 source_account_id: sourceAccount.account_id,
                 destination_account_id: destinationAccount.account_id,
                 amount: parseFloat(amount.toFixed(2)),
