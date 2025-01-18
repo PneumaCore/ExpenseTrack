@@ -9,6 +9,7 @@ import { useHistory } from 'react-router';
 import AddTransfer from '../components/AddTransfer';
 import { database } from '../configurations/firebase';
 import './Transfers.css';
+import EditTransfer from '../components/EditTransfer';
 
 interface Account {
     account_id: string,
@@ -36,11 +37,13 @@ interface Transfer {
 const Transfers: React.FC = () => {
     const history = useHistory();
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('today');
     const [startDate, setStartDate] = useState<string | null>(null);
     const [endDate, setEndDate] = useState<string | null>(null);
     const [isDateOpen, setIsDateModalOpen] = useState(false);
     const [transfers, setTransfers] = useState<Transfer[]>([]);
+    const [selectedTransfer, setSelectedTransfer] = useState<Transfer | null>(null);
     const [accounts, setAccounts] = useState<Account[]>([]);
 
     /* Leemos las transferencias del usuario de la base de datos */
@@ -132,6 +135,11 @@ const Transfers: React.FC = () => {
         }
         return false;
     });
+
+    const handleEditTransfer = (transfer: Transfer) => {
+        setSelectedTransfer(transfer);
+        setIsEditModalOpen(true);
+    };
 
     return (
         <IonPage id="main-content">
@@ -248,7 +256,7 @@ const Transfers: React.FC = () => {
                                                 <div className='transfer-date-container'>
                                                     <IonLabel>{formattedDate}</IonLabel>
                                                 </div>
-                                                <IonItem key={transfer.transfer_id} className="transfer-item">
+                                                <IonItem key={transfer.transfer_id} className="transfer-item" onClick={() => handleEditTransfer(transfer)}>
                                                     <div>
                                                         <FontAwesomeIcon icon={faArrowDown}></FontAwesomeIcon>
                                                     </div>
@@ -283,6 +291,9 @@ const Transfers: React.FC = () => {
 
                 {/* Modal para añadir transferencias */}
                 <AddTransfer isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}></AddTransfer>
+
+                {/* Modal para editar o eliminar transferencias */}
+                <EditTransfer isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} transfer={selectedTransfer}></EditTransfer>
             </IonContent>
         </IonPage>
     );
