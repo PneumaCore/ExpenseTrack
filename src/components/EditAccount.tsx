@@ -151,6 +151,25 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
                 await deleteDoc(transactionDoc.ref);
             }
 
+            /* Buscamos en la base de datos las transferencias que estuvieran asociadas a la cuenta  */
+            const transfersRef = collection(database, 'transfers');
+
+            const sourceTransfersQuery = query(transfersRef, where("source_account_id", "==", account.account_id));
+            const querySnapshotSourceTransfers = await getDocs(sourceTransfersQuery);
+
+            const destinationTransfersQuery = query(transfersRef, where("destination_account_id", "==", account.account_id));
+            const querySnapshotDestinationTransfers = await getDocs(destinationTransfersQuery);
+
+            /* Eliminamos las transferencias es la cuenta de origen  */
+            for (const transferDoc of querySnapshotSourceTransfers.docs) {
+                await deleteDoc(transferDoc.ref);
+            }
+
+            /* Eliminamos las transferencias es la cuenta de destino  */
+            for (const transferDoc of querySnapshotDestinationTransfers.docs) {
+                await deleteDoc(transferDoc.ref);
+            }
+
             const accountRef = doc(database, 'accounts', account.account_id);
 
             /* Eliminamos la cuenta de la base de datos */
