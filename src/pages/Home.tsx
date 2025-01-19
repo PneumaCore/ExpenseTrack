@@ -1,11 +1,11 @@
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faSearch, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import axios from 'axios';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs, onSnapshot, or, orderBy, query, Timestamp, where } from 'firebase/firestore';
-import { add, chevronBack } from 'ionicons/icons';
+import { add, chevronBack, search } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import AddTransaction from '../components/AddTransaction';
@@ -49,6 +49,8 @@ interface Category {
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Home: React.FC = () => {
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [searchText, setSearchText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDateOpen, setIsDateModalOpen] = useState(false);
@@ -151,12 +153,15 @@ const Home: React.FC = () => {
     };
   }, []);
 
-  {/* Filtramos las transacciones según el tipo de la transacción */ }
-  const filteredTransactions = transactions.filter(transaction =>
-    transaction.type === type &&
-    (!selectedAccountId || transaction.account_id === selectedAccountId)
-  );
-
+  {/* Filtramos las transacciones según el tipo de la transacción, cuenta, categoría, etc. */ }
+  const filteredTransactions = transactions.filter(transaction => {
+    const matchesType = transaction.type === type;
+    const matchesAccount = !selectedAccountId || transaction.account_id === selectedAccountId;
+    const category = categories.find(cat => cat.category_id === transaction.category_id);
+    const matchesCategory = category?.name.toLowerCase().includes(searchText.toLowerCase()) ?? false;
+    const matchesSearch = transaction.note.toLowerCase().includes(searchText.toLowerCase()) || matchesCategory;
+    return matchesType && matchesAccount && matchesSearch;
+  });
 
   {/* Filtramos las transacciones según el dia, la semana y el mes */ }
   const now = new Date();
@@ -342,10 +347,23 @@ const Home: React.FC = () => {
     <IonPage id="main-content">
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonMenuButton></IonMenuButton>
-          </IonButtons>
-          <IonTitle>Transacciones</IonTitle>
+          {!isSearchActive ? (
+            <>
+              <IonButtons slot="start">
+                <IonMenuButton></IonMenuButton>
+              </IonButtons>
+              <IonTitle>Transferencias</IonTitle>
+              <IonButtons slot='end'>
+                <IonButton onClick={() => setIsSearchActive(true)} size='default'>
+                  <IonIcon icon={search} />
+                </IonButton>
+              </IonButtons>
+            </>
+          ) : (
+            <>
+              <IonSearchbar animated placeholder="Buscar..." showCancelButton="always" onIonCancel={() => { setIsSearchActive(false); setSearchText(''); }} onIonInput={(e) => setSearchText(e.detail.value!)} />
+            </>
+          )}
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
