@@ -352,7 +352,7 @@ const Home: React.FC = () => {
               <IonButtons slot="start">
                 <IonMenuButton></IonMenuButton>
               </IonButtons>
-              <IonTitle>Transferencias</IonTitle>
+              <IonTitle>Transacciones</IonTitle>
               <IonButtons slot='end'>
                 <IonButton onClick={() => setIsSearchActive(true)} size='default'>
                   <IonIcon icon={search} />
