@@ -157,6 +157,7 @@ const AccountSetup: React.FC = () => {
               <IonRow>
                 <IonCol size="12" size-md="8" offset-md="2">
                   <IonSearchbar
+                    placeholder="Buscar..."
                     value={searchText}
                     onIonInput={handleSearch}
                     debounce={0}
