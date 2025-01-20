@@ -47,9 +47,10 @@ interface Category {
 }
 
 const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category }) => {
-    const [type, setType] = useState<CategoryType>(category?.type === 'gasto' || category?.type === 'ingreso' ? category.type : 'gasto');
-    const [name, setName] = useState(category?.name || '');
-    const [color, setColor] = useState(category?.color || '#000000');
+    const [type, setType] = useState<CategoryType>('gasto');
+    const [name, setName] = useState('');
+    const [icon, setIcon] = useState(faHome);
+    const [color, setColor] = useState('#000000');
 
     /* Notificación global */
     const [toastConfig, setToastConfig] = useState<{
@@ -176,8 +177,6 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
         };
         return icons[iconName] || faHome;
     }
-
-    const [icon, setIcon] = useState(getFontAwesomeIcon(category?.icon || 'home'));
 
     return (
         <>

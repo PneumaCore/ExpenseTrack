@@ -40,11 +40,12 @@ const colors = [
 ];
 
 const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) => {
-    const [name, setName] = useState(account?.name || '');
+    const [name, setName] = useState('');
     const [currencies, setCurrencies] = useState<Currency[]>([]);
-    const [selectedCurrency, setSelectedCurrency] = useState(account?.currency || '');
-    const [balance, setBalance] = useState(account?.balance || 0);
-    const [color, setColor] = useState(account?.color || '#000000');
+    const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>();
+    const [balance, setBalance] = useState(0);
+    const [icon, setIcon] = useState(faWallet);
+    const [color, setColor] = useState('#000000');
 
     /* Notificación global */
     const [toastConfig, setToastConfig] = useState<{
@@ -100,8 +101,6 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
         };
         return icons[iconName] || faWallet;
     }
-
-    const [icon, setIcon] = useState(getFontAwesomeIcon(account?.icon || 'wallet'));
 
     const handleSaveAccount = async () => {
         try {

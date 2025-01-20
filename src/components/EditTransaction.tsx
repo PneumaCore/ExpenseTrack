@@ -47,13 +47,13 @@ interface Category {
 }
 
 const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, transaction }) => {
-    const [type, setType] = useState(transaction?.type || 'gasto');
+    const [type, setType] = useState('gasto');
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [selectedAccount, setSelectedAccount] = useState<string | undefined>();
-    const [amount, setAmount] = useState(transaction?.amount || 0);
+    const [amount, setAmount] = useState(0);
     const [selectedDate, setSelectedDate] = useState('');
     const [isDatePickerOpen, setDatePickerOpen] = useState(false);
-    const [note, setNote] = useState(transaction?.note || '');
+    const [note, setNote] = useState('');
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
     const [images, setImages] = useState<File[]>([]);
