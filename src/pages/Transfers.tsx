@@ -1,9 +1,9 @@
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButton, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonModal, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, onSnapshot, orderBy, query, Timestamp, where } from 'firebase/firestore';
-import { add, chevronBack } from 'ionicons/icons';
+import { add, chevronBack, search } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import AddTransfer from '../components/AddTransfer';
@@ -36,6 +36,8 @@ interface Transfer {
 
 const Transfers: React.FC = () => {
     const history = useHistory();
+    const [isSearchActive, setIsSearchActive] = useState(false);
+    const [searchText, setSearchText] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month' | 'year' | 'custom'>('today');
@@ -136,6 +138,23 @@ const Transfers: React.FC = () => {
         return false;
     });
 
+    {/* Filtramos las transferencias según el tipo de la cuenta de origen, cuenta de destino, etc. */ }
+    const filteredTransfers = filteredByRange.filter((transfer) => {
+        const sourceAccount = accounts.find(account => account.account_id === transfer.source_account_id);
+        const destinationAccount = accounts.find(account => account.account_id === transfer.destination_account_id);
+        const matchesSearchText = searchText.toLowerCase();
+        const matchesSourceAccountName = sourceAccount?.name.toLowerCase() || "";
+        const matchesDestinationAccountName = destinationAccount?.name.toLowerCase() || "";
+        const matchesNote = transfer.note.toLowerCase();
+    
+        return (
+            (matchesSourceAccountName.includes(matchesSearchText) ||
+            matchesDestinationAccountName.includes(matchesSearchText) ||
+            matchesNote.includes(matchesSearchText)) &&
+            filteredByRange.includes(transfer)
+        );
+    });
+
     const handleEditTransfer = (transfer: Transfer) => {
         setSelectedTransfer(transfer);
         setIsEditModalOpen(true);
@@ -145,10 +164,23 @@ const Transfers: React.FC = () => {
         <IonPage id="main-content">
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>Transferencias</IonTitle>
-                    <IonButton slot="start" onClick={() => history.push('/accounts', { from: window.location.pathname })} fill='clear'>
-                        <IonIcon icon={chevronBack}></IonIcon>
-                    </IonButton>
+                    {!isSearchActive ? (
+                        <>
+                            <IonButton slot="start" onClick={() => history.push('/accounts', { from: window.location.pathname })} fill='clear'>
+                                <IonIcon icon={chevronBack}></IonIcon>
+                            </IonButton>
+                            <IonTitle>Transferencias</IonTitle>
+                            <IonButtons slot='end'>
+                                <IonButton onClick={() => setIsSearchActive(true)} size='default'>
+                                    <IonIcon icon={search} />
+                                </IonButton>
+                            </IonButtons>
+                        </>
+                    ) : (
+                        <>
+                            <IonSearchbar animated placeholder="Buscar..." showCancelButton="always" onIonCancel={() => { setIsSearchActive(false); setSearchText(''); }} onIonInput={(e) => setSearchText(e.detail.value!)} />
+                        </>
+                    )}
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
@@ -236,16 +268,16 @@ const Transfers: React.FC = () => {
                     <IonRow>
                         <IonCol>
                             <IonList>
-                                {filteredByRange.length === 0 ? (
+                                {filteredTransfers.length === 0 ? (
                                     <IonItem className="transfer-message">
                                         <IonLabel>No hay transferencias</IonLabel>
                                     </IonItem>
                                 ) : (
-                                    filteredByRange.map((transfer) => {
-                                        const sourceAccount = accounts.find(account => account.account_id === transfer.source_account_id);
-                                        const destinationAccount = accounts.find(account => account.account_id === transfer.destination_account_id);
+                                    filteredTransfers.map((transfer) => {
+                                        const matchesSourceAccount = accounts.find(account => account.account_id === transfer.source_account_id);
+                                        const matchesDestinationAccount = accounts.find(account => account.account_id === transfer.destination_account_id);
                                         const transferDate = transfer.date.toDate();
-                                        const formattedDate = transferDate.toLocaleDateString("es-ES", {
+                                        const matchesDate = transferDate.toLocaleDateString("es-ES", {
                                             day: "2-digit",
                                             month: "long",
                                             year: "numeric",
@@ -257,15 +289,15 @@ const Transfers: React.FC = () => {
                                         return (
                                             <>
                                                 <div className='transfer-date-container'>
-                                                    <IonLabel>{formattedDate}</IonLabel>
+                                                    <IonLabel>{matchesDate}</IonLabel>
                                                 </div>
                                                 <IonItem key={transfer.transfer_id} className="transfer-item" onClick={() => handleEditTransfer(transfer)}>
                                                     <div>
                                                         <FontAwesomeIcon icon={faArrowDown}></FontAwesomeIcon>
                                                     </div>
                                                     <div>
-                                                        <IonLabel>{sourceAccount?.name}</IonLabel>
-                                                        <IonLabel>{destinationAccount?.name}</IonLabel>
+                                                        <IonLabel>{matchesSourceAccount?.name}</IonLabel>
+                                                        <IonLabel>{matchesDestinationAccount?.name}</IonLabel>
                                                     </div>
                                                     <div slot='end'>
                                                         <IonLabel>{transfer.amount}</IonLabel>

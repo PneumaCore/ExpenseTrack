@@ -159,8 +159,8 @@ const Home: React.FC = () => {
     const matchesAccount = !selectedAccountId || transaction.account_id === selectedAccountId;
     const category = categories.find(cat => cat.category_id === transaction.category_id);
     const matchesCategory = category?.name.toLowerCase().includes(searchText.toLowerCase()) ?? false;
-    const matchesSearch = transaction.note.toLowerCase().includes(searchText.toLowerCase()) || matchesCategory;
-    return matchesType && matchesAccount && matchesSearch;
+    const matchesNote = transaction.note.toLowerCase().includes(searchText.toLowerCase()) || matchesCategory;
+    return matchesType && matchesAccount && matchesNote;
   });
 
   {/* Filtramos las transacciones según el dia, la semana y el mes */ }
