@@ -1,10 +1,12 @@
-import { IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonImg, IonInput, IonItem, IonLabel, IonList, IonLoading, IonPage, IonRow, IonSearchbar, IonTitle, IonToolbar } from '@ionic/react';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { IonAvatar, IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonImg, IonInput, IonItem, IonLabel, IonList, IonLoading, IonPage, IonRow, IonSearchbar, IonTitle, IonToolbar } from '@ionic/react';
+import ImageCompression from 'browser-image-compression';
+import { getAuth } from 'firebase/auth';
 import { collection, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { database } from '../configurations/firebase';
 import './AccountSetup.css';
-import { getAuth } from 'firebase/auth';
 
 interface Currency {
   code: string;
@@ -13,6 +15,10 @@ interface Currency {
 
 const AccountSetup: React.FC = () => {
   const [page, setPage] = useState(1);
+  const [profilePhoto, setProfilePhoto] = useState<string>('/assets/user.png');
+  const [name, setName] = useState<string>('');
+  const [surname1, setSurname1] = useState<string>('');
+  const [surname2, setSurname2] = useState<string>('');
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [filteredCurrencies, setFilteredCurrencies] = useState<Currency[]>([]);
   const [searchText, setSearchText] = useState<string>('');
@@ -40,6 +46,45 @@ const AccountSetup: React.FC = () => {
 
     fetchCurrencies();
   }, []);
+
+  /* Seleccionamos una foto de perfil haciendo una foto con la cámara o escogiéndola de la galería */
+  const handlePhoto = async () => {
+    try {
+      const photo = await Camera.getPhoto({
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Prompt,
+        quality: 90,
+      });
+
+      if (photo?.webPath) {
+        const imageBlob = await fetch(photo.webPath).then(res => res.blob());
+        const fileName = "profile-photo.jpg";
+        const imageFile = new File([imageBlob], fileName, { type: imageBlob.type });
+
+        const options = {
+          maxSizeMB: 0.5,
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+        };
+
+        const compressedImage = await ImageCompression(imageFile, options);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64Image = reader.result as string;
+          setProfilePhoto(base64Image);
+        };
+        reader.readAsDataURL(compressedImage);
+      }
+    } catch (error) {
+      console.error('Error al obtener o comprimir la foto:', error);
+    }
+  };
+
+  /* Si el usuario no desea añadir una imagen personalizada, se pondrá una por defecto */
+  const resetToDefaultPhoto = () => {
+    setProfilePhoto('/assets/user.png');
+  };
 
   /* Barra de búsqueda para las divisas */
   const handleSearch = (e: any) => {
@@ -91,6 +136,10 @@ const AccountSetup: React.FC = () => {
       const usersRef = doc(database, "users", currentUser?.uid);
 
       await updateDoc(usersRef, {
+        profile_photo: profilePhoto,
+        name: name,
+        surname_1: surname1,
+        surname_2: surname2,
         currency: selectedCurrency,
         isAccountSetup: true,
       });
@@ -116,19 +165,19 @@ const AccountSetup: React.FC = () => {
           <IonContent>
             <IonGrid className='account-setup-grid'>
               <IonRow className='account-setup-row'>
-                <IonCol>
+                <IonCol size="12" size-md="8" offset-md="2">
                   <div className='account-setup-image-container'>
                     <IonImg src='/assets/icon.png' className='account-setup-image'></IonImg>
                   </div>
                 </IonCol>
               </IonRow>
               <IonRow className='account-setup-row'>
-                <IonCol>
+                <IonCol size="12" size-md="8" offset-md="2">
                   <h2>¡Bienvenido a ExpenseTrack!</h2>
                 </IonCol>
               </IonRow>
               <IonRow className='account-setup-row'>
-                <IonCol>
+                <IonCol size="12" size-md="8" offset-md="2">
                   <IonLabel>ExpenseTrack es una aplicación para controlar tus gastos e ingresos de manera sencilla.</IonLabel>
                 </IonCol>
               </IonRow>
@@ -144,8 +193,50 @@ const AccountSetup: React.FC = () => {
         </>
       )}
 
-      {/* Pantalla para seleccionar la divisa de la cuenta principal */}
       {page === 2 && (
+        <>
+          <IonContent>
+            <IonGrid className='account-setup-grid'>
+              <IonRow className='account-setup-row'>
+                <IonCol size="12" size-md="8" offset-md="2">
+                  <div className='account-setup-profile-photo-container'>
+                    <IonAvatar className='account-setup-avatar'>
+                      <img src={profilePhoto} alt="Foto de perfil" />
+                    </IonAvatar>
+                    <IonButton expand="block" onClick={handlePhoto}>Cambiar foto</IonButton>
+                    <IonButton expand="block" color="danger" onClick={resetToDefaultPhoto}>Eliminar foto</IonButton>
+                  </div>
+                </IonCol>
+              </IonRow>
+              <IonRow className='account-setup-row'>
+                <IonCol size="12" size-md="8" offset-md="2">
+                  <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonChange={(e) => setName(e.detail.value!)} required />
+                </IonCol>
+              </IonRow>
+              <IonRow className='account-setup-row'>
+                <IonCol size="12" size-md="8" offset-md="2">
+                  <IonInput label='Primer apellido' labelPlacement='floating' placeholder='Primer apellido' value={surname1} onIonChange={(e) => setSurname1(e.detail.value!)} required />
+                </IonCol>
+              </IonRow>
+              <IonRow className='account-setup-row'>
+                <IonCol size="12" size-md="8" offset-md="2">
+                  <IonInput label='Segundo apellido' labelPlacement='floating' placeholder='Segundo apellido' value={surname2} onIonChange={(e) => setSurname2(e.detail.value!)} required />
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          </IonContent>
+          <IonFooter>
+            <IonToolbar>
+              <div className='account-setup-footer'>
+                <IonButton onClick={() => setPage(3)}>Comenzar</IonButton>
+              </div>
+            </IonToolbar>
+          </IonFooter>
+        </>
+      )}
+
+      {/* Pantalla para seleccionar la divisa de la cuenta principal */}
+      {page === 3 && (
         <>
           <IonContent>
             <IonGrid className='account-setup-grid'>
@@ -187,7 +278,7 @@ const AccountSetup: React.FC = () => {
           <IonFooter>
             <IonToolbar>
               <div className='account-setup-footer'>
-                <IonButton onClick={() => setPage(3)}>Siguiente</IonButton>
+                <IonButton onClick={() => setPage(4)}>Siguiente</IonButton>
               </div>
             </IonToolbar>
           </IonFooter>
@@ -195,7 +286,7 @@ const AccountSetup: React.FC = () => {
       )}
 
       {/* Pantalla para seleccionar el balance de la cuenta principal */}
-      {page === 3 && (
+      {page === 4 && (
         <>
           <IonContent>
             <IonGrid>

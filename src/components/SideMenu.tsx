@@ -1,9 +1,10 @@
-import { faBell, faChartColumn, faCreditCard, faCreditCardAlt, faHome, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faChartColumn, faCreditCard, faCreditCardAlt, faGear, faHome, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IonButton, IonContent, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonTitle, IonToolbar } from "@ionic/react";
+import { IonAvatar, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonRow, IonTitle, IonToolbar } from "@ionic/react";
 import { signOut } from "firebase/auth";
 import { useHistory } from "react-router";
 import { auth } from "../configurations/firebase";
+import './SideMenu.css'
 
 const SideMenu: React.FC = () => {
     const history = useHistory();
@@ -29,6 +30,22 @@ const SideMenu: React.FC = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent>
+                <IonGrid>
+                    <IonRow>
+                        <IonCol>
+                            <div className="side-menu-profile-welcome-container">
+                                <div className="side-menu-profile-welcome-avatar">
+                                    <IonAvatar>
+                                        <img src={'/assets/user.png'} alt="Foto de perfil" />
+                                    </IonAvatar>
+                                </div>
+                                <div className="side-menu-profile-welcome-label">
+                                    <IonLabel>Bienvenido, Lucía</IonLabel>
+                                </div>
+                            </div>
+                        </IonCol>
+                    </IonRow>
+                </IonGrid>
                 <IonList>
                     <IonMenuToggle auto-hide="true">
                         <IonItem onClick={() => history.push('/home', { from: window.location.pathname })}>
@@ -60,6 +77,12 @@ const SideMenu: React.FC = () => {
                                 <FontAwesomeIcon icon={faBell}></FontAwesomeIcon>
                             </div>
                             <IonLabel>Recordatorios</IonLabel>
+                        </IonItem>
+                        <IonItem onClick={() => history.push('/settings', { from: window.location.pathname })}>
+                            <div slot="start">
+                                <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>
+                            </div>
+                            <IonLabel>Ajustes</IonLabel>
                         </IonItem>
                     </IonMenuToggle>
                 </IonList>

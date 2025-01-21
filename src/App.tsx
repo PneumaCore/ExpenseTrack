@@ -47,6 +47,7 @@ import Home from './pages/Home';
 import Notifications from './pages/Notifications';
 import './theme/variables.css';
 import Transfers from './pages/Transfers';
+import Settings from './pages/Settings';
 
 setupIonicReact();
 
@@ -118,6 +119,7 @@ const App: React.FC = () => {
               <Route path="/notifications" component={Notifications} />
               <Route path="/charts" component={Charts} />
               <Route path="/transfers" component={Transfers} />
+              <Route path="/settings" component={Settings} />
             </>
           )}
         </IonRouterOutlet>

@@ -1,0 +1,10 @@
+.side-menu-profile-welcome-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.side-menu-profile-welcome-label {
+    width: 100%;
+    align-content: center;
+    align-items: center;
+}
