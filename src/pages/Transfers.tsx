@@ -267,7 +267,7 @@ const Transfers: React.FC = () => {
                     {/* Listado de transferencias */}
                     <IonRow>
                         <IonCol>
-                            <IonList>
+                            <IonList className='transfer-list'>
                                 {filteredTransfers.length === 0 ? (
                                     <IonItem className="transfer-message">
                                         <IonLabel>No hay transferencias</IonLabel>

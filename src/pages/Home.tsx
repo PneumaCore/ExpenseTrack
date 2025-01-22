@@ -484,14 +484,16 @@ const Home: React.FC = () => {
           {/* Gráfico de transacciones */}
           <IonRow>
             <IonCol size="12">
-              <Pie data={pieData} />
+              <div className='transaction-pie-chart'>
+                <Pie data={pieData} />
+              </div>
             </IonCol>
           </IonRow>
 
           {/* Listado de transacciones */}
           <IonRow>
             <IonCol>
-              <IonList>
+              <IonList className='home-transaction-list'>
                 {filteredByRange.length === 0 ? (
                   <IonItem className="transaction-message">
                     <IonLabel>No hay transacciones</IonLabel>
@@ -544,7 +546,7 @@ const Home: React.FC = () => {
         {/* Modal para editar o eliminar transacciones */}
         <EditTransaction isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} transaction={selectedTransaction}></EditTransaction>
       </IonContent>
-    </IonPage>
+    </IonPage >
   );
 };
 

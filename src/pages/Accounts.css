@@ -48,3 +48,8 @@
     text-align: center;
     padding: 16px;
 }
+
+.account-list {
+    padding: 8px;
+    border-radius: 10px;
+}

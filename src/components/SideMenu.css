@@ -8,3 +8,8 @@
     align-content: center;
     align-items: center;
 }
+
+.side-menu-list {
+    padding: 8px;
+    border-radius: 10px;
+}

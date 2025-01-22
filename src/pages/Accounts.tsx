@@ -198,7 +198,7 @@ const Accounts: React.FC = () => {
                     {/* Listado de cuentas */}
                     <IonRow>
                         <IonCol>
-                            <IonList>
+                            <IonList className="account-list">
                                 {accounts.length === 0 ? (
                                     <IonItem className="account-message">
                                         <IonLabel>No hay cuentas</IonLabel>

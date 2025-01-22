@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useHistory } from 'react-router';
 import { database } from '../configurations/firebase';
+import './Charts.css';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -198,13 +199,15 @@ const Charts: React.FC = () => {
                     {/* Gráfico de transacciones */}
                     <IonRow>
                         <IonCol size="12">
-                            <Bar data={chartData} options={{
-                                responsive: true, plugins: {
-                                    legend: {
-                                        display: false,
-                                    },
-                                }
-                            }} />
+                            <div className='chart-bar-chart'>
+                                <Bar data={chartData} options={{
+                                    responsive: true, plugins: {
+                                        legend: {
+                                            display: false,
+                                        },
+                                    }
+                                }} />
+                            </div>
                         </IonCol>
                     </IonRow>
                 </IonGrid>

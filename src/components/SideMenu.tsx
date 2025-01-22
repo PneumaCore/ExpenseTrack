@@ -73,7 +73,7 @@ const SideMenu: React.FC = () => {
                         </IonCol>
                     </IonRow>
                 </IonGrid>
-                <IonList>
+                <IonList className="side-menu-list">
                     <IonMenuToggle auto-hide="true">
                         <IonItem onClick={() => history.push('/home', { from: window.location.pathname })}>
                             <div slot="start">

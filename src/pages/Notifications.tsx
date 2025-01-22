@@ -69,7 +69,7 @@ const Notifications: React.FC = () => {
                     {/* Listado de recordatorios */}
                     <IonRow>
                         <IonCol>
-                            <IonList>
+                            <IonList className='notification-list'>
                                 {notifications.length === 0 ? (
                                     <IonItem className="notification-message">
                                         <IonLabel>No hay recordatorios</IonLabel>
