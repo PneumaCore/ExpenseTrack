@@ -1,13 +1,40 @@
 import { faBell, faChartColumn, faCreditCard, faCreditCardAlt, faGear, faHome, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IonAvatar, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonRow, IonTitle, IonToolbar } from "@ionic/react";
-import { signOut } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { useHistory } from "react-router";
-import { auth } from "../configurations/firebase";
+import { auth, database } from "../configurations/firebase";
 import './SideMenu.css'
+import { useEffect, useState } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 const SideMenu: React.FC = () => {
     const history = useHistory();
+    const [profilePhoto, setProfilePhoto] = useState<string>('/assets/user.png');
+    const [name, setName] = useState<string>('');
+    /* Leemos la foto de perfil y el nombre del usuario de la base de datos */
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                const usersRef = collection(database, 'users');
+                const q = query(usersRef, where('uid', '==', currentUser?.uid));
+                const snapshot = await getDocs(q);
+
+                if (!snapshot.empty) {
+                    const userData = snapshot.docs[0].data();
+                    setProfilePhoto(userData.profile_photo);
+                    setName(userData.name);
+                }
+            } catch (error) {
+                console.error("Error al obtener los datos del usuario: ", error);
+            }
+        };
+
+        fetchUserProfile();
+    }, []);
 
     /* Se cierra la sesión actual del usuario y se le redirige a la pantalla de inicio de sesión */
     const handleLogout = async () => {
@@ -36,11 +63,11 @@ const SideMenu: React.FC = () => {
                             <div className="side-menu-profile-welcome-container">
                                 <div className="side-menu-profile-welcome-avatar">
                                     <IonAvatar>
-                                        <img src={'/assets/user.png'} alt="Foto de perfil" />
+                                        <img src={profilePhoto} alt="Foto de perfil" />
                                     </IonAvatar>
                                 </div>
                                 <div className="side-menu-profile-welcome-label">
-                                    <IonLabel>Bienvenido, Lucía</IonLabel>
+                                    <IonLabel>Bienvenido, {name}</IonLabel>
                                 </div>
                             </div>
                         </IonCol>
