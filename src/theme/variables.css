@@ -1,2 +1,49 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+/* variables.css */
+:root {
+
+    /* Colores base */
+    --ion-color-primary: #395659;
+    --ion-color-primary-rgb: 57, 86, 89;
+    --ion-color-secondary: #99BFBF;
+    --ion-color-secondary-rgb: 153, 191, 191;
+    --ion-color-tertiary: #BAD9D9;
+    --ion-color-tertiary-rgb: 186, 217, 217;
+    --ion-color-warning: #F2BB77;
+    --ion-color-warning-rgb: 242, 187, 119;
+    --ion-color-medium: #D9AB82;
+    --ion-color-medium-rgb: 217, 171, 130;
+
+    /* Colores para los fondos */
+    --ion-background-color: #F7F9F9;
+    --ion-background-color-rgb: 247, 249, 249;
+    --ion-text-color: #395659;
+
+    /* Botones */
+    --ion-button-background: var(--ion-color-primary);
+    --ion-button-background-hover: #577D7F;
+    --ion-button-color: white;
+
+    /* Encabezados */
+    --ion-toolbar-background: var(--ion-color-primary);
+    --ion-toolbar-color: white;
+
+    /* Toast */
+    --ion-toast-background: var(--ion-color-secondary);
+    --ion-toast-color: white;
+
+    /* Cards */
+    --ion-card-background: var(--ion-color-tertiary);
+    --ion-card-color: var(--ion-text-color);
+
+    /* Campos */
+    --ion-item-background: white;
+    --ion-item-color: var(--ion-text-color);
+
+    /* Bordes */
+    --ion-border-color: #BAD9D9;
+
+    /* Sombras */
+    --ion-box-shadow-color: rgba(57, 86, 89, 0.2);
+}
