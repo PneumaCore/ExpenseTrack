@@ -1,6 +1,7 @@
-import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToggle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
-import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import { add } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -14,7 +15,8 @@ interface Notification {
     name: string,
     frecuency: string,
     date: Timestamp,
-    message: string
+    message: string,
+    isActive: boolean
 }
 
 const Notifications: React.FC = () => {
@@ -53,6 +55,66 @@ const Notifications: React.FC = () => {
         };
     }, []);
 
+    /* Creamos la notificación del sistema */
+    const scheduleNotification = async (
+        notificationId: string,
+        title: string,
+        body: string,
+        triggerDate: Date,
+        frecuency: string
+    ) => {
+        const scheduleConfig: { at: Date; repeats?: boolean; every?: 'day' | 'month' | 'year' } = { at: triggerDate };
+
+        switch (frecuency) {
+            case 'Diariamente':
+                scheduleConfig.repeats = true;
+                scheduleConfig.every = 'day';
+                break;
+            case 'Mensualmente':
+                scheduleConfig.repeats = true;
+                scheduleConfig.every = 'month';
+                break;
+            case 'Anualmente':
+                scheduleConfig.repeats = true;
+                scheduleConfig.every = 'year';
+                break;
+            default:
+                break;
+        }
+
+        await LocalNotifications.schedule({
+            notifications: [
+                {
+                    id: parseInt(notificationId.slice(-6), 16),
+                    title,
+                    body,
+                    schedule: scheduleConfig,
+                },
+            ],
+        });
+    };
+
+    /* Si activamos el toggle se vuelve a programar la notificación, si no, se elimina la notificación local */
+    const handleToggleChange = async (notificationId: string, isActive: boolean) => {
+        const notificationRef = doc(database, 'notifications', notificationId);
+        await updateDoc(notificationRef, {
+            isActive: isActive
+        });
+
+        if (isActive) {
+            const notification = notifications.find(n => n.notification_id === notificationId);
+            if (notification) {
+                await scheduleNotification(notificationId, notification.name, notification.message, new Date(notification.date.seconds * 1000), notification.frecuency);
+            }
+        } else {
+            await cancelNotification(notificationId);
+        }
+    };
+
+    const cancelNotification = async (notificationId: string) => {
+        await LocalNotifications.cancel({ notifications: [{ id: parseInt(notificationId.slice(-6), 16) }] });
+    };
+
     return (
         <IonPage id="main-content">
             <IonHeader>
@@ -79,6 +141,7 @@ const Notifications: React.FC = () => {
                                         return (
                                             <IonItem key={notification.notification_id} className="notification-item">
                                                 <IonLabel>{notification.name}</IonLabel>
+                                                <IonToggle slot='end' checked={notification.isActive} onIonChange={(e) => handleToggleChange(notification.notification_id, e.detail.checked)} />
                                             </IonItem>
                                         );
                                     })

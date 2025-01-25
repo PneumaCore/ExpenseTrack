@@ -1,3 +1,4 @@
+import { LocalNotifications } from '@capacitor/local-notifications';
 import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonModal, IonPopover, IonRow, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, setDoc, Timestamp } from 'firebase/firestore';
@@ -6,7 +7,6 @@ import { useState } from 'react';
 import { database } from '../configurations/firebase';
 import './AddNotification.css';
 import GlobalToast from './GlobalToast';
-import { LocalNotifications } from '@capacitor/local-notifications';
 
 interface AddNotificationProps {
     isOpen: boolean;
@@ -109,7 +109,8 @@ const AddNotification: React.FC<AddNotificationProps> = ({ isOpen, onClose }) =>
                 name: name,
                 frecuency: selectedFrecuency,
                 date: dateTimestamp,
-                message: message
+                message: message,
+                isActive: true
             }
 
             /* Guardamos el recordatorio en la base de datos */
