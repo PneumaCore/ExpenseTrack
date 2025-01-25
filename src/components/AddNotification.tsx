@@ -1,4 +1,3 @@
-import { LocalNotifications } from '@capacitor/local-notifications';
 import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonModal, IonPopover, IonRow, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, setDoc, Timestamp } from 'firebase/firestore';
@@ -7,13 +6,14 @@ import { useState } from 'react';
 import { database } from '../configurations/firebase';
 import './AddNotification.css';
 import GlobalToast from './GlobalToast';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 interface AddNotificationProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-const frecuencies: string[] = ['Una vez', 'Diariamente', 'Mensualmente', 'Trimestralmente', 'Semestralmente', 'Anualmente'];
+const frecuencies: string[] = ['Una vez', 'Diariamente', 'Mensualmente', 'Anualmente'];
 
 const AddNotification: React.FC<AddNotificationProps> = ({ isOpen, onClose }) => {
     const [name, setName] = useState('');
@@ -35,87 +35,57 @@ const AddNotification: React.FC<AddNotificationProps> = ({ isOpen, onClose }) =>
         setDatePickerOpen(false);
     };
 
-    /* Calculamos la fecha de la siguiente notificación en caso de repetirse más de una vez */
-    const getNextNotificationDate = (frecuency: string, currentDate: Date) => {
-        let nextDate = new Date(currentDate);
+    /* Creamos la notificación del sistema */
+    const scheduleNotification = async (
+        notificationId: string,
+        title: string,
+        body: string,
+        triggerDate: Date,
+        frecuency: string
+    ) => {
+        const scheduleConfig: { at: Date; repeats?: boolean; every?: 'day' | 'month' | 'year' } = { at: triggerDate };
 
         switch (frecuency) {
             case 'Diariamente':
-                nextDate.setDate(nextDate.getDate() + 1);
+                scheduleConfig.repeats = true;
+                scheduleConfig.every = 'day';
                 break;
             case 'Mensualmente':
-                nextDate.setMonth(nextDate.getMonth() + 1);
-
-                if (nextDate.getDate() !== currentDate.getDate()) {
-                    nextDate.setDate(0);
-                }
-                break;
-            case 'Trimestralmente':
-                nextDate.setMonth(nextDate.getMonth() + 3);
-                if (nextDate.getDate() !== currentDate.getDate()) {
-                    nextDate.setDate(0);
-                }
-                break;
-            case 'Semestralmente':
-                nextDate.setMonth(nextDate.getMonth() + 6);
-                if (nextDate.getDate() !== currentDate.getDate()) {
-                    nextDate.setDate(0);
-                }
+                scheduleConfig.repeats = true;
+                scheduleConfig.every = 'month';
                 break;
             case 'Anualmente':
-                nextDate.setFullYear(nextDate.getFullYear() + 1);
-                if (nextDate.getDate() !== currentDate.getDate()) {
-                    nextDate.setDate(0);
-                }
+                scheduleConfig.repeats = true;
+                scheduleConfig.every = 'year';
                 break;
             default:
                 break;
         }
 
-        return nextDate;
-    };
-
-    let notificationCounter = 0;
-
-    const scheduleRecurrentNotification = async (startDate: Date, frecuency: string, notificationId: string) => {
-        try {
-            
-            /* Pedimos al usuario que active los permisos de notificaciones en su teléfono */
-            await LocalNotifications.requestPermissions();
-
-            let notificationDate = new Date(startDate);
-
-            const notificationLimit = 1;
-
-            for (let i = 0; i < notificationLimit; i++) {
-                const notification = {
-                    id: notificationCounter++,
-                    title: name,
-                    body: message,
-                    schedule: {
-                        at: notificationDate,
-                        repeats: frecuency !== 'Una vez',
-                    },
-                    sound: 'default',
-                    actionTypeId: 'default',
-                    extra: { id: notificationId },
-                };
-
-                await LocalNotifications.schedule({
-                    notifications: [notification],
-                });
-
-                if (frecuency !== 'Una vez') {
-                    notificationDate = getNextNotificationDate(frecuency, notificationDate);
-                }
-            }
-        } catch (error) {
-            console.error('No se pudo configurar el recordatorio', error);
-        }
+        await LocalNotifications.schedule({
+            notifications: [
+                {
+                    id: parseInt(notificationId.slice(-6), 16),
+                    title,
+                    body,
+                    schedule: scheduleConfig,
+                },
+            ],
+        });
     };
 
     const handleSaveNotification = async () => {
         try {
+
+            /* Le pedimos al usuario permisos de notificaciones */
+            const requestNotificationPermissions = async () => {
+                const permission = await LocalNotifications.requestPermissions();
+                if (permission.display !== 'granted') {
+                    throw new Error('Permiso para notificaciones no concedido');
+                }
+            };
+
+            await requestNotificationPermissions();
 
             /* Obtenemos los datos del usuario autenticado */
             const auth = getAuth();
@@ -145,8 +115,8 @@ const AddNotification: React.FC<AddNotificationProps> = ({ isOpen, onClose }) =>
             /* Guardamos el recordatorio en la base de datos */
             await setDoc(notificationsRef, newNotification);
 
-            /* Programamos una notificación local en el teléfono */
-            await scheduleRecurrentNotification(dateTimestamp.toDate(), selectedFrecuency, notificationId);
+            /* Programamos la notificación en el dispositivo */
+            await scheduleNotification(notificationId, name, message, dateObject, selectedFrecuency);
 
             setToastConfig({ isOpen: true, message: 'Recordatorio añadido con éxito', type: 'success' });
 
