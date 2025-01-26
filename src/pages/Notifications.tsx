@@ -4,8 +4,8 @@ import { getAuth } from 'firebase/auth';
 import { collection, doc, onSnapshot, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import { add } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
 import AddNotification from '../components/AddNotification';
+import EditNotification from '../components/EditNotification';
 import { database } from '../configurations/firebase';
 import './Notifications.css';
 
@@ -20,9 +20,10 @@ interface Notification {
 }
 
 const Notifications: React.FC = () => {
-    const history = useHistory();
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
 
     useEffect(() => {
         const fetchNotifications = () => {
@@ -54,6 +55,11 @@ const Notifications: React.FC = () => {
             if (unsubscribe) unsubscribe();
         };
     }, []);
+
+    const handleEditNotification = (notification: Notification) => {
+        setSelectedNotification(notification);
+        setIsEditModalOpen(true);
+    };
 
     /* Creamos la notificación del sistema */
     const scheduleNotification = async (
@@ -140,7 +146,9 @@ const Notifications: React.FC = () => {
                                     notifications.map((notification) => {
                                         return (
                                             <IonItem key={notification.notification_id} className="notification-item">
-                                                <IonLabel>{notification.name}</IonLabel>
+                                                <div style={{ backgroundColor: 'red' }} onClick={() => handleEditNotification(notification)}>
+                                                    <IonLabel>{notification.name}</IonLabel>
+                                                </div>
                                                 <IonToggle slot='end' checked={notification.isActive} onIonChange={(e) => handleToggleChange(notification.notification_id, e.detail.checked)} />
                                             </IonItem>
                                         );
@@ -160,6 +168,9 @@ const Notifications: React.FC = () => {
 
                 {/* Modal para añadir cuentas */}
                 <AddNotification isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)}></AddNotification>
+
+                {/* Modal para editar o eliminar notificaciones */}
+                <EditNotification isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} notification={selectedNotification}></EditNotification>
             </IonContent>
         </IonPage>
     );
