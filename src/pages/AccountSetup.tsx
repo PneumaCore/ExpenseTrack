@@ -27,13 +27,19 @@ const AccountSetup: React.FC = () => {
   const [balance, setBalance] = useState(0);
   const history = useHistory();
 
+  /* Buscamos el código y nombre de las divisas en la API de openexchangerates.org */
   useEffect(() => {
     const fetchCurrencies = async () => {
       try {
 
-        /* Obtenemos las divisas */
-        const currenciesRef = await getDocs(collection(database, 'currencies'));
-        const currencyList: Currency[] = currenciesRef.docs.map((doc) => doc.data() as Currency);
+        /* Obtenemos los nombres y códigos de las divisas desde la API */
+        const response = await fetch('https://openexchangerates.org/api/currencies.json');
+        const data = await response.json();
+
+        const currencyList: Currency[] = Object.keys(data).map((key) => ({
+          code: key,
+          name: data[key],
+        }));
 
         setCurrencies(currencyList);
         setFilteredCurrencies(currencyList);
