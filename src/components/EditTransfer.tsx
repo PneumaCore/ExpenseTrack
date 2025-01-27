@@ -1,6 +1,6 @@
 import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonModal, IonPopover, IonRow, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
 import { collection, deleteDoc, doc, getDoc, onSnapshot, query, Timestamp, updateDoc, where } from 'firebase/firestore';
@@ -226,7 +226,7 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                                     <IonSelect interface="popover" label="Cuenta de origen" labelPlacement="floating" placeholder="Selecciona la cuenta de origen" value={selectedSourceAccount} onIonChange={(e) => setSelectedSourceAccount(e.detail.value)}>
                                         {accounts.map(account => (
                                             <IonSelectOption key={account.account_id} value={account.account_id}>
-                                                {account.name}
+                                                <IonLabel>{account.name} ({account.balance.toFixed(2)} {account.currency})</IonLabel>
                                             </IonSelectOption>
                                         ))}
                                     </IonSelect>
@@ -241,7 +241,7 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                                     <IonSelect interface="popover" label="Cuenta de destino" labelPlacement="floating" placeholder="Selecciona la cuenta de destino" value={selectedDestinationAccount} onIonChange={(e) => setSelectedDestinationAccount(e.detail.value)}>
                                         {accounts.map(account => (
                                             <IonSelectOption key={account.account_id} value={account.account_id}>
-                                                {account.name}
+                                                <IonLabel>{account.name} ({account.balance.toFixed(2)} {account.currency})</IonLabel>
                                             </IonSelectOption>
                                         ))}
                                     </IonSelect>
