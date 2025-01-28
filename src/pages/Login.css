@@ -1,31 +1,14 @@
-.login-content {
-  padding: 20px;
+.login-button {
+  --box-shadow: none;
 }
 
-.login-row {
-  margin-top: 20px;
-}
-
-.error-message {
-  color: red;
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.signup-link {
+.login-link {
   text-align: center;
   display: block;
-  margin-top: 15px;
   cursor: pointer;
-  color: blue;
+  color: #4A90E2;
 }
 
-.signup-link:hover {
+.login-link:hover {
   text-decoration: underline;
-}
-
-.error-message {
-  color: red;
-  text-align: center;
-  margin-bottom: 15px;
 }
