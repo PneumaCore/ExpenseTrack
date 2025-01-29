@@ -34,9 +34,8 @@ const icons = [
 ];
 
 const colors = [
-    '#ff6347', '#3b82f6', '#34d399', '#f59e0b', '#e11d48', '#6366f1',
-    '#9c27b0', '#4caf50', '#ff9800', '#2196f3', '#f44336', '#9e9e9e',
-    '#00bcd4', '#8bc34a'
+    '#395659', '#99BFBF', '#BAD9D9', '#F2BB77', '#D9AB82', '#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1',
+    '#955251', '#B565A7', '#009B77', '#DD4124', '#D65076', '#45B8AC', '#EFC050', '#5B5EA6'
 ];
 
 const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) => {
@@ -45,7 +44,7 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
     const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>();
     const [balance, setBalance] = useState(0);
     const [icon, setIcon] = useState(faWallet);
-    const [color, setColor] = useState('#000000');
+    const [color, setColor] = useState('#395659');
 
     /* Notificación global */
     const [toastConfig, setToastConfig] = useState<{
