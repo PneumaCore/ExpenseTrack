@@ -162,7 +162,7 @@ const Categories: React.FC = () => {
                 <IonFab slot="fixed" vertical="bottom" horizontal="center">
 
                     {/* Abrir el modal para añadir categorías */}
-                    <IonFabButton onClick={() => setIsAddModalOpen(true)}>
+                    <IonFabButton color="medium" className="category-fab-button" onClick={() => setIsAddModalOpen(true)}>
                         <IonIcon icon={add}></IonIcon>
                     </IonFabButton>
                 </IonFab>

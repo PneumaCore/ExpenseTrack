@@ -224,7 +224,7 @@ const Accounts: React.FC = () => {
                 <IonFab slot="fixed" vertical="bottom" horizontal="center">
 
                     {/* Abrir el modal para añadir cuentas */}
-                    <IonFabButton onClick={() => setIsAddModalOpen(true)}>
+                    <IonFabButton color="medium" className="account-fab-button" onClick={() => setIsAddModalOpen(true)}>
                         <IonIcon icon={add}></IonIcon>
                     </IonFabButton>
                 </IonFab>

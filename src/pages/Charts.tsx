@@ -9,10 +9,10 @@ import { add, chevronBack, search } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useHistory } from 'react-router';
+import AddTransaction from '../components/AddTransaction';
+import EditTransaction from '../components/EditTransaction';
 import { database } from '../configurations/firebase';
 import './Charts.css';
-import EditTransaction from '../components/EditTransaction';
-import AddTransaction from '../components/AddTransaction';
 ChartJS.register(ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 interface Account {
@@ -59,7 +59,6 @@ const Charts: React.FC = () => {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
     const selectedAccount = accounts.find(account => account.account_id === selectedAccountId);
-    const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
     const [type, setType] = useState('gasto');
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -70,7 +69,6 @@ const Charts: React.FC = () => {
     const [preferredCurrency, setPreferredCurrency] = useState<string>("EUR");
     const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
     const [totalBalanceInPreferredCurrency, setTotalBalanceInPreferredCurrency] = useState<number>(0);
-    const [selectedAccountBalanceInPreferredCurrency, setSelectedAccountBalanceInPreferredCurrency] = useState<number | null>(null);
 
     /* Leemos las divisa preferida del usuario de la base de datos */
     useEffect(() => {
@@ -555,7 +553,7 @@ const Charts: React.FC = () => {
                 <IonFab slot="fixed" vertical="bottom" horizontal="center">
 
                     {/* Abrir el modal para añadir transacciones */}
-                    <IonFabButton onClick={() => setIsModalOpen(true)}>
+                    <IonFabButton color="medium" className='chart-fab-button' onClick={() => setIsModalOpen(true)}>
                         <IonIcon icon={add}></IonIcon>
                     </IonFabButton>
                 </IonFab>

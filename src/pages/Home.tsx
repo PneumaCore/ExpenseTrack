@@ -544,7 +544,7 @@ const Home: React.FC = () => {
         <IonFab slot="fixed" vertical="bottom" horizontal="center">
 
           {/* Abrir el modal para añadir transacciones */}
-          <IonFabButton onClick={() => setIsModalOpen(true)}>
+          <IonFabButton color="medium" className='transaction-fab-button' onClick={() => setIsModalOpen(true)}>
             <IonIcon icon={add}></IonIcon>
           </IonFabButton>
         </IonFab>

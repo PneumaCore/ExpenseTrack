@@ -319,7 +319,7 @@ const Transfers: React.FC = () => {
                 <IonFab slot="fixed" vertical="bottom" horizontal="center">
 
                     {/* Abrir el modal para añadir transferencias */}
-                    <IonFabButton onClick={() => setIsAddModalOpen(true)}>
+                    <IonFabButton color="medium" className='transfer-fab-button' onClick={() => setIsAddModalOpen(true)}>
                         <IonIcon icon={add}></IonIcon>
                     </IonFabButton>
                 </IonFab>

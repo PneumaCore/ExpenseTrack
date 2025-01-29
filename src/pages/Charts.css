@@ -42,3 +42,7 @@
     padding: 8px;
     border-radius: 10px;
 }
+
+.chart-fab-button {
+    --box-shadow: none;
+}

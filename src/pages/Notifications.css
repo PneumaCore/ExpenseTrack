@@ -7,3 +7,7 @@
     padding: 8px;
     border-radius: 10px;
 }
+
+.notification-fab-button {
+    --box-shadow: none;
+}
