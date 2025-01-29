@@ -150,7 +150,7 @@ const AccountSetup: React.FC = () => {
         isAccountSetup: true,
       });
 
-      history.push('/tab1');
+      history.push('/home');
 
     } catch (error) {
 
@@ -216,17 +216,17 @@ const AccountSetup: React.FC = () => {
               </IonRow>
               <IonRow className='account-setup-row'>
                 <IonCol size="12" size-md="8" offset-md="2">
-                  <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonChange={(e) => setName(e.detail.value!)} required />
+                  <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonInput={(e) => setName(e.detail.value!)} required />
                 </IonCol>
               </IonRow>
               <IonRow className='account-setup-row'>
                 <IonCol size="12" size-md="8" offset-md="2">
-                  <IonInput label='Primer apellido' labelPlacement='floating' placeholder='Primer apellido' value={surname1} onIonChange={(e) => setSurname1(e.detail.value!)} required />
+                  <IonInput label='Primer apellido' labelPlacement='floating' placeholder='Primer apellido' value={surname1} onIonInput={(e) => setSurname1(e.detail.value!)} required />
                 </IonCol>
               </IonRow>
               <IonRow className='account-setup-row'>
                 <IonCol size="12" size-md="8" offset-md="2">
-                  <IonInput label='Segundo apellido' labelPlacement='floating' placeholder='Segundo apellido' value={surname2} onIonChange={(e) => setSurname2(e.detail.value!)} required />
+                  <IonInput label='Segundo apellido' labelPlacement='floating' placeholder='Segundo apellido' value={surname2} onIonInput={(e) => setSurname2(e.detail.value!)} required />
                 </IonCol>
               </IonRow>
             </IonGrid>
@@ -234,7 +234,7 @@ const AccountSetup: React.FC = () => {
           <IonFooter>
             <IonToolbar>
               <div className='account-setup-footer'>
-                <IonButton onClick={() => setPage(3)}>Comenzar</IonButton>
+                <IonButton onClick={() => setPage(3)}>Siguiente</IonButton>
               </div>
             </IonToolbar>
           </IonFooter>
@@ -251,7 +251,7 @@ const AccountSetup: React.FC = () => {
                   <h2>Elije tu divisa</h2>
                 </IonCol>
               </IonRow>
-              <IonRow>
+              <IonRow className='account-setup-row'>
                 <IonCol size="12" size-md="8" offset-md="2">
                   <IonSearchbar
                     placeholder="Buscar..."
@@ -309,7 +309,7 @@ const AccountSetup: React.FC = () => {
               <IonRow className='account-setup-row'>
                 <IonCol size="12" size-md="8" offset-md="2" className='account-setup-currency'>
                   <IonItem>
-                    <IonInput placeholder='0' type="number" value={balance} onIonChange={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
+                    <IonInput placeholder='0' type="number" value={balance} onIonInput={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
                     <IonLabel slot='end' className='account-setup-balance-label'>{selectedCurrency}</IonLabel>
                   </IonItem>
                 </IonCol>
