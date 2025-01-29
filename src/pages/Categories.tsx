@@ -1,11 +1,10 @@
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonLabel, IonMenuButton, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from "@ionic/react";
+import { IonAlert, IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth } from "firebase/auth";
 import { collection, onSnapshot, or, query, where } from "firebase/firestore";
 import { add } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router";
 import AddCategory from "../components/AddCategory";
 import EditCategory from "../components/EditCategory";
 import { database } from "../configurations/firebase";
@@ -21,12 +20,13 @@ interface Category {
 }
 
 const Categories: React.FC = () => {
-    const history = useHistory();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [type, setType] = useState('gasto');
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+    const [alert, setAlert] = useState<string>('');
+    const [showAlert, setShowAlert] = useState(false);
 
     {/* Filtramos las categorías según el tipo de la transacción */ }
     const filteredCategories = categories.filter(category => category.type === type);
@@ -45,7 +45,7 @@ const Categories: React.FC = () => {
                     categoriesRef,
                     or(
                         where('user_id', '==', currentUser?.uid),
-                        where('user_id', '==', '')
+                        where('user_id', '==', null)
                     )
                 );
 
@@ -111,7 +111,37 @@ const Categories: React.FC = () => {
     }
 
     const handleEditCategory = (category: Category) => {
-        if (category.name === 'Otros') {
+        if (category.user_id == null && category.name === 'Hogar') {
+            setAlert('No puedes editar las categorías globales');
+            setShowAlert(true);
+            return;
+        } else if (category.user_id == null && category.name === 'Transporte') {
+            setAlert('No puedes editar las categorías globales');
+            setShowAlert(true);
+            return;
+        } else if (category.user_id == null && category.name === 'Comida') {
+            setAlert('No puedes editar las categorías globales');
+            setShowAlert(true);
+            return;
+        } else if (category.user_id == null && category.name === 'Salud') {
+            setAlert('No puedes editar las categorías globales');
+            setShowAlert(true);
+            return;
+        } else if (category.user_id == null && category.name === 'Otros') {
+            setAlert('No puedes editar las categorías globales');
+            setShowAlert(true);
+            return;
+        } else if (category.user_id == null && category.name === 'Salario') {
+            setAlert('No puedes editar las categorías globales');
+            setShowAlert(true);
+            return;
+        } else if (category.user_id == null && category.name === 'Venta') {
+            setAlert('No puedes editar las categorías globales');
+            setShowAlert(true);
+            return;
+        } else if (category.user_id == null && category.name === 'Regalo') {
+            setAlert('No puedes editar las categorías globales');
+            setShowAlert(true);
             return;
         }
         setSelectedCategory(category);
@@ -129,6 +159,7 @@ const Categories: React.FC = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
+                {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} message={alert} buttons={['Aceptar']} />)}
 
                 {/* Seleccionamos el tipo de transacción */}
                 <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
@@ -144,8 +175,12 @@ const Categories: React.FC = () => {
 
                         {/* Se mapean las categorías, si no hay, se muestra que no hay categorías */}
                         {categories.length === 0 ? (
-                            <IonCol className="category-col">
-                                <IonLabel>No hay categorías</IonLabel>
+                            <IonCol>
+                                <IonList className="category-list">
+                                    <IonItem className="category-message">
+                                        <IonLabel>No hay categorías</IonLabel>
+                                    </IonItem>
+                                </IonList>
                             </IonCol>
                         ) : (
                             filteredCategories.map((category) => (

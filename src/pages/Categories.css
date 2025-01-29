@@ -1,5 +1,16 @@
 .category-col {
     text-align: center;
+    padding: 16px;
+}
+
+.category-list {
+    padding: 8px;
+    border-radius: 10px;
+}
+
+.category-message {
+    text-align: center;
+    padding: 16px;
 }
 
 .category-circle {
