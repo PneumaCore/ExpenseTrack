@@ -34,7 +34,8 @@ type CategoryType = keyof typeof icons;
 
 const colors = [
   '#395659', '#99BFBF', '#BAD9D9', '#F2BB77', '#D9AB82', '#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1',
-  '#955251', '#B565A7', '#009B77', '#DD4124', '#D65076', '#45B8AC', '#EFC050', '#5B5EA6'
+  '#955251', '#B565A7', '#009B77', '#DD4124', '#D65076', '#45B8AC', '#EFC050', '#5B5EA6', '#FFB3BA', '#FFDFBA',
+  '#FFFFBA', '#BAFFC9', '#BAE1FF', '#C0C0C0', '#FFD700', '#40E0D0', '#FF69B4', '#8A2BE2', '#00CED1', '#FF4500'
 ];
 
 const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
