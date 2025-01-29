@@ -1,4 +1,4 @@
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faSearch, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import axios from 'axios';
@@ -57,7 +57,6 @@ const Home: React.FC = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const selectedAccount = accounts.find(account => account.account_id === selectedAccountId);
-  const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [type, setType] = useState('gasto');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -68,7 +67,6 @@ const Home: React.FC = () => {
   const [preferredCurrency, setPreferredCurrency] = useState<string>("EUR");
   const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
   const [totalBalanceInPreferredCurrency, setTotalBalanceInPreferredCurrency] = useState<number>(0);
-  const [selectedAccountBalanceInPreferredCurrency, setSelectedAccountBalanceInPreferredCurrency] = useState<number | null>(null);
 
   /* Leemos las divisa preferida del usuario de la base de datos */
   useEffect(() => {
@@ -373,23 +371,34 @@ const Home: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        {/* Seleccionamos la cuenta de las transacciones */}
-        <IonSelect labelPlacement="floating" onIonChange={(e) => setSelectedAccountId(e.detail.value)} value={selectedAccountId}>
-          <IonSelectOption value={null}>Total</IonSelectOption>
-          {accounts.map(account => (
-            <IonSelectOption key={account.account_id} value={account.account_id}>
-              {account.name}
-            </IonSelectOption>
-          ))}
-        </IonSelect>
+        <IonGrid>
 
-        {/* Mostramos el saldo total de la cuenta seleccionada por el usuario */}
-        <IonLabel>
-          {selectedAccountId
-            ? `${selectedAccount?.balance} ${selectedAccount?.currency}`
-            : `${totalBalanceInPreferredCurrency.toFixed(2)} ${preferredCurrency}`
-          }
-        </IonLabel>
+          {/* Seleccionamos la cuenta de las transacciones */}
+          <IonRow>
+            <IonCol>
+              <IonSelect labelPlacement="floating" onIonChange={(e) => setSelectedAccountId(e.detail.value)} value={selectedAccountId}>
+                <IonSelectOption value={null}>Total</IonSelectOption>
+                {accounts.map(account => (
+                  <IonSelectOption key={account.account_id} value={account.account_id}>
+                    {account.name}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonCol>
+          </IonRow>
+
+          {/* Mostramos el saldo total de la cuenta seleccionada por el usuario */}
+          <IonRow>
+            <IonCol>
+              <IonLabel>
+                {selectedAccountId
+                  ? `${selectedAccount?.balance.toFixed(2)} ${selectedAccount?.currency}`
+                  : `${totalBalanceInPreferredCurrency.toFixed(2)} ${preferredCurrency}`
+                }
+              </IonLabel>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
 
         {/* Seleccionamos el tipo de transacción */}
         <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
@@ -470,7 +479,7 @@ const Home: React.FC = () => {
                 </IonContent>
                 <IonFooter>
                   <IonToolbar>
-                    <div className='date-period-picker-footer'>
+                    <div className='transaction-date-period-picker-footer'>
 
                       {/* Botón para aplicar el filtro */}
                       <IonButton onClick={() => setIsDateModalOpen(false)}>Aplicar</IonButton>

@@ -1,3 +1,42 @@
+.chart-date-period-picker-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.chart-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: white;
+}
+
+.chart-category-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+}
+
+.chart-category-icon {
+    font-size: 25px;
+    color: white;
+}
+
+.chart-message {
+    text-align: center;
+    padding: 16px;
+}
+
+.chart-list {
+    padding: 8px;
+    border-radius: 10px;
+}
+
 .chart-bar-chart {
     background-color: white;
     padding: 8px;
