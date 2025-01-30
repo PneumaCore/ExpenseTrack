@@ -57,62 +57,97 @@ const SideMenu: React.FC = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent>
-                <IonGrid>
-                    <IonRow>
-                        <IonCol>
-                            <div className="side-menu-profile-welcome-container">
-                                <div className="side-menu-profile-welcome-avatar">
-                                    <IonAvatar>
-                                        <img src={profilePhoto} alt="Foto de perfil" />
-                                    </IonAvatar>
-                                </div>
-                                <div className="side-menu-profile-welcome-label">
-                                    <IonLabel>Bienvenido, {name}</IonLabel>
-                                </div>
-                            </div>
-                        </IonCol>
-                    </IonRow>
-                </IonGrid>
-                <IonList className="side-menu-list">
-                    <IonMenuToggle auto-hide="true">
-                        <IonItem onClick={() => history.push('/home', { from: window.location.pathname })}>
-                            <div slot="start">
-                                <FontAwesomeIcon icon={faHome}></FontAwesomeIcon>
-                            </div>
-                            <IonLabel>Inicio</IonLabel>
-                        </IonItem>
-                        <IonItem onClick={() => history.push('/accounts', { from: window.location.pathname })}>
-                            <div slot="start">
-                                <FontAwesomeIcon icon={faSackDollar}></FontAwesomeIcon>
-                            </div>
-                            <IonLabel>Cuentas</IonLabel>
-                        </IonItem>
-                        <IonItem onClick={() => history.push('/charts', { from: window.location.pathname })}>
-                            <div slot="start">
-                                <FontAwesomeIcon icon={faChartColumn}></FontAwesomeIcon>
-                            </div>
-                            <IonLabel>Gráficos</IonLabel>
-                        </IonItem>
-                        <IonItem onClick={() => history.push('/categories', { from: window.location.pathname })}>
-                            <div slot="start">
-                                <FontAwesomeIcon icon={faIcons}></FontAwesomeIcon>
-                            </div>
-                            <IonLabel>Categorías</IonLabel>
-                        </IonItem>
-                        <IonItem onClick={() => history.push('/notifications', { from: window.location.pathname })}>
-                            <div slot="start">
-                                <FontAwesomeIcon icon={faBell}></FontAwesomeIcon>
-                            </div>
-                            <IonLabel>Recordatorios</IonLabel>
-                        </IonItem>
-                        <IonItem onClick={() => history.push('/settings', { from: window.location.pathname })}>
-                            <div slot="start">
-                                <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>
-                            </div>
-                            <IonLabel>Ajustes</IonLabel>
-                        </IonItem>
-                    </IonMenuToggle>
-                </IonList>
+                <IonMenuToggle auto-hide="true">
+                    <IonGrid>
+                        <IonList className="side-menu-list">
+                            <IonRow>
+                                <IonCol>
+                                    <div className="side-menu-profile-welcome-container">
+                                        <div className="side-menu-profile-welcome-avatar">
+                                            <IonAvatar>
+                                                <img src={profilePhoto} alt="Foto de perfil" />
+                                            </IonAvatar>
+                                        </div>
+                                        <div className="side-menu-profile-welcome-label">
+                                            <IonLabel>Bienvenido, <b>{name}</b></IonLabel>
+                                        </div>
+                                    </div>
+                                </IonCol>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <IonItem onClick={() => history.push('/home', { from: window.location.pathname })}>
+                                        <div slot="start">
+                                            <FontAwesomeIcon icon={faHome}></FontAwesomeIcon>
+                                        </div>
+                                        <IonLabel>Inicio</IonLabel>
+                                    </IonItem>
+                                </IonCol>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <IonItem onClick={() => history.push('/accounts', { from: window.location.pathname })}>
+                                        <div slot="start">
+                                            <FontAwesomeIcon icon={faSackDollar}></FontAwesomeIcon>
+                                        </div>
+                                        <IonLabel>Cuentas</IonLabel>
+                                    </IonItem>
+                                </IonCol>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <IonItem onClick={() => history.push('/charts', { from: window.location.pathname })}>
+                                        <div slot="start">
+                                            <FontAwesomeIcon icon={faChartColumn}></FontAwesomeIcon>
+                                        </div>
+                                        <IonLabel>Gráficos</IonLabel>
+                                    </IonItem>
+                                </IonCol>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <IonItem onClick={() => history.push('/categories', { from: window.location.pathname })}>
+                                        <div slot="start">
+                                            <FontAwesomeIcon icon={faIcons}></FontAwesomeIcon>
+                                        </div>
+                                        <IonLabel>Categorías</IonLabel>
+                                    </IonItem>
+                                </IonCol>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <IonItem onClick={() => history.push('/notifications', { from: window.location.pathname })}>
+                                        <div slot="start">
+                                            <FontAwesomeIcon icon={faBell}></FontAwesomeIcon>
+                                        </div>
+                                        <IonLabel>Recordatorios</IonLabel>
+                                    </IonItem>
+                                </IonCol>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <IonItem onClick={() => history.push('/settings', { from: window.location.pathname })}>
+                                        <div slot="start">
+                                            <FontAwesomeIcon icon={faGear}></FontAwesomeIcon>
+                                        </div>
+                                        <IonLabel>Ajustes</IonLabel>
+                                    </IonItem>
+                                </IonCol>
+                            </IonRow>
+
+
+
+
+
+
+
+
+
+
+
+                        </IonList>
+                    </IonGrid>
+                </IonMenuToggle>
             </IonContent>
         </IonMenu>
     );

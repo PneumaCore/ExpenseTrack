@@ -1,15 +1,18 @@
 .side-menu-profile-welcome-container {
     display: flex;
+    padding: 8px;
+    border-radius: 10px;
     flex-direction: row;
+    background-color: #BAD9D9;
 }
 
 .side-menu-profile-welcome-label {
     width: 100%;
+    text-align: center;
     align-content: center;
     align-items: center;
 }
 
 .side-menu-list {
-    padding: 8px;
     border-radius: 10px;
 }
