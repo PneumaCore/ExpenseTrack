@@ -4,11 +4,10 @@ import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabB
 import axios from 'axios';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
-import { collection, getDocs, onSnapshot, or, orderBy, query, Timestamp, where } from 'firebase/firestore';
+import { collection, onSnapshot, or, orderBy, query, Timestamp, where } from 'firebase/firestore';
 import { add, chevronBack, search } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { useHistory } from 'react-router';
 import AddTransaction from '../components/AddTransaction';
 import EditTransaction from '../components/EditTransaction';
 import { database } from '../configurations/firebase';
@@ -50,7 +49,6 @@ interface Category {
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Charts: React.FC = () => {
-    const history = useHistory();
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [searchText, setSearchText] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,25 +70,34 @@ const Charts: React.FC = () => {
 
     /* Leemos las divisa preferida del usuario de la base de datos */
     useEffect(() => {
-        const fetchUserCurrency = async () => {
+        const fetchUserCurrency = () => {
             try {
                 const auth = getAuth();
                 const currentUser = auth.currentUser;
 
-                const usersRef = collection(database, 'users');
-                const q = query(usersRef, where('uid', '==', currentUser?.uid));
-                const snapshot = await getDocs(q);
-
-                if (!snapshot.empty) {
-                    const userData = snapshot.docs[0].data();
-                    setPreferredCurrency(userData.currency || "EUR");
+                if (!currentUser) {
+                    throw new Error("El usuario no está autenticado.");
                 }
+
+                const usersRef = collection(database, 'users');
+                const q = query(usersRef, where('uid', '==', currentUser.uid));
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    if (!snapshot.empty) {
+                        const userData = snapshot.docs[0].data();
+                        setPreferredCurrency(userData.currency || "EUR");
+                    }
+                });
+
+                return unsubscribe;
             } catch (error) {
                 console.error("Error al obtener la divisa preferida del usuario: ", error);
             }
         };
 
-        fetchUserCurrency();
+        const unsubscribe = fetchUserCurrency();
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
     }, []);
 
     /* Utilizamos una API para consultar el valor de las divisas */
