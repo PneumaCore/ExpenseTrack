@@ -147,7 +147,7 @@ const AddNotification: React.FC<AddNotificationProps> = ({ isOpen, onClose }) =>
                         <IonRow>
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
-                                    <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonChange={(e) => setName(e.detail.value!)} required />
+                                    <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonInput={(e) => setName(e.detail.value!)} required />
                                 </IonItem>
                             </IonCol>
                         </IonRow>
@@ -183,7 +183,7 @@ const AddNotification: React.FC<AddNotificationProps> = ({ isOpen, onClose }) =>
                         <IonRow>
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
-                                    <IonTextarea label='Mensaje' labelPlacement='floating' placeholder='Introduce un mensaje' value={message} onIonChange={(e) => setMessage(e.detail.value!)}></IonTextarea>
+                                    <IonTextarea label='Mensaje' labelPlacement='floating' placeholder='Introduce un mensaje' value={message} onIonInput={(e) => setMessage(e.detail.value!)}></IonTextarea>
                                 </IonItem>
                             </IonCol>
                         </IonRow>

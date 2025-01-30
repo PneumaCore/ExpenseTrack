@@ -354,7 +354,7 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
                         <IonRow>
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
-                                    <IonInput label='Monto' labelPlacement='floating' placeholder='Monto' type="number" value={amount} onIonChange={(e) => setAmount(parseFloat(e.detail.value!))} required />
+                                    <IonInput label='Monto' labelPlacement='floating' placeholder='Monto' type="number" value={amount} onIonInput={(e) => setAmount(parseFloat(e.detail.value!))} required />
                                 </IonItem>
                             </IonCol>
                         </IonRow>
@@ -391,7 +391,7 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
                     <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
                             <IonItem>
-                                <IonTextarea label='Nota' labelPlacement='floating' placeholder='Introduce una descripción' value={note} onIonChange={(e) => setNote(e.detail.value!)}></IonTextarea>
+                                <IonTextarea label='Nota' labelPlacement='floating' placeholder='Introduce una descripción' value={note} onIonInput={(e) => setNote(e.detail.value!)}></IonTextarea>
                             </IonItem>
                         </IonCol>
                     </IonRow>

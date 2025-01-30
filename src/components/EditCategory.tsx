@@ -196,7 +196,7 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                         <IonRow>
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
-                                    <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonChange={(e) => setName(e.detail.value!)} required />
+                                    <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonInput={(e) => setName(e.detail.value!)} required />
                                 </IonItem>
                             </IonCol>
                         </IonRow>

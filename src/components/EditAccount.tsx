@@ -206,7 +206,7 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
                     <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
                             <IonItem>
-                                <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonChange={(e) => setName(e.detail.value!)} required />
+                                <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonInput={(e) => setName(e.detail.value!)} required />
                             </IonItem>
                         </IonCol>
                     </IonRow>
@@ -230,7 +230,7 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
                     <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2" className='account-setup-currency'>
                             <IonItem style={{ width: '100%' }}>
-                                <IonInput placeholder='0' type="number" value={balance} onIonChange={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
+                                <IonInput placeholder='0' type="number" value={balance} onIonInput={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
                             </IonItem>
                         </IonCol>
                     </IonRow>
