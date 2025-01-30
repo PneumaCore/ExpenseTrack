@@ -46,6 +46,7 @@ import Categories from './pages/Categories';
 import Charts from './pages/Charts';
 import Home from './pages/Home';
 import Notifications from './pages/Notifications';
+import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Transfers from './pages/Transfers';
 import './theme/variables.css';
@@ -133,6 +134,7 @@ const App: React.FC = () => {
               <Route path="/charts" component={Charts} />
               <Route path="/transfers" component={Transfers} />
               <Route path="/settings" component={Settings} />
+              <Route path="/profile" component={Profile} />
             </>
           )}
         </IonRouterOutlet>

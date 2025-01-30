@@ -2,8 +2,11 @@ import { IonButtons, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList,
 import './Settings.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCommentDollar, faDatabase, faUser } from '@fortawesome/free-solid-svg-icons';
+import { useHistory } from 'react-router';
 
 const Settings: React.FC = () => {
+    const history = useHistory();
+
     return (
         <IonPage id="main-content">
             <IonHeader>
@@ -17,7 +20,7 @@ const Settings: React.FC = () => {
             <IonContent fullscreen>
                 <IonGrid>
                     <IonList className='settings-list'>
-                        <IonItem>
+                        <IonItem onClick={() => history.push('/profile', { from: window.location.pathname })}>
                             <div slot="start">
                                 <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
                             </div>

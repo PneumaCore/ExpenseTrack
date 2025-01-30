@@ -2,7 +2,7 @@ import { faArrowRightArrowLeft, faBell, faChartColumn, faGear, faHome, faIcons, 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IonAlert, IonAvatar, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonRow, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth, signOut } from "firebase/auth";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { auth, database } from "../configurations/firebase";
@@ -16,20 +16,23 @@ const SideMenu: React.FC = () => {
 
     /* Leemos la foto de perfil y el nombre del usuario de la base de datos */
     useEffect(() => {
-        const fetchUserProfile = async () => {
+        const fetchUserProfile = () => {
             try {
                 const auth = getAuth();
                 const currentUser = auth.currentUser;
 
                 const usersRef = collection(database, 'users');
                 const q = query(usersRef, where('uid', '==', currentUser?.uid));
-                const snapshot = await getDocs(q);
 
-                if (!snapshot.empty) {
-                    const userData = snapshot.docs[0].data();
-                    setProfilePhoto(userData.profile_photo);
-                    setName(userData.name);
-                }
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    if (!snapshot.empty) {
+                        const userData = snapshot.docs[0].data();
+                        setProfilePhoto(userData.profile_photo);
+                        setName(userData.name);
+                    }
+                });
+
+                return () => unsubscribe();
             } catch (error) {
                 console.error("Error al obtener los datos del usuario: ", error);
             }
