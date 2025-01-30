@@ -1,15 +1,14 @@
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, onSnapshot, orderBy, query, Timestamp, where } from 'firebase/firestore';
 import { add, chevronBack, search } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
 import AddTransfer from '../components/AddTransfer';
+import EditTransfer from '../components/EditTransfer';
 import { database } from '../configurations/firebase';
 import './Transfers.css';
-import EditTransfer from '../components/EditTransfer';
 
 interface Account {
     account_id: string,
@@ -35,7 +34,6 @@ interface Transfer {
 };
 
 const Transfers: React.FC = () => {
-    const history = useHistory();
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [searchText, setSearchText] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -146,11 +144,11 @@ const Transfers: React.FC = () => {
         const matchesSourceAccountName = sourceAccount?.name.toLowerCase() || "";
         const matchesDestinationAccountName = destinationAccount?.name.toLowerCase() || "";
         const matchesNote = transfer.note.toLowerCase();
-    
+
         return (
             (matchesSourceAccountName.includes(matchesSearchText) ||
-            matchesDestinationAccountName.includes(matchesSearchText) ||
-            matchesNote.includes(matchesSearchText)) &&
+                matchesDestinationAccountName.includes(matchesSearchText) ||
+                matchesNote.includes(matchesSearchText)) &&
             filteredByRange.includes(transfer)
         );
     });
@@ -166,9 +164,9 @@ const Transfers: React.FC = () => {
                 <IonToolbar>
                     {!isSearchActive ? (
                         <>
-                            <IonButton slot="start" onClick={() => history.push('/accounts', { from: window.location.pathname })} fill='clear'>
-                                <IonIcon icon={chevronBack}></IonIcon>
-                            </IonButton>
+                            <IonButtons slot="start">
+                                <IonMenuButton></IonMenuButton>
+                            </IonButtons>
                             <IonTitle>Transferencias</IonTitle>
                             <IonButtons slot='end'>
                                 <IonButton onClick={() => setIsSearchActive(true)} size='default'>

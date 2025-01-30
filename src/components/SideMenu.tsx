@@ -1,12 +1,12 @@
-import { faBell, faChartColumn, faCreditCard, faCreditCardAlt, faGear, faHome, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightArrowLeft, faBell, faChartColumn, faGear, faHome, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IonAlert, IonAvatar, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonLoading, IonMenu, IonMenuToggle, IonRow, IonTitle, IonToolbar } from "@ionic/react";
+import { IonAlert, IonAvatar, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonRow, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth, signOut } from "firebase/auth";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { auth, database } from "../configurations/firebase";
-import './SideMenu.css'
-import { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import './SideMenu.css';
 
 const SideMenu: React.FC = () => {
     const history = useHistory();
@@ -109,6 +109,16 @@ const SideMenu: React.FC = () => {
                                             <FontAwesomeIcon icon={faIcons}></FontAwesomeIcon>
                                         </div>
                                         <IonLabel><b>Categorías</b></IonLabel>
+                                    </IonItem>
+                                </IonCol>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <IonItem onClick={() => history.push('/transfers', { from: window.location.pathname })}>
+                                        <div slot="start">
+                                            <FontAwesomeIcon icon={faArrowRightArrowLeft}></FontAwesomeIcon>
+                                        </div>
+                                        <IonLabel><b>Transferencias</b></IonLabel>
                                     </IonItem>
                                 </IonCol>
                             </IonRow>
