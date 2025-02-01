@@ -110,7 +110,7 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
             }
 
             /* Buscamos en la base de datos las transacciones que estuvieran asociadas a la categoría  */
-            const newCategoryId = category.type === "gasto" ? 'EXiE4r05NMlvrcSEWNxf' : 'lTeToQA1ctbmQKdIiPKA';
+            const newCategoryId = category.type === "gasto" ? 'maDDc2ma6pMJFCTG3LKD' : 'rFA77FQ9wx9l8308us5S';
             const transactionsRef = collection(database, "transactions");
             const q = query(transactionsRef, where("category_id", "==", category.category_id));
 
