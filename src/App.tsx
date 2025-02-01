@@ -48,6 +48,7 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Transfers from './pages/Transfers';
 import './theme/variables.css';
+import Budgets from './pages/Budgets';
 
 setupIonicReact();
 
@@ -113,13 +114,15 @@ const App: React.FC = () => {
               <Route exact path="/" render={() => <Redirect to="/home" />} />
 
               {/* Rutas independientes */}
-              <Route path="/accounts" component={Accounts} />
-              <Route path="/categories" component={Categories} />
               <Route path="/account_setup" component={AccountSetup} />
               <Route path="/charts" component={Charts} />
+              <Route path="/accounts" component={Accounts} />
               <Route path="/transfers" component={Transfers} />
+              <Route path="/categories" component={Categories} />     
+              <Route path="/budgets" component={Budgets} />
               <Route path="/settings" component={Settings} />
               <Route path="/profile" component={Profile} />
+              
             </>
           )}
         </IonRouterOutlet>
