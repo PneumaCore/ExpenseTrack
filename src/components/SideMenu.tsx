@@ -1,4 +1,4 @@
-import { faArrowRightArrowLeft, faBell, faChartColumn, faGear, faHome, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightArrowLeft, faBarsProgress, faBell, faChartColumn, faGear, faHome, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IonAlert, IonAvatar, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonRow, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth, signOut } from "firebase/auth";
@@ -87,16 +87,6 @@ const SideMenu: React.FC = () => {
                             </IonRow>
                             <IonRow>
                                 <IonCol>
-                                    <IonItem onClick={() => history.push('/accounts', { from: window.location.pathname })}>
-                                        <div slot="start">
-                                            <FontAwesomeIcon icon={faSackDollar}></FontAwesomeIcon>
-                                        </div>
-                                        <IonLabel><b>Cuentas</b></IonLabel>
-                                    </IonItem>
-                                </IonCol>
-                            </IonRow>
-                            <IonRow>
-                                <IonCol>
                                     <IonItem onClick={() => history.push('/charts', { from: window.location.pathname })}>
                                         <div slot="start">
                                             <FontAwesomeIcon icon={faChartColumn}></FontAwesomeIcon>
@@ -107,11 +97,11 @@ const SideMenu: React.FC = () => {
                             </IonRow>
                             <IonRow>
                                 <IonCol>
-                                    <IonItem onClick={() => history.push('/categories', { from: window.location.pathname })}>
+                                    <IonItem onClick={() => history.push('/accounts', { from: window.location.pathname })}>
                                         <div slot="start">
-                                            <FontAwesomeIcon icon={faIcons}></FontAwesomeIcon>
+                                            <FontAwesomeIcon icon={faSackDollar}></FontAwesomeIcon>
                                         </div>
-                                        <IonLabel><b>Categorías</b></IonLabel>
+                                        <IonLabel><b>Cuentas</b></IonLabel>
                                     </IonItem>
                                 </IonCol>
                             </IonRow>
@@ -127,11 +117,21 @@ const SideMenu: React.FC = () => {
                             </IonRow>
                             <IonRow>
                                 <IonCol>
-                                    <IonItem onClick={() => history.push('/notifications', { from: window.location.pathname })}>
+                                    <IonItem onClick={() => history.push('/categories', { from: window.location.pathname })}>
                                         <div slot="start">
-                                            <FontAwesomeIcon icon={faBell}></FontAwesomeIcon>
+                                            <FontAwesomeIcon icon={faIcons}></FontAwesomeIcon>
                                         </div>
-                                        <IonLabel><b>Recordatorios</b></IonLabel>
+                                        <IonLabel><b>Categorías</b></IonLabel>
+                                    </IonItem>
+                                </IonCol>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <IonItem onClick={() => history.push('/budgets', { from: window.location.pathname })}>
+                                        <div slot="start">
+                                            <FontAwesomeIcon icon={faBarsProgress}></FontAwesomeIcon>
+                                        </div>
+                                        <IonLabel><b>Presupuestos</b></IonLabel>
                                     </IonItem>
                                 </IonCol>
                             </IonRow>

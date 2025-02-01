@@ -22,6 +22,7 @@ interface Category {
   category_id: string,
   user_id: string,
   name: string,
+  mensualBudget: number,
   type: string,
   icon: string,
   color: string

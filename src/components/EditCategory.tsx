@@ -41,6 +41,7 @@ interface Category {
     category_id: string,
     user_id: string,
     name: string,
+    mensualBudget: number,
     type: string,
     icon: string,
     color: string
@@ -49,6 +50,7 @@ interface Category {
 const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category }) => {
     const [type, setType] = useState<CategoryType>('gasto');
     const [name, setName] = useState('');
+    const [mensualBudget, setMensualBudget] = useState(0);
     const [icon, setIcon] = useState(faHome);
     const [color, setColor] = useState('#395659');
 
@@ -64,6 +66,7 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
         if (category) {
             setType(category.type === 'gasto' || category.type === 'ingreso' ? category.type : 'gasto');
             setName(category.name);
+            setMensualBudget(category.mensualBudget);
             setIcon(getFontAwesomeIcon(category.icon));
             setColor(category.color);
         }
@@ -80,6 +83,7 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
 
             const updateCategory = {
                 name: name,
+                mensualBudget: mensualBudget,
                 type: type,
                 icon: icon.iconName,
                 color: color
@@ -197,6 +201,15 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
                                     <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonInput={(e) => setName(e.detail.value!)} required />
+                                </IonItem>
+                            </IonCol>
+                        </IonRow>
+
+                        {/* Campo para añadir el presupuesto mensual de la categoría */}
+                        <IonRow>
+                            <IonCol size="12" size-md="8" offset-md="2">
+                                <IonItem>
+                                    <IonInput label='Presupuesto mensual' labelPlacement='floating' placeholder='Presupuesto mensual' type='number' value={mensualBudget} onIonInput={(e) => setMensualBudget(parseFloat(e.detail.value!))} required />
                                 </IonItem>
                             </IonCol>
                         </IonRow>

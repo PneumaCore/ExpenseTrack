@@ -41,6 +41,7 @@ const colors = [
 const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
   const [type, setType] = useState<CategoryType>('gasto');
   const [name, setName] = useState('');
+  const [mensualBudget, setMensualBudget] = useState(0);
   const [icon, setIcon] = useState(faQuestion);
   const [color, setColor] = useState('#000000');
 
@@ -66,6 +67,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
         category_id: categoryId,
         user_id: currentUser?.uid,
         name: name,
+        mensualBudget: mensualBudget,
         type: type,
         icon: icon.iconName,
         color: color
@@ -114,6 +116,15 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
               <IonCol size="12" size-md="8" offset-md="2">
                 <IonItem>
                   <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonInput={(e) => setName(e.detail.value!)} required />
+                </IonItem>
+              </IonCol>
+            </IonRow>
+
+            {/* Campo para añadir el presupuesto mensual de la categoría */}
+            <IonRow>
+              <IonCol size="12" size-md="8" offset-md="2">
+                <IonItem>
+                  <IonInput label='Presupuesto mensual' labelPlacement='floating' placeholder='Presupuesto mensual' type='number' value={mensualBudget} onIonInput={(e) => setMensualBudget(parseFloat(e.detail.value!))} required />
                 </IonItem>
               </IonCol>
             </IonRow>
