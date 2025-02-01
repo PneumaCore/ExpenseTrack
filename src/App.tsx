@@ -34,7 +34,6 @@ import '@ionic/react/css/text-transformation.css';
 /* import '@ionic/react/css/palettes/dark.system.css'; */
 
 /* Theme variables */
-import { BackgroundMode } from '@ionic-native/background-mode';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -45,7 +44,6 @@ import AccountSetup from './pages/AccountSetup';
 import Categories from './pages/Categories';
 import Charts from './pages/Charts';
 import Home from './pages/Home';
-import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Transfers from './pages/Transfers';
@@ -56,18 +54,6 @@ setupIonicReact();
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isAccountSetup, setIsAccountSetup] = useState<boolean | null>(null);
-
-  /* Corremos la aplicación siempre en segundo plano para que las notificaciones locales funcionen correctamente */
-  const enableBackgroundMode = () => {
-    BackgroundMode.enable();
-    BackgroundMode.on('activate').subscribe(() => {
-      console.log('La app está en segundo plano');
-    });
-  };
-
-  useEffect(() => {
-    enableBackgroundMode();
-  }, []);
 
   /* Se comprueba que haya un usuario autenticado en la aplicación */
   useEffect(() => {
@@ -130,7 +116,6 @@ const App: React.FC = () => {
               <Route path="/accounts" component={Accounts} />
               <Route path="/categories" component={Categories} />
               <Route path="/account_setup" component={AccountSetup} />
-              <Route path="/notifications" component={Notifications} />
               <Route path="/charts" component={Charts} />
               <Route path="/transfers" component={Transfers} />
               <Route path="/settings" component={Settings} />
