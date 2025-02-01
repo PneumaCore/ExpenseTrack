@@ -96,13 +96,13 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
         const auth = getAuth();
         const currentUser = auth.currentUser;
 
-        /* Obtenemos las categorías asociadas al usuario autenticado */
+        /* Obtenemos las categorías asociadas al usuario autenticado y los globales */
         const categoriesRef = collection(database, 'categories');
         const q = query(
           categoriesRef,
           or(
             where('user_id', '==', currentUser?.uid),
-            where('user_id', '==', '')
+            where('user_id', '==', null)
           )
         );
 
