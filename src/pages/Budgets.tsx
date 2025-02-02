@@ -4,6 +4,8 @@ import { collection, onSnapshot, query, where, Timestamp } from 'firebase/firest
 import { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
 import './Budgets.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from "@fortawesome/free-solid-svg-icons";
 
 interface Category {
     category_id: string,
@@ -86,6 +88,49 @@ const Budgets: React.FC = () => {
         };
     }, []);
 
+    /* Mapeamos todos los iconos de las categorías, si alguno no existe, se mapea uno por defecto */
+    const getFontAwesomeIcon = (iconName: string) => {
+        const icons: { [key: string]: any } = {
+            'home': faHome,
+            'light-bulb': faLightbulb,
+            'tools': faTools,
+            'gas-pump': faGasPump,
+            'bus': faBus,
+            'wrench': faWrench,
+            'car': faCar,
+            'cart-shopping': faShoppingCart,
+            'utensils': faUtensils,
+            'briefcase-medical': faBriefcaseMedical,
+            'pills': faPills,
+            'user-md': faUserMd,
+            'film': faFilm,
+            'music': faMusic,
+            'puzzle-piece': faPuzzlePiece,
+            'graduation-cap': faGraduationCap,
+            'book': faBook,
+            'chalkboard-teacher': faChalkboardTeacher,
+            'credit-card': faCreditCard,
+            'money-bill-wave': faMoneyBillWave,
+            'piggy-bank': faPiggyBank,
+            'chart-line': faChartLine,
+            'gift': faGift,
+            'hand-holding-heart': faHandHoldingHeart,
+            'shopping-bag': faShoppingBag,
+            'briefcase': faBriefcase,
+            'hand-holding-usd': faHandHoldingUsd,
+            'laptop': faLaptop,
+            'shopping-basket': faShoppingBasket,
+            'coins': faCoins,
+            'chart-bar': faChartBar,
+            'building': faBuilding,
+            'sync-alt': faSyncAlt,
+            'trophy': faTrophy,
+            'receipt': faReceipt,
+            'question': faQuestion
+        };
+        return icons[iconName] || faHome;
+    }
+
     const getMonthlySpending = (categoryId: string) => {
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -110,7 +155,7 @@ const Budgets: React.FC = () => {
                 <IonGrid>
                     <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
-                            <IonList>
+                            <IonList className="budget-list">
                                 {filteredCategories.length === 0 ? (
                                     <IonItem className="budget-message">
                                         <IonLabel>No hay presupuestos</IonLabel>
@@ -119,13 +164,20 @@ const Budgets: React.FC = () => {
                                     filteredCategories.map(category => {
                                         const monthlySpending = getMonthlySpending(category.category_id);
                                         const progress = monthlySpending / (category.mensualBudget || 1);
+                                        const progressColor = progress >= 0.75 ? 'danger' : 'success';
+                                        
                                         return (
-                                            <IonItem key={category.category_id}>
-                                                <IonLabel>
-                                                    {category.name}: {monthlySpending.toFixed(2)} / {category.mensualBudget?.toFixed(2)}
-                                                </IonLabel>
-                                                <IonProgressBar value={progress}></IonProgressBar>
-                                            </IonItem>
+                                            <>
+                                                <div>
+                                                    <IonLabel>Presupuesto de <b>{category.name}</b>: {monthlySpending.toFixed(2)} / {category.mensualBudget?.toFixed(2)}</IonLabel>
+                                                </div>
+                                                <IonItem key={category.category_id} className="budget-item">
+                                                    <div className="budget-icon-circle" slot='start' style={{ backgroundColor: category?.color }}>
+                                                        <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="budget-icon-font"></FontAwesomeIcon>
+                                                    </div>
+                                                    <IonProgressBar value={progress} color={progressColor}></IonProgressBar>
+                                                </IonItem>
+                                            </>
                                         );
                                     })
                                 )}
