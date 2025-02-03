@@ -282,7 +282,7 @@ const Charts: React.FC = () => {
                     categoriesRef,
                     or(
                         where('user_id', '==', currentUser?.uid),
-                        where('user_id', '==', '')
+                        where('user_id', '==', null)
                     )
                 );
 
