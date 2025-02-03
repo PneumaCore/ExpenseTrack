@@ -46,4 +46,10 @@ http://ionicframework.com/docs/theming/ */
 
     /* Sombras */
     --ion-box-shadow-color: rgba(57, 86, 89, 0.2);
+
+    /* Notificaciones */
+    --ion-color-success: #6BA292;
+    --ion-color-success-rgb: 107, 162, 146;
+    --ion-color-danger: #D97B6C;
+    --ion-color-danger-rgb: 217, 123, 108;
 }
