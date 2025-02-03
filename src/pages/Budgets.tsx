@@ -1,11 +1,11 @@
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonProgressBar, IonTitle, IonToolbar, IonList, IonItem, IonLabel, IonGrid, IonRow, IonCol } from "@ionic/react";
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonProgressBar, IonRow, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth } from 'firebase/auth';
-import { collection, onSnapshot, query, where, Timestamp } from 'firebase/firestore';
+import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
 import './Budgets.css';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from "@fortawesome/free-solid-svg-icons";
 
 interface Category {
     category_id: string,
@@ -31,8 +31,41 @@ interface Transaction {
 }
 
 const Budgets: React.FC = () => {
+    const [preferredCurrency, setPreferredCurrency] = useState<string>("EUR");
     const [categories, setCategories] = useState<Category[]>([]);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+    /* Leemos las divisa preferida del usuario de la base de datos */
+    useEffect(() => {
+        const fetchUserCurrency = () => {
+            try {
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                if (!currentUser) {
+                    throw new Error("El usuario no está autenticado.");
+                }
+
+                const usersRef = collection(database, 'users');
+                const q = query(usersRef, where('uid', '==', currentUser.uid));
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    if (!snapshot.empty) {
+                        const userData = snapshot.docs[0].data();
+                        setPreferredCurrency(userData.currency || "EUR");
+                    }
+                });
+
+                return unsubscribe;
+            } catch (error) {
+                console.error("Error al obtener la divisa preferida del usuario: ", error);
+            }
+        };
+
+        const unsubscribe = fetchUserCurrency();
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, []);
 
     useEffect(() => {
         const fetchCategories = () => {
@@ -68,7 +101,7 @@ const Budgets: React.FC = () => {
                 const currentUser = auth.currentUser;
 
                 const transactionsRef = collection(database, 'transactions');
-                const q = query(transactionsRef, where('user_id', '==', currentUser?.uid));
+                const q = query(transactionsRef, where('user_id', '==', currentUser?.uid), where('currency', '==', preferredCurrency));
 
                 const unsubscribe = onSnapshot(q, (querySnapshot) => {
                     const fetchedTransactions = querySnapshot.docs.map((doc) => ({
@@ -86,7 +119,7 @@ const Budgets: React.FC = () => {
         return () => {
             if (unsubscribe) unsubscribe();
         };
-    }, []);
+    }, [preferredCurrency]);
 
     /* Mapeamos todos los iconos de las categorías, si alguno no existe, se mapea uno por defecto */
     const getFontAwesomeIcon = (iconName: string) => {
@@ -165,11 +198,11 @@ const Budgets: React.FC = () => {
                                         const monthlySpending = getMonthlySpending(category.category_id);
                                         const progress = monthlySpending / (category.mensualBudget || 1);
                                         const progressColor = progress >= 0.75 ? 'danger' : 'success';
-                                        
+
                                         return (
                                             <>
                                                 <div>
-                                                    <IonLabel>Presupuesto de <b>{category.name}</b>: {monthlySpending.toFixed(2)} / {category.mensualBudget?.toFixed(2)}</IonLabel>
+                                                    <IonLabel><b>{category.name}:</b> {monthlySpending.toFixed(2)} / {category.mensualBudget?.toFixed(2)} {preferredCurrency}</IonLabel>
                                                 </div>
                                                 <IonItem key={category.category_id} className="budget-item">
                                                     <div className="budget-icon-circle" slot='start' style={{ backgroundColor: category?.color }}>
