@@ -1,6 +1,6 @@
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faSackDollar, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import axios from 'axios';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
@@ -50,6 +50,7 @@ interface Category {
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Home: React.FC = () => {
+  const [isAccountAlertOpen, setIsAccountAlertOpen] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -362,6 +363,9 @@ const Home: React.FC = () => {
               </IonButtons>
               <IonTitle>Transacciones</IonTitle>
               <IonButtons slot='end'>
+                <IonButton onClick={() => setIsAccountAlertOpen(true)}>
+                  <FontAwesomeIcon icon={faSackDollar} />
+                </IonButton>
                 <IonButton onClick={() => setIsSearchActive(true)} size='default'>
                   <IonIcon icon={search} />
                 </IonButton>
@@ -386,26 +390,47 @@ const Home: React.FC = () => {
           {/* Seleccionamos la cuenta de las transacciones */}
           <IonRow>
             <IonCol>
-              <IonSelect labelPlacement="floating" onIonChange={(e) => setSelectedAccountId(e.detail.value)} value={selectedAccountId}>
-                <IonSelectOption value={null}>Total</IonSelectOption>
-                {accounts.map(account => (
-                  <IonSelectOption key={account.account_id} value={account.account_id}>
-                    {account.name}
-                  </IonSelectOption>
-                ))}
-              </IonSelect>
+              <IonAlert
+                isOpen={isAccountAlertOpen}
+                onDidDismiss={() => setIsAccountAlertOpen(false)}
+                header="Filtrar por cuenta"
+                inputs={[
+                  { label: 'Total', type: 'radio' as const, value: null, checked: selectedAccountId === null },
+                  ...accounts.map(account => ({
+                    label: account.name,
+                    type: 'radio' as const,
+                    value: account.account_id,
+                    checked: selectedAccountId === account.account_id
+                  }))
+                ]}
+                buttons={[
+                  {
+                    text: 'Cancelar',
+                    role: 'cancel',
+                    handler: () => setIsAccountAlertOpen(false)
+                  },
+                  {
+                    text: 'Aceptar',
+                    handler: (selected) => setSelectedAccountId(selected)
+                  }
+                ]}
+              />
             </IonCol>
           </IonRow>
 
           {/* Mostramos el saldo total de la cuenta seleccionada por el usuario */}
           <IonRow>
             <IonCol>
-              <IonLabel>
-                {selectedAccountId
-                  ? `${selectedAccount?.balance.toFixed(2)} ${selectedAccount?.currency}`
-                  : `${totalBalanceInPreferredCurrency.toFixed(2)} ${preferredCurrency}`
-                }
-              </IonLabel>
+              <div className='transaction-total-balance'>
+                <IonLabel>
+                  <b>
+                    {selectedAccountId
+                      ? `${selectedAccount?.balance.toFixed(2)} ${selectedAccount?.currency}`
+                      : `${totalBalanceInPreferredCurrency.toFixed(2)} ${preferredCurrency}`
+                    }
+                  </b>
+                </IonLabel>
+              </div>
             </IonCol>
           </IonRow>
         </IonGrid>
