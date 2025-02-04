@@ -1,9 +1,10 @@
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import ImageCompression from 'browser-image-compression';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, onSnapshot, or, query, runTransaction, Timestamp, where } from 'firebase/firestore';
 import { addOutline, calendar, chevronBack, closeCircle } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
-import ImageCompression from 'browser-image-compression';
 import { database } from '../configurations/firebase';
 import './AddTransaction.css';
 import GlobalToast from './GlobalToast';
@@ -43,8 +44,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
   const [note, setNote] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
-  const [images, setImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]);
 
   /* Notificación global */
   const [toastConfig, setToastConfig] = useState<{
@@ -131,68 +131,47 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
     setDatePickerOpen(false);
   };
 
-  /* Guardamos la dirección de la imagen */
-  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-
-    /* Almacenamos las imagenes de la galería del usuario */
-    const files = event.target.files;
-    if (files) {
-
-      /* Pasamos la lista de imágenes a un array */
-      const newImages = Array.from(files);
-
-      /* Impedimos que el usuario introduzca más de cinco imágenes, ya que realmente no son necesarias tantas */
-      if (images.length + newImages.length > 5) {
-        setToastConfig({ isOpen: true, message: 'No puedes añadir más de cinco fotos', type: 'error' });
-        return;
-      }
-
-      /* Comprimimos todas las imágenes */
-      const compressedImages = await Promise.all(
-        newImages.map(async (image) => {
-          const compressedImage = await compressImage(image);
-          return compressedImage;
-        })
-      );
-
-      /* Generamos las URL para las vistas previas */
-      const newPreviews = compressedImages.map((file) => URL.createObjectURL(file));
-      setImages((prev) => [...prev, ...compressedImages]);
-      setImagePreviews((prev) => [...prev, ...newPreviews]);
+  /* Seleccionamos las fotos haciendo una foto con la cámara o escogiéndolas de la galería */
+  const handlePhoto = async () => {
+    if (images.length >= 5) {
+      setToastConfig({ isOpen: true, message: 'No puedes añadir más de 5 imágenes', type: 'error' });
+      return;
     }
-  };
 
-  /* Funcionalidad para eliminar una fotos que el usuario ha cargado de la galería */
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  /* Funcionalidad para comprimir la imagen */
-  const compressImage = async (file: File) => {
     try {
-      const options = {
-        maxSizeMB: 0.5,
-        maxWidthOrHeight: 800,
-        useWebWorker: true,
-      };
+      const photo = await Camera.getPhoto({
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Prompt,
+        quality: 90,
+      });
 
-      const compressedFile = await ImageCompression(file, options);
-      return compressedFile;
+      if (photo?.webPath) {
+        const imageBlob = await fetch(photo.webPath).then(res => res.blob());
+        const fileName = "transaction-photo.jpg";
+        const imageFile = new File([imageBlob], fileName, { type: imageBlob.type });
+
+        const options = {
+          maxSizeMB: 0.5,
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+        };
+
+        const compressedImage = await ImageCompression(imageFile, options);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64Image = reader.result as string;
+          setImages(prevImages => [...prevImages, base64Image]);
+        };
+        reader.readAsDataURL(compressedImage);
+      }
     } catch (error) {
-      console.error('Error al comprimir la imagen:', error);
-      return file;
+      console.error('Error al obtener o comprimir la foto:', error);
     }
   };
 
-  /* Funcionalidad para convertir una imagen a base64 */
-  const handleImageToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-      reader.readAsDataURL(file);
-    });
+  const removeImage = (index: number) => {
+    setImages(prevImages => prevImages.filter((_, i) => i !== index));
   };
 
   /* Guardamos la transacción en la base de datos */
@@ -219,13 +198,6 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
       const dateObject = new Date(selectedDate);
       const dateTimestamp = Timestamp.fromDate(dateObject);
 
-      /* Pasamos todas las imágenes a base64 */
-      const imageBase64List = await Promise.all(
-        images.map((image) =>
-          handleImageToBase64(image)
-        )
-      );
-
       const newTransaction = {
         transaction_id: transactionId,
         user_id: currentUser?.uid,
@@ -236,7 +208,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
         currency: account.currency,
         date: dateTimestamp,
         note: note,
-        image: imageBase64List
+        image: images
       }
 
       /* Buscamos la referencia en la base de datos de la cuenta seleccionada */
@@ -360,21 +332,20 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
             </IonCol>
           </IonRow>
 
-          {/* Campo añadir foto de la galería */}
+          {/* Campo añadir fotos de la cámara o galería */}
           <IonRow>
             <IonCol size="12" size-md="8" offset-md="2">
               <div className="image-container">
-                {imagePreviews.map((src, index) => (
+                {images.map((image, index) => (
                   <div key={index} className="image-preview">
-                    <img src={src} alt={`preview-${index}`} />
+                    <img src={image} alt={`Imagen ${index + 1}`} />
                     <IonIcon icon={closeCircle} className="close-icon" onClick={() => removeImage(index)} />
                   </div>
                 ))}
                 {images.length < 5 && (
-                  <label htmlFor="upload-photo" className="add-image-button">
+                  <div className="add-image-button" onClick={handlePhoto}>
                     <IonIcon icon={addOutline} />
-                    <input id="upload-photo" type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={handleImageChange} />
-                  </label>
+                  </div>
                 )}
               </div>
             </IonCol>
