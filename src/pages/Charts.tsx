@@ -477,7 +477,7 @@ const Charts: React.FC = () => {
                             <IonModal isOpen={isDateOpen} onDidDismiss={() => setIsDateModalOpen(false)}>
                                 <IonHeader>
                                     <IonToolbar>
-                                        <IonTitle>Período</IonTitle>
+                                        <IonTitle>Filtrar por período</IonTitle>
                                         <IonButton slot="start" onClick={() => (setIsDateModalOpen(false))} fill='clear'>
                                             <IonIcon icon={chevronBack}></IonIcon>
                                         </IonButton>
@@ -488,7 +488,7 @@ const Charts: React.FC = () => {
                                         <IonRow>
                                             <IonCol size="12" size-md="8" offset-md="2">
                                                 <IonItem>
-                                                    <IonDatetime presentation="date" value={startDate || new Date().toISOString()}
+                                                    <IonDatetime presentation="date" value={startDate || new Date().toISOString()} max={new Date().toISOString().split('T')[0]}
                                                         onIonChange={(e) => {
                                                             if (typeof e.detail.value === 'string') {
                                                                 setStartDate(e.detail.value);
@@ -501,7 +501,7 @@ const Charts: React.FC = () => {
                                         <IonRow>
                                             <IonCol size="12" size-md="8" offset-md="2">
                                                 <IonItem>
-                                                    <IonDatetime presentation="date" value={endDate || new Date().toISOString()}
+                                                    <IonDatetime presentation="date" value={endDate || new Date().toISOString()} max={new Date().toISOString().split('T')[0]}
                                                         onIonChange={(e) => {
                                                             if (typeof e.detail.value === 'string') {
                                                                 setEndDate(e.detail.value);
