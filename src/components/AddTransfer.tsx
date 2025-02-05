@@ -1,6 +1,6 @@
 import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, onSnapshot, query, setDoc, Timestamp, updateDoc, where } from 'firebase/firestore';
@@ -26,6 +26,8 @@ interface AddTransferProps {
 }
 
 const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
+    const [error, setError] = useState<string>('');
+    const [showAlert, setShowAlert] = useState(false);
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [selectedSourceAccount, setSelectedSourceAccount] = useState<string | undefined>();
     const [selectedDestinationAccount, setSelectedDestinationAccount] = useState<string | undefined>();
@@ -81,6 +83,59 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
 
     const handleSaveTransfer = async () => {
 
+        /* Buscamos las cuentas de origen y de destino en la base de datos */
+        const sourceAccount = accounts.find(account => account.account_id === selectedSourceAccount);
+        const destinationAccount = accounts.find(account => account.account_id === selectedDestinationAccount);
+
+        /* Validamos que los datos sean válidos */
+        if (!selectedSourceAccount) {
+            setError('Selecciona una cuenta de origen para la transferencia');
+            setShowAlert(true);
+            return;
+        }
+
+        if (!sourceAccount) {
+            setError('Cuenta de origen no encontrada');
+            setShowAlert(true);
+            return;
+        }
+
+        if (sourceAccount?.balance < amount) {
+            setError('Saldo insuficiente en la cuenta de origen para la transferencia');
+            setShowAlert(true);
+            return;
+        }
+
+        if (!selectedDestinationAccount) {
+            setError('Selecciona una cuenta de destino para la transferencia');
+            setShowAlert(true);
+            return;
+        }
+
+        if (!destinationAccount) {
+            setError('Cuenta de destino no encontrada');
+            setShowAlert(true);
+            return;
+        }
+
+        if (selectedSourceAccount === selectedDestinationAccount) {
+            setError('No puedes transferir entre la misma cuenta');
+            setShowAlert(true);
+            return;
+        }
+
+        if (amount <= 0) {
+            setError('Introduce un monto válido para la transacción');
+            setShowAlert(true);
+            return;
+        }
+
+        if (!selectedDate) {
+            setError('Selecciona una fecha para la transferencia');
+            setShowAlert(true);
+            return;
+        }
+
         try {
 
             /* Obtenemos los datos del usuario autenticado */
@@ -90,30 +145,6 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
             /* Generamos un ID automático con Firestore */
             const transfersRef = doc(collection(database, 'transfers'));
             const transferId = transfersRef.id;
-
-            if (!selectedSourceAccount || !selectedDestinationAccount) {
-                setToastConfig({ isOpen: true, message: 'Selecciona ambas cuentas', type: 'error' });
-                return;
-            }
-
-            if (selectedSourceAccount === selectedDestinationAccount) {
-                setToastConfig({ isOpen: true, message: 'No puedes transferir entre la misma cuenta', type: 'error' });
-                return;
-            }
-
-            /* Buscamos las cuentas de origen y de destino en la base de datos */
-            const sourceAccount = accounts.find(account => account.account_id === selectedSourceAccount);
-            const destinationAccount = accounts.find(account => account.account_id === selectedDestinationAccount);
-
-            if (!sourceAccount || !destinationAccount) {
-                setToastConfig({ isOpen: true, message: 'Cuentas no encontradas', type: 'error' });
-                return;
-            }
-
-            if (sourceAccount.balance < amount) {
-                setToastConfig({ isOpen: true, message: 'Saldo insuficiente en la cuenta de origen', type: 'error' });
-                return;
-            }
 
             /* Convertimos el monto de la transferencia a la divisa de la cuenta de destino con una API para consultar el valor de las divisas */
             let convertedAmount = amount;
@@ -137,7 +168,7 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
             const destinationAccountRef = doc(database, 'accounts', destinationAccount.account_id);
 
             const newTransfer = {
-                transfer_id: transfersRef.id,
+                transfer_id: transferId,
                 user_id: currentUser?.uid,
                 source_account_id: sourceAccount.account_id,
                 destination_account_id: destinationAccount.account_id,
@@ -175,6 +206,7 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
                     </IonToolbar>
                 </IonHeader>
                 <IonContent>
+                    {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} header={'Datos inválidos'} message={error} buttons={['Aceptar']} />)}
 
                     <IonGrid>
                         {/* Campo para seleccionar la cuenta de origen */}
@@ -244,7 +276,7 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
                     {/* Popover para seleccionar la fecha de la transacción */}
                     {/* Cerrar el popover para seleccionar la fecha de la transacción */}
                     <IonPopover isOpen={isDatePickerOpen} onDidDismiss={() => setDatePickerOpen(false)}>
-                        <IonDatetime locale='es-ES' value={selectedDate} onIonChange={handleDateChange} />
+                        <IonDatetime locale='es-ES' value={selectedDate} onIonChange={handleDateChange} max={new Date().toISOString().split('T')[0]} />
                         <IonButton expand="block" onClick={() => setDatePickerOpen(false)}>Cerrar</IonButton>
                     </IonPopover>
                 </IonContent>
