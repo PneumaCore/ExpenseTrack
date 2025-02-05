@@ -1,5 +1,5 @@
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import ImageCompression from 'browser-image-compression';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, onSnapshot, or, query, runTransaction, Timestamp, where } from 'firebase/firestore';
@@ -35,6 +35,8 @@ interface AddTransactionProps {
 }
 
 const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
+  const [error, setError] = useState<string>('');
+  const [showAlert, setShowAlert] = useState(false);
   const [type, setType] = useState('gasto');
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<string | undefined>();
@@ -142,7 +144,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
       const photo = await Camera.getPhoto({
         resultType: CameraResultType.Uri,
         source: CameraSource.Prompt,
-        quality: 90,
+        quality: 75,
       });
 
       if (photo?.webPath) {
@@ -176,6 +178,31 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
 
   /* Guardamos la transacción en la base de datos */
   const handleSaveTransaction = async () => {
+
+    /* Validamos que los datos sean válidos */
+    if (!selectedAccount) {
+      setError('Selecciona una cuenta');
+      setShowAlert(true);
+      return;
+    }
+
+    if (amount <= 0) {
+      setError('Introduce un monto válido');
+      setShowAlert(true);
+      return;
+    }
+
+    if (!selectedCategory) {
+      setError('Selecciona una categoría');
+      setShowAlert(true);
+      return;
+    }
+
+    if (!selectedDate) {
+      setError('Selecciona una fecha');
+      setShowAlert(true);
+      return;
+    }
 
     try {
 
@@ -258,6 +285,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
           </IonToolbar>
         </IonHeader>
         <IonContent>
+          {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} header={'Datos inválidos'} message={error} buttons={['Aceptar']} />)}
 
           {/* Seleccionamos el tipo de transacción */}
           <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
@@ -354,7 +382,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
           {/* Popover para seleccionar la fecha de la transacción */}
           {/* Cerrar el popover para seleccionar la fecha de la transacción */}
           <IonPopover isOpen={isDatePickerOpen} onDidDismiss={() => setDatePickerOpen(false)}>
-            <IonDatetime locale='es-ES' value={selectedDate} onIonChange={handleDateChange} />
+            <IonDatetime locale='es-ES' value={selectedDate} onIonChange={handleDateChange} max={new Date().toISOString().split('T')[0]} />
             <IonButton expand="block" onClick={() => setDatePickerOpen(false)}>Cerrar</IonButton>
           </IonPopover>
         </IonContent>
