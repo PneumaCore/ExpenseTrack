@@ -1,4 +1,4 @@
-import { IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
+import { IonAlert, IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { chevronBack } from "ionicons/icons";
 import { useEffect, useState } from "react";
@@ -30,6 +30,8 @@ const colors = [
 ];
 
 const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
+    const [error, setError] = useState<string>('');
+    const [showAlert, setShowAlert] = useState(false);
     const [name, setName] = useState('');
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>();
@@ -68,6 +70,26 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
     }, []);
 
     const handleSaveAccount = async () => {
+
+        /* Validamos que los datos sean válidos */
+        if (!name) {
+            setError('Introduce un nombre para la cuenta');
+            setShowAlert(true);
+            return;
+        }
+
+        if (!selectedCurrency) {
+            setError('Selecciona la divisa que va a manejar la cuenta');
+            setShowAlert(true);
+            return;
+        }
+
+        if (balance <= 0) {
+            setError('Introduce un balance válido para la cuenta');
+            setShowAlert(true);
+            return;
+        }
+
         try {
 
             /* Obtenemos los datos del usuario autenticado */
@@ -112,6 +134,8 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent>
+                {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} header={'Datos inválidos'} message={error} buttons={['Aceptar']} />)}
+
                 <IonGrid>
 
                     {/* Campo para añadir el nombre de la cuenta */}

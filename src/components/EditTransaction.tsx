@@ -205,6 +205,32 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
     };
 
     const handleSaveTransaction = async () => {
+
+        /* Validamos que los datos sean válidos */
+        if (!selectedAccount) {
+            setError('Selecciona una cuenta para la transacción');
+            setShowAlert(true);
+            return;
+        }
+
+        if (amount <= 0) {
+            setError('Introduce un monto válido para la transacción');
+            setShowAlert(true);
+            return;
+        }
+
+        if (!selectedCategory) {
+            setError('Selecciona una categoría para la transacción');
+            setShowAlert(true);
+            return;
+        }
+
+        if (!selectedDate) {
+            setError('Selecciona una fecha para la transacción');
+            setShowAlert(true);
+            return;
+        }
+
         try {
 
             if (!transaction?.transaction_id) {
@@ -256,32 +282,6 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
     }
 
     const handleDeleteTransaction = async () => {
-
-        /* Validamos que los datos sean válidos */
-        if (!selectedAccount) {
-            setError('Selecciona una cuenta');
-            setShowAlert(true);
-            return;
-        }
-
-        if (amount <= 0) {
-            setError('Introduce un monto válido');
-            setShowAlert(true);
-            return;
-        }
-
-        if (!selectedCategory) {
-            setError('Selecciona una categoría');
-            setShowAlert(true);
-            return;
-        }
-
-        if (!selectedDate) {
-            setError('Selecciona una fecha');
-            setShowAlert(true);
-            return;
-        }
-
         try {
 
             if (!transaction?.transaction_id) {
@@ -426,7 +426,7 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
                     {/* Popover para seleccionar la fecha de la transacción */}
                     {/* Cerrar el popover para seleccionar la fecha de la transacción */}
                     <IonPopover isOpen={isDatePickerOpen} onDidDismiss={() => setDatePickerOpen(false)}>
-                        <IonDatetime locale='es-ES' value={selectedDate} onIonChange={handleDateChange} max={new Date().toISOString().split('T')[0]}/>
+                        <IonDatetime locale='es-ES' value={selectedDate} onIonChange={handleDateChange} max={new Date().toISOString().split('T')[0]} />
                         <IonButton expand="block" onClick={() => setDatePickerOpen(false)}>Cerrar</IonButton>
                     </IonPopover>
 

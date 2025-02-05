@@ -181,25 +181,25 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
 
     /* Validamos que los datos sean válidos */
     if (!selectedAccount) {
-      setError('Selecciona una cuenta');
+      setError('Selecciona una cuenta para la transacción');
       setShowAlert(true);
       return;
     }
 
     if (amount <= 0) {
-      setError('Introduce un monto válido');
+      setError('Introduce un monto válido para la transacción');
       setShowAlert(true);
       return;
     }
 
     if (!selectedCategory) {
-      setError('Selecciona una categoría');
+      setError('Selecciona una categoría para la transacción');
       setShowAlert(true);
       return;
     }
 
     if (!selectedDate) {
-      setError('Selecciona una fecha');
+      setError('Selecciona una fecha para la transacción');
       setShowAlert(true);
       return;
     }

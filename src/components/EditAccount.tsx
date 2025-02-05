@@ -1,7 +1,7 @@
 import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
 import { faCoins, faCreditCard, faHandHoldingDollar, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
+import { IonAlert, IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
 import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { chevronBack } from "ionicons/icons";
 import { useEffect, useState } from "react";
@@ -40,6 +40,8 @@ const colors = [
 ];
 
 const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) => {
+    const [error, setError] = useState<string>('');
+    const [showAlert, setShowAlert] = useState(false);
     const [name, setName] = useState('');
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>();
@@ -109,6 +111,26 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
     }
 
     const handleSaveAccount = async () => {
+
+        /* Validamos que los datos sean válidos */
+        if (!name) {
+            setError('Introduce un nombre para la cuenta');
+            setShowAlert(true);
+            return;
+        }
+
+        if (!selectedCurrency) {
+            setError('Selecciona la divisa que va a manejar la cuenta');
+            setShowAlert(true);
+            return;
+        }
+
+        if (balance <= 0) {
+            setError('Introduce un balance válido para la cuenta');
+            setShowAlert(true);
+            return;
+        }
+
         try {
 
             if (!account?.account_id) {
@@ -200,6 +222,8 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
                 </IonToolbar>
             </IonHeader>
             <IonContent>
+                {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} header={'Datos inválidos'} message={error} buttons={['Aceptar']} />)}
+
                 <IonGrid>
 
                     {/* Campo para añadir el nombre de la cuenta */}
