@@ -1,7 +1,7 @@
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { chevronBack } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
@@ -48,11 +48,13 @@ interface Category {
 }
 
 const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category }) => {
+    const [error, setError] = useState<string>('');
+    const [showAlert, setShowAlert] = useState(false);
     const [type, setType] = useState<CategoryType>('gasto');
     const [name, setName] = useState('');
     const [mensualBudget, setMensualBudget] = useState(0);
-    const [icon, setIcon] = useState(faHome);
-    const [color, setColor] = useState('#395659');
+    const [icon, setIcon] = useState(faQuestion);
+    const [color, setColor] = useState('#A9A9A9');
 
     /* Notificación global */
     const [toastConfig, setToastConfig] = useState<{
@@ -73,6 +75,32 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
     }, [category]);
 
     const handleSaveCategory = async () => {
+
+        /* Validamos que los datos sean válidos */
+        if (!name) {
+            setError('Introduce un nombre válido para la categoría');
+            setShowAlert(true);
+            return;
+        }
+
+        if (mensualBudget < 0) {
+            setError('Introduce un presupuesto mensual válido para la categoría');
+            setShowAlert(true);
+            return;
+        }
+
+        if (icon === faQuestion) {
+            setError('Selecciona un icono para la categoría');
+            setShowAlert(true);
+            return;
+        }
+
+        if (color === '#A9A9A9') {
+            setError('Selecciona un color para la categoría');
+            setShowAlert(true);
+            return;
+        }
+
         try {
 
             if (!category?.category_id) {
@@ -195,6 +223,7 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                 </IonHeader>
                 <IonContent>
                     <IonGrid>
+                        {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} header={'Datos inválidos'} message={error} buttons={['Aceptar']} />)}
 
                         {/* Campo para añadir el nombre de la categoría */}
                         <IonRow>
