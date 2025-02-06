@@ -53,6 +53,8 @@ interface Category {
 const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, transaction }) => {
     const [error, setError] = useState<string>('');
     const [showAlert, setShowAlert] = useState(false);
+    const [showUpdateAlert, setShowUpdateAlert] = useState(false);
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const [type, setType] = useState('gasto');
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [selectedAccount, setSelectedAccount] = useState<string | undefined>();
@@ -330,12 +332,12 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
                         </IonButton>
 
                         {/* Botón para guardar la transacción */}
-                        <IonButton slot='end' fill='clear' onClick={handleSaveTransaction}>
+                        <IonButton slot='end' fill='clear' onClick={() => setShowUpdateAlert(true)}>
                             <FontAwesomeIcon icon={faFloppyDisk} />
                         </IonButton>
 
                         {/* Botón para eliminar la cuenta */}
-                        <IonButton slot='end' className='handle-delete-transaction-button' color='danger' fill='clear' onClick={handleDeleteTransaction}>
+                        <IonButton slot='end' className='handle-delete-transaction-button' color='danger' fill='clear' onClick={() => setShowDeleteAlert(true)}>
                             <FontAwesomeIcon icon={faTrashCan} />
                         </IonButton>
                     </IonToolbar>
@@ -443,6 +445,12 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
                     </IonPopover>
                     
                 </IonContent>
+
+                {/* Alerta para confirmar la edición de la transacción */}
+                <IonAlert isOpen={showUpdateAlert} onDidDismiss={() => setShowAlert(false)} header={'Editar transacción'} message={'¿Estás seguro de que quieres editar la transacción?'} buttons={[{ text: 'Cancelar', role: 'cancel', handler: () => { setShowUpdateAlert(false); } }, { text: 'Editar', handler: () => { handleSaveTransaction(); } }]} />
+
+                {/* Alerta para confirmar la eliminación de la transacción */}
+                <IonAlert isOpen={showDeleteAlert} onDidDismiss={() => setShowAlert(false)} header={'Eliminar transacción'} message={'¿Estás seguro de que quieres eliminar la transacción?'} buttons={[{ text: 'Cancelar', role: 'cancel', handler: () => { setShowDeleteAlert(false); } }, { text: 'Eliminar', handler: () => { handleDeleteTransaction(); } }]} />
             </IonModal>
             <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
         </>

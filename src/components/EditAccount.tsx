@@ -42,6 +42,8 @@ const colors = [
 const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) => {
     const [error, setError] = useState<string>('');
     const [showAlert, setShowAlert] = useState(false);
+    const [showUpdateAlert, setShowUpdateAlert] = useState(false);
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const [name, setName] = useState('');
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [selectedCurrency, setSelectedCurrency] = useState<string | undefined>();
@@ -125,7 +127,7 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
             return;
         }
 
-        if (balance <= 0) {
+        if (balance < 0) {
             setError('Introduce un balance válido para la cuenta');
             setShowAlert(true);
             return;
@@ -221,12 +223,12 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
                     </IonButton>
 
                     {/* Botón para guardar la cuenta */}
-                    <IonButton slot="end" fill="clear" onClick={handleSaveAccount}>
+                    <IonButton slot="end" fill="clear" onClick={() => setShowUpdateAlert(true)}>
                         <FontAwesomeIcon icon={faFloppyDisk} />
                     </IonButton>
 
                     {/* Botón para eliminar la cuenta */}
-                    <IonButton slot="end" className='handle-delete-account-button' color='danger' fill="clear" onClick={handleDeleteAccount}>
+                    <IonButton slot="end" className='handle-delete-account-button' color='danger' fill="clear" onClick={() => setShowDeleteAlert(true)}>
                         <FontAwesomeIcon icon={faTrashCan} />
                     </IonButton>
                 </IonToolbar>
@@ -314,6 +316,12 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
                     </IonRow>
                 </IonGrid>
             </IonContent>
+
+            {/* Alerta para confirmar la edición de la cuenta */}
+            <IonAlert isOpen={showUpdateAlert} onDidDismiss={() => setShowAlert(false)} header={'Editar cuenta'} message={'¿Estás seguro de que quieres editar la cuenta?'} buttons={[{ text: 'Cancelar', role: 'cancel', handler: () => { setShowUpdateAlert(false); } }, { text: 'Editar', handler: () => { handleSaveAccount(); } }]} />
+
+            {/* Alerta para confirmar la eliminación de la cuenta */}
+            <IonAlert isOpen={showDeleteAlert} onDidDismiss={() => setShowAlert(false)} header={'Eliminar cuenta'} message={'¿Estás seguro de que quieres eliminar la cuenta?'} buttons={[{ text: 'Cancelar', role: 'cancel', handler: () => { setShowDeleteAlert(false); } }, { text: 'Eliminar', handler: () => { handleDeleteAccount(); } }]} />
         </IonModal >
     );
 }

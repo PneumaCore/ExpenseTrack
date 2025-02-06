@@ -42,6 +42,8 @@ interface AddTransferProps {
 const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer }) => {
     const [error, setError] = useState<string>('');
     const [showAlert, setShowAlert] = useState(false);
+    const [showUpdateAlert, setShowUpdateAlert] = useState(false);
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [selectedSourceAccount, setSelectedSourceAccount] = useState<string | undefined>();
     const [selectedDestinationAccount, setSelectedDestinationAccount] = useState<string | undefined>();
@@ -256,12 +258,12 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                         </IonButton>
 
                         {/* Botón para guardar la transferencia */}
-                        <IonButton slot='end' fill='clear' onClick={handleSaveTransfer}>
+                        <IonButton slot='end' fill='clear' onClick={() => setShowUpdateAlert(true)}>
                             <FontAwesomeIcon icon={faFloppyDisk}></FontAwesomeIcon>
                         </IonButton>
 
                         {/* Botón para eliminar la transferencia */}
-                        <IonButton slot='end' className='handle-delete-transfer-button' color='danger' fill='clear' onClick={handleDeleteTransfer}>
+                        <IonButton slot='end' className='handle-delete-transfer-button' color='danger' fill='clear' onClick={() => setShowDeleteAlert(true)}>
                             <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
                         </IonButton>
                     </IonToolbar>
@@ -341,9 +343,14 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                         <IonButton expand="block" onClick={() => setDatePickerOpen(false)}>Cerrar</IonButton>
                     </IonPopover>
                 </IonContent>
+
+                {/* Alerta para confirmar la edición de la transferencia */}
+                <IonAlert isOpen={showUpdateAlert} onDidDismiss={() => setShowAlert(false)} header={'Editar transferencia'} message={'¿Estás seguro de que quieres editar la transferencia?'} buttons={[{ text: 'Cancelar', role: 'cancel', handler: () => { setShowUpdateAlert(false); } }, { text: 'Editar', handler: () => { handleSaveTransfer(); } }]} />
+
+                {/* Alerta para confirmar la eliminación de la transferencia */}
+                <IonAlert isOpen={showDeleteAlert} onDidDismiss={() => setShowAlert(false)} header={'Eliminar transferencia'} message={'¿Estás seguro de que quieres eliminar la transferencia?'} buttons={[{ text: 'Cancelar', role: 'cancel', handler: () => { setShowDeleteAlert(false); } }, { text: 'Eliminar', handler: () => { handleDeleteTransfer(); } }]} />
             </IonModal>
             <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
-
         </>
     );
 }

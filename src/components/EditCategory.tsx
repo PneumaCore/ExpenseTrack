@@ -50,6 +50,8 @@ interface Category {
 const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category }) => {
     const [error, setError] = useState<string>('');
     const [showAlert, setShowAlert] = useState(false);
+    const [showUpdateAlert, setShowUpdateAlert] = useState(false);
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const [type, setType] = useState<CategoryType>('gasto');
     const [name, setName] = useState('');
     const [mensualBudget, setMensualBudget] = useState(0);
@@ -221,12 +223,12 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                         </IonButton>
 
                         {/* Botón para guardar la categoría */}
-                        <IonButton slot='end' fill='clear' onClick={handleSaveCategory}>
+                        <IonButton slot='end' fill='clear' onClick={() => setShowUpdateAlert(true)}>
                             <FontAwesomeIcon icon={faFloppyDisk} />
                         </IonButton>
 
                         {/* Botón para eliminar la categoría */}
-                        <IonButton slot='end' className='handle-delete-button' color='danger' fill='clear' onClick={handleDeleteCategory}>
+                        <IonButton slot='end' className='handle-delete-button' color='danger' fill='clear' onClick={() => setShowDeleteAlert(true)}>
                             <FontAwesomeIcon icon={faTrashCan} />
                         </IonButton>
                     </IonToolbar>
@@ -298,6 +300,12 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                         </IonRow>
                     </IonGrid>
                 </IonContent>
+
+                {/* Alerta para confirmar la edición de la categoría */}
+                <IonAlert isOpen={showUpdateAlert} onDidDismiss={() => setShowAlert(false)} header={'Editar categoría'} message={'¿Estás seguro de que quieres editar la categoría?'} buttons={[{ text: 'Cancelar', role: 'cancel', handler: () => { setShowUpdateAlert(false); } }, { text: 'Editar', handler: () => { handleSaveCategory(); } }]} />
+
+                {/* Alerta para confirmar la eliminación de la categoría */}
+                <IonAlert isOpen={showDeleteAlert} onDidDismiss={() => setShowAlert(false)} header={'Eliminar categoría'} message={'¿Estás seguro de que quieres eliminar la categoría?'} buttons={[{ text: 'Cancelar', role: 'cancel', handler: () => { setShowDeleteAlert(false); } }, { text: 'Eliminar', handler: () => { handleDeleteCategory(); } }]} />
             </IonModal>
             <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
         </>

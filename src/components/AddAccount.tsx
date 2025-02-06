@@ -85,7 +85,7 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
             return;
         }
 
-        if (balance <= 0) {
+        if (balance < 0) {
             setError('Introduce un balance válido para la cuenta');
             setShowAlert(true);
             return;
