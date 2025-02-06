@@ -1,9 +1,9 @@
-import { faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faFloppyDisk, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
-import { collection, deleteDoc, doc, getDoc, onSnapshot, query, Timestamp, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, onSnapshot, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import { chevronBack } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
@@ -254,6 +254,16 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                         <IonButton slot="start" onClick={onClose} fill='clear'>
                             <IonIcon icon={chevronBack}></IonIcon>
                         </IonButton>
+
+                        {/* Botón para guardar la transferencia */}
+                        <IonButton slot='end' fill='clear' onClick={handleSaveTransfer}>
+                            <FontAwesomeIcon icon={faFloppyDisk}></FontAwesomeIcon>
+                        </IonButton>
+
+                        {/* Botón para eliminar la transferencia */}
+                        <IonButton slot='end' className='handle-delete-transfer-button' color='danger' fill='clear' onClick={handleDeleteTransfer}>
+                            <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
+                        </IonButton>
                     </IonToolbar>
                 </IonHeader>
                 <IonContent>
@@ -331,18 +341,6 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                         <IonButton expand="block" onClick={() => setDatePickerOpen(false)}>Cerrar</IonButton>
                     </IonPopover>
                 </IonContent>
-                <IonFooter>
-                    <IonToolbar>
-                        <div className='add-transaction-footer'>
-
-                            {/* Botón para guardar la transferencia */}
-                            <IonButton onClick={handleSaveTransfer}>Guardar transferencia</IonButton>
-
-                            {/* Botón para eliminar la transferencia */}
-                            <IonButton className='handle-delete-transfer-button' color='danger' onClick={handleDeleteTransfer}>Eliminar transferencia</IonButton>
-                        </div>
-                    </IonToolbar>
-                </IonFooter>
             </IonModal>
             <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
 

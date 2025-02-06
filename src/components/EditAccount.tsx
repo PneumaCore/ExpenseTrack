@@ -1,7 +1,7 @@
 import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
-import { faCoins, faCreditCard, faHandHoldingDollar, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
+import { faCoins, faCreditCard, faFloppyDisk, faHandHoldingDollar, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faTrashCan, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IonAlert, IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
+import { IonAlert, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
 import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { chevronBack } from "ionicons/icons";
 import { useEffect, useState } from "react";
@@ -219,6 +219,16 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
                     <IonButton slot="start" onClick={onClose} fill='clear'>
                         <IonIcon icon={chevronBack}></IonIcon>
                     </IonButton>
+
+                    {/* Botón para guardar la cuenta */}
+                    <IonButton slot="end" fill="clear" onClick={handleSaveAccount}>
+                        <FontAwesomeIcon icon={faFloppyDisk} />
+                    </IonButton>
+
+                    {/* Botón para eliminar la cuenta */}
+                    <IonButton slot="end" className='handle-delete-account-button' color='danger' fill="clear" onClick={handleDeleteAccount}>
+                        <FontAwesomeIcon icon={faTrashCan} />
+                    </IonButton>
                 </IonToolbar>
             </IonHeader>
             <IonContent>
@@ -304,18 +314,6 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
                     </IonRow>
                 </IonGrid>
             </IonContent>
-            <IonFooter>
-                <IonToolbar>
-                    <div className='add-account-footer'>
-
-                        {/* Botón para guardar la cuenta */}
-                        <IonButton onClick={handleSaveAccount}>Guardar cuenta</IonButton>
-
-                        {/* Botón para eliminar la cuenta */}
-                        <IonButton className='handle-delete-account-button' color='danger' onClick={handleDeleteAccount}>Eliminar cuenta</IonButton>
-                    </div>
-                </IonToolbar>
-            </IonFooter>
         </IonModal >
     );
 }

@@ -1,5 +1,7 @@
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { faFloppyDisk, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import ImageCompression from 'browser-image-compression';
 import { getAuth } from 'firebase/auth';
 import { collection, deleteDoc, doc, getDoc, onSnapshot, or, query, Timestamp, updateDoc, where } from 'firebase/firestore';
@@ -326,6 +328,16 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
                         <IonButton slot="start" onClick={onClose} fill='clear'>
                             <IonIcon icon={chevronBack}></IonIcon>
                         </IonButton>
+
+                        {/* Botón para guardar la transacción */}
+                        <IonButton slot='end' fill='clear' onClick={handleSaveTransaction}>
+                            <FontAwesomeIcon icon={faFloppyDisk} />
+                        </IonButton>
+
+                        {/* Botón para eliminar la cuenta */}
+                        <IonButton slot='end' className='handle-delete-transaction-button' color='danger' fill='clear' onClick={handleDeleteTransaction}>
+                            <FontAwesomeIcon icon={faTrashCan} />
+                        </IonButton>
                     </IonToolbar>
                 </IonHeader>
                 <IonContent>
@@ -429,20 +441,8 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
                         <IonDatetime locale='es-ES' value={selectedDate} onIonChange={handleDateChange} max={new Date().toISOString().split('T')[0]} />
                         <IonButton expand="block" onClick={() => setDatePickerOpen(false)}>Cerrar</IonButton>
                     </IonPopover>
-
+                    
                 </IonContent>
-                <IonFooter>
-                    <IonToolbar>
-                        <div className='add-transaction-footer'>
-
-                            {/* Botón para guardar la transacción */}
-                            <IonButton onClick={handleSaveTransaction}>Guardar transacción</IonButton>
-
-                            {/* Botón para eliminar la cuenta */}
-                            <IonButton className='handle-delete-transaction-button' color='danger' onClick={handleDeleteTransaction}>Eliminar transacción</IonButton>
-                        </div>
-                    </IonToolbar>
-                </IonFooter>
             </IonModal>
             <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
         </>

@@ -1,7 +1,7 @@
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faFloppyDisk, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrashCan, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonAlert, IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { chevronBack } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
@@ -219,6 +219,16 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                         <IonButton slot="start" onClick={onClose} fill='clear'>
                             <IonIcon icon={chevronBack}></IonIcon>
                         </IonButton>
+
+                        {/* Botón para guardar la categoría */}
+                        <IonButton slot='end' fill='clear' onClick={handleSaveCategory}>
+                            <FontAwesomeIcon icon={faFloppyDisk} />
+                        </IonButton>
+
+                        {/* Botón para eliminar la categoría */}
+                        <IonButton slot='end' className='handle-delete-button' color='danger' fill='clear' onClick={handleDeleteCategory}>
+                            <FontAwesomeIcon icon={faTrashCan} />
+                        </IonButton>
                     </IonToolbar>
                 </IonHeader>
                 <IonContent>
@@ -288,18 +298,6 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
                         </IonRow>
                     </IonGrid>
                 </IonContent>
-                <IonFooter>
-                    <IonToolbar>
-                        <div className='edit-category-footer'>
-
-                            {/* Botón para guardar la categoría */}
-                            <IonButton onClick={handleSaveCategory}>Guardar categoría</IonButton>
-
-                            {/* Botón para eliminar la categoría */}
-                            <IonButton className='handle-delete-button' color='danger' onClick={handleDeleteCategory}>Eliminar categoría</IonButton>
-                        </div>
-                    </IonToolbar>
-                </IonFooter>
             </IonModal>
             <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
         </>
