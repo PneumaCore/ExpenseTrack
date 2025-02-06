@@ -54,6 +54,18 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
     type: 'success' | 'error';
   }>({ isOpen: false, message: '', type: 'error' });
 
+  /* Al guardar la categoría en la base de datos, reseteamos a sus valores por defecto todos los campos del formulario */
+  const resetForm = () => {
+    setError('');
+    setShowAlert(false);
+    setType('gasto');
+    setName('');
+    setMensualBudget(0);
+    setIcon(faQuestion);
+    setColor('#A9A9A9');
+    setToastConfig({ isOpen: false, message: '', type: 'error' });
+  };
+
   const handleSaveCategory = async () => {
 
     /* Validamos que los datos sean válidos */
@@ -107,6 +119,7 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
       setToastConfig({ isOpen: true, message: 'Categoría añadida con éxito', type: 'success' });
 
       /* Cerramos el modal automáticamente al guardar la categoría */
+      resetForm();
       onClose();
 
     } catch (error) {

@@ -81,6 +81,19 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
         setDatePickerOpen(false);
     };
 
+    /* Al guardar la transferencia en la base de datos, reseteamos a sus valores por defecto todos los campos del formulario */
+    const resetForm = () => {
+        setError('');
+        setShowAlert(false);
+        setSelectedSourceAccount(undefined);
+        setSelectedDestinationAccount(undefined);
+        setAmount(0);
+        setSelectedDate('');
+        setDatePickerOpen(false);
+        setNote('');
+        setToastConfig({ isOpen: false, message: '', type: 'error' });
+    };
+
     const handleSaveTransfer = async () => {
 
         /* Buscamos las cuentas de origen y de destino en la base de datos */
@@ -188,6 +201,8 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
 
             /* Cerramos el modal automáticamente al guardar la transferencia */
             setToastConfig({ isOpen: true, message: 'Transferencia añadida con éxito', type: 'success' });
+
+            resetForm();
             onClose();
         } catch (error) {
             setToastConfig({ isOpen: true, message: 'No se pudo añadir la transferencia', type: 'error' });

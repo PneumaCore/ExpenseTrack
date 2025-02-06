@@ -70,6 +70,18 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
         fetchCurrencies();
     }, []);
 
+    /* Al guardar la cuenta en la base de datos, reseteamos a sus valores por defecto todos los campos del formulario */
+    const resetForm = () => {
+        setError('');
+        setShowAlert(false);
+        setName('');
+        setSelectedCurrency(undefined);
+        setBalance(0);
+        setIcon(faWallet);
+        setColor('#395659');
+        setToastConfig({ isOpen: false, message: '', type: 'error' });
+    };
+
     const handleSaveAccount = async () => {
 
         /* Validamos que los datos sean válidos */
@@ -117,6 +129,7 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
             setToastConfig({ isOpen: true, message: 'Cuenta añadida con éxito', type: 'success' });
 
             /* Cerramos el modal automáticamente al guardar la cuenta */
+            resetForm();
             onClose();
 
         } catch (error) {

@@ -178,6 +178,21 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
     setImages(prevImages => prevImages.filter((_, i) => i !== index));
   };
 
+  /* Al guardar la transacción en la base de datos, reseteamos a sus valores por defecto todos los campos del formulario */
+  const resetForm = () => {
+    setError('');
+    setShowAlert(false);
+    setType('gasto');
+    setSelectedAccount(undefined);
+    setAmount(0);
+    setSelectedDate('');
+    setDatePickerOpen(false);
+    setNote('');
+    setSelectedCategory(undefined);
+    setImages([]);
+    setToastConfig({ isOpen: false, message: '', type: 'error' });
+  };
+
   /* Guardamos la transacción en la base de datos */
   const handleSaveTransaction = async () => {
 
@@ -269,6 +284,7 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
       setToastConfig({ isOpen: true, message: 'Transacción añadida con éxito', type: 'success' });
 
       /* Cerramos el modal automáticamente al guardar la transacción */
+      resetForm();
       onClose();
     } catch (error) {
       setToastConfig({ isOpen: true, message: 'No se pudo añadir la transacción', type: 'error' });
