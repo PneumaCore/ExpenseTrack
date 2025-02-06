@@ -1,9 +1,11 @@
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonFab, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import ImageCompression from 'browser-image-compression';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, onSnapshot, or, query, runTransaction, Timestamp, where } from 'firebase/firestore';
-import { addOutline, calendar, chevronBack, closeCircle } from 'ionicons/icons';
+import { addOutline, chevronBack, closeCircle } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
 import './AddTransaction.css';
@@ -346,7 +348,9 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
                 <IonInput label='Fecha' labelPlacement='floating' placeholder='Selecciona una fecha' readonly value={selectedDate}></IonInput>
 
                 {/* Abrir el popover para seleccionar la fecha de la transacción */}
-                <IonIcon slot='end' icon={calendar} onClick={() => setDatePickerOpen(true)}></IonIcon>
+                <div slot='end'>
+                  <FontAwesomeIcon icon={faCalendar} onClick={() => setDatePickerOpen(true)}></FontAwesomeIcon>
+                </div>
               </IonItem>
             </IonCol>
           </IonRow>
