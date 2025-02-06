@@ -8,6 +8,7 @@ import { chevronBack } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { database } from "../configurations/firebase";
 import "./AddAccount.css";
+import GlobalToast from "./GlobalToast";
 
 interface AddAccountProps {
     isOpen: boolean;
@@ -124,106 +125,109 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
     };
 
     return (
-        <IonModal isOpen={isOpen} onDidDismiss={onClose}>
-            <IonHeader>
-                <IonToolbar>
-                    <IonTitle>Añadir cuenta</IonTitle>
-                    <IonButton slot="start" onClick={onClose} fill='clear'>
-                        <IonIcon icon={chevronBack}></IonIcon>
-                    </IonButton>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent>
-                {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} header={'Datos inválidos'} message={error} buttons={['Aceptar']} />)}
+        <>
+            <IonModal isOpen={isOpen} onDidDismiss={onClose}>
+                <IonHeader>
+                    <IonToolbar>
+                        <IonTitle>Añadir cuenta</IonTitle>
+                        <IonButton slot="start" onClick={onClose} fill='clear'>
+                            <IonIcon icon={chevronBack}></IonIcon>
+                        </IonButton>
+                    </IonToolbar>
+                </IonHeader>
+                <IonContent>
+                    {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} header={'Datos inválidos'} message={error} buttons={['Aceptar']} />)}
 
-                <IonGrid>
+                    <IonGrid>
 
-                    {/* Campo para añadir el nombre de la cuenta */}
-                    <IonRow>
-                        <IonCol size="12" size-md="8" offset-md="2">
-                            <IonItem>
-                                <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonInput={(e) => setName(e.detail.value!)} required />
-                            </IonItem>
-                        </IonCol>
-                    </IonRow>
+                        {/* Campo para añadir el nombre de la cuenta */}
+                        <IonRow>
+                            <IonCol size="12" size-md="8" offset-md="2">
+                                <IonItem>
+                                    <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonInput={(e) => setName(e.detail.value!)} required />
+                                </IonItem>
+                            </IonCol>
+                        </IonRow>
 
-                    {/* Campo para seleccionar la divisa de la cuenta */}
-                    <IonRow>
-                        <IonCol size="12" size-md="8" offset-md="2">
-                            <IonItem>
-                                <IonSelect interface="popover" label="Divisa" labelPlacement="floating" placeholder="Selecciona una divisa" value={selectedCurrency} onIonChange={(e) => setSelectedCurrency(e.detail.value)}>
-                                    {currencies.map(currency => (
-                                        <IonSelectOption key={currency.code} value={currency.code}>
-                                            <IonLabel>{currency.name} ({currency.code})</IonLabel>
-                                        </IonSelectOption>
-                                    ))}
-                                </IonSelect>
-                            </IonItem>
-                        </IonCol>
-                    </IonRow>
-
-                    {/* Campo para introducir el balance de la cuenta */}
-                    <IonRow>
-                        <IonCol size="12" size-md="8" offset-md="2" className='account-setup-currency'>
-                            <IonItem style={{ width: '100%' }}>
-                                <IonInput placeholder='0' type="number" value={balance} onIonInput={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
-                            </IonItem>
-                        </IonCol>
-                    </IonRow>
-
-                    {/* Campo para la selección de icono de la cuenta */}
-                    <IonRow>
-                        <IonCol size="12" size-md="8" offset-md="2">
-                            <IonItem>
-                                <div className="account-icon-picker-container">
-                                    <IonLabel>Selecciona un icono</IonLabel>
-                                    <div>
-                                        {icons.map((faIcon, index) => (
-                                            <div
-                                                key={index}
-                                                onClick={() => setIcon(faIcon)}
-                                                className={`account-icon-container ${icon === faIcon ? 'selected' : ''}`}
-                                            >
-                                                <FontAwesomeIcon icon={faIcon} />
-                                            </div>
+                        {/* Campo para seleccionar la divisa de la cuenta */}
+                        <IonRow>
+                            <IonCol size="12" size-md="8" offset-md="2">
+                                <IonItem>
+                                    <IonSelect interface="popover" label="Divisa" labelPlacement="floating" placeholder="Selecciona una divisa" value={selectedCurrency} onIonChange={(e) => setSelectedCurrency(e.detail.value)}>
+                                        {currencies.map(currency => (
+                                            <IonSelectOption key={currency.code} value={currency.code}>
+                                                <IonLabel>{currency.name} ({currency.code})</IonLabel>
+                                            </IonSelectOption>
                                         ))}
+                                    </IonSelect>
+                                </IonItem>
+                            </IonCol>
+                        </IonRow>
+
+                        {/* Campo para introducir el balance de la cuenta */}
+                        <IonRow>
+                            <IonCol size="12" size-md="8" offset-md="2" className='account-setup-currency'>
+                                <IonItem style={{ width: '100%' }}>
+                                    <IonInput placeholder='0' type="number" value={balance} onIonInput={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
+                                </IonItem>
+                            </IonCol>
+                        </IonRow>
+
+                        {/* Campo para la selección de icono de la cuenta */}
+                        <IonRow>
+                            <IonCol size="12" size-md="8" offset-md="2">
+                                <IonItem>
+                                    <div className="account-icon-picker-container">
+                                        <IonLabel>Selecciona un icono</IonLabel>
+                                        <div>
+                                            {icons.map((faIcon, index) => (
+                                                <div
+                                                    key={index}
+                                                    onClick={() => setIcon(faIcon)}
+                                                    className={`account-icon-container ${icon === faIcon ? 'selected' : ''}`}
+                                                >
+                                                    <FontAwesomeIcon icon={faIcon} />
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
 
-                            </IonItem>
-                        </IonCol>
-                    </IonRow>
+                                </IonItem>
+                            </IonCol>
+                        </IonRow>
 
-                    {/* Campo para la selección de color de la cuenta */}
-                    <IonRow>
-                        <IonCol size="12" size-md="8" offset-md="2">
-                            <IonItem>
-                                <div className="account-color-picker-container">
-                                    <IonLabel>Selecciona un color</IonLabel>
-                                    <div>
-                                        {colors.map((colorOption, index) => (
-                                            <div
-                                                key={index}
-                                                onClick={() => setColor(colorOption)}
-                                                className={`account-color-container ${color === colorOption ? 'selected' : ''}`}
-                                                style={{ backgroundColor: colorOption }}
-                                            />
-                                        ))}
+                        {/* Campo para la selección de color de la cuenta */}
+                        <IonRow>
+                            <IonCol size="12" size-md="8" offset-md="2">
+                                <IonItem>
+                                    <div className="account-color-picker-container">
+                                        <IonLabel>Selecciona un color</IonLabel>
+                                        <div>
+                                            {colors.map((colorOption, index) => (
+                                                <div
+                                                    key={index}
+                                                    onClick={() => setColor(colorOption)}
+                                                    className={`account-color-container ${color === colorOption ? 'selected' : ''}`}
+                                                    style={{ backgroundColor: colorOption }}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            </IonItem>
-                        </IonCol>
-                    </IonRow>
-                </IonGrid>
-                <IonFab slot="fixed" vertical="bottom" horizontal="center">
-                    <div>
+                                </IonItem>
+                            </IonCol>
+                        </IonRow>
+                    </IonGrid>
+                    <IonFab slot="fixed" vertical="bottom" horizontal="center">
+                        <div>
 
-                        {/* Botón para guardar la cuenta */}
-                        <IonButton className="category-fab-button" color={"medium"} shape="round" onClick={handleSaveAccount}>Añadir</IonButton>
-                    </div>
-                </IonFab>
-            </IonContent>
-        </IonModal >
+                            {/* Botón para guardar la cuenta */}
+                            <IonButton className="category-fab-button" color={"medium"} shape="round" onClick={handleSaveAccount}>Añadir</IonButton>
+                        </div>
+                    </IonFab>
+                </IonContent>
+            </IonModal >
+            <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
+        </>
     );
 }
 
