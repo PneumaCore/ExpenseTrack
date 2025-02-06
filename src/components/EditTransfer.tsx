@@ -329,7 +329,7 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                         <IonRow>
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
-                                    <IonTextarea label='Nota' labelPlacement='floating' placeholder='Introduce una descripción' value={note} onIonInput={(e) => setNote(e.detail.value!)}></IonTextarea>
+                                    <IonTextarea label='Nota' labelPlacement='floating' placeholder='Introduce una descripción' rows={5} value={note} onIonInput={(e) => setNote(e.detail.value!)}></IonTextarea>
                                 </IonItem>
                             </IonCol>
                         </IonRow>
