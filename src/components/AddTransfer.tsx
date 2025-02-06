@@ -1,6 +1,6 @@
 import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonFab, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import axios from 'axios';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, onSnapshot, query, setDoc, Timestamp, updateDoc, where } from 'firebase/firestore';
@@ -279,16 +279,14 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
                         <IonDatetime locale='es-ES' value={selectedDate} onIonChange={handleDateChange} max={new Date().toISOString().split('T')[0]} />
                         <IonButton expand="block" onClick={() => setDatePickerOpen(false)}>Cerrar</IonButton>
                     </IonPopover>
-                </IonContent>
-                <IonFooter>
-                    <IonToolbar>
-                        <div className='add-transaction-footer'>
+                    <IonFab slot="fixed" vertical="bottom" horizontal="center">
+                        <div>
 
                             {/* Botón para guardar la transacción */}
-                            <IonButton onClick={handleSaveTransfer}>Guardar transferencia</IonButton>
+                            <IonButton className='transfer-fab-button' color={"medium"} shape="round" onClick={handleSaveTransfer}>Añadir</IonButton>
                         </div>
-                    </IonToolbar>
-                </IonFooter>
+                    </IonFab>
+                </IonContent>
             </IonModal>
             <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
 

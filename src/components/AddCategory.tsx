@@ -1,7 +1,7 @@
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faDollarSign, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonAlert, IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCol, IonContent, IonFab, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { chevronBack } from 'ionicons/icons';
@@ -202,16 +202,14 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
               </IonCol>
             </IonRow>
           </IonGrid>
-        </IonContent>
-        <IonFooter>
-          <IonToolbar>
-            <div className='add-category-footer'>
+          <IonFab slot="fixed" vertical="bottom" horizontal="center">
+            <div>
 
               {/* Botón para guardar la categoría */}
-              <IonButton onClick={handleSaveCategory}>Guardar categoría</IonButton>
+              <IonButton color={"medium"} shape='round' onClick={handleSaveCategory}>Añadir</IonButton>
             </div>
-          </IonToolbar>
-        </IonFooter>
+          </IonFab>
+        </IonContent>
       </IonModal>
       <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
     </>

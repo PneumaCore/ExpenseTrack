@@ -1,13 +1,13 @@
-import { IonAlert, IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
+import { faCoins, faCreditCard, faHandHoldingDollar, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IonAlert, IonButton, IonCol, IonContent, IonFab, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from "@ionic/react";
+import { getAuth } from "firebase/auth";
+import { collection, doc, setDoc } from "firebase/firestore";
 import { chevronBack } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { database } from "../configurations/firebase";
 import "./AddAccount.css";
-import { faCoins, faCreditCard, faHandHoldingDollar, faLandmark, faMoneyBill, faPiggyBank, faReceipt, faSackDollar, faScaleBalanced, faStamp, faVault, faWallet } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBitcoin, faEthereum } from "@fortawesome/free-brands-svg-icons";
-import { getAuth } from "firebase/auth";
 
 interface AddAccountProps {
     isOpen: boolean;
@@ -215,16 +215,14 @@ const AddAccount: React.FC<AddAccountProps> = ({ isOpen, onClose }) => {
                         </IonCol>
                     </IonRow>
                 </IonGrid>
-            </IonContent>
-            <IonFooter>
-                <IonToolbar>
-                    <div className='add-account-footer'>
+                <IonFab slot="fixed" vertical="bottom" horizontal="center">
+                    <div>
 
                         {/* Botón para guardar la cuenta */}
-                        <IonButton onClick={handleSaveAccount}>Guardar cuenta</IonButton>
+                        <IonButton className="category-fab-button" color={"medium"} shape="round" onClick={handleSaveAccount}>Añadir</IonButton>
                     </div>
-                </IonToolbar>
-            </IonFooter>
+                </IonFab>
+            </IonContent>
         </IonModal >
     );
 }

@@ -48,9 +48,6 @@
     transform: scale(1.1);
 }
 
-.add-account-footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
+.category-fab-button {
+    --box-shadow: none;
+}	

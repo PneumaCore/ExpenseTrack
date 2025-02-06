@@ -1,5 +1,5 @@
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonFab, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
 import ImageCompression from 'browser-image-compression';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, onSnapshot, or, query, runTransaction, Timestamp, where } from 'firebase/firestore';
@@ -385,16 +385,14 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
             <IonDatetime locale='es-ES' value={selectedDate} onIonChange={handleDateChange} max={new Date().toISOString().split('T')[0]} />
             <IonButton expand="block" onClick={() => setDatePickerOpen(false)}>Cerrar</IonButton>
           </IonPopover>
-        </IonContent>
-        <IonFooter>
-          <IonToolbar>
-            <div className='add-transaction-footer'>
+          <IonFab slot="fixed" vertical="bottom" horizontal="center">
+            <div>
 
               {/* Botón para guardar la transacción */}
-              <IonButton onClick={handleSaveTransaction}>Guardar transacción</IonButton>
+              <IonButton className='add-transaction-fab-button' color={"medium"} shape='round' onClick={handleSaveTransaction}>Añadir</IonButton>
             </div>
-          </IonToolbar>
-        </IonFooter>
+          </IonFab>
+        </IonContent>
       </IonModal>
       <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
     </>
