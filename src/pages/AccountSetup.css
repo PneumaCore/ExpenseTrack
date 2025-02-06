@@ -35,11 +35,8 @@
     border-left: 4px solid #007bff;
 }
 
-.account-setup-footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+.account-setup-fab-button {
+    --box-shadow: none;
 }
 
 .account-setup-balance-input {

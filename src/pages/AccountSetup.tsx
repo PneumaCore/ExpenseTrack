@@ -1,8 +1,8 @@
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { IonAvatar, IonButton, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonImg, IonInput, IonItem, IonLabel, IonList, IonLoading, IonPage, IonRow, IonSearchbar, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAvatar, IonButton, IonCol, IonContent, IonFab, IonGrid, IonImg, IonInput, IonItem, IonLabel, IonList, IonLoading, IonPage, IonRow, IonSearchbar } from '@ionic/react';
 import ImageCompression from 'browser-image-compression';
 import { getAuth } from 'firebase/auth';
-import { collection, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { database } from '../configurations/firebase';
@@ -159,11 +159,6 @@ const AccountSetup: React.FC = () => {
 
   return (
     <IonPage id="main-content">
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Account Setup</IonTitle>
-        </IonToolbar>
-      </IonHeader>
 
       {/* Pantalla con descripción y presentación breve sobre la aplicación */}
       {page === 1 && (
@@ -188,14 +183,12 @@ const AccountSetup: React.FC = () => {
                 </IonCol>
               </IonRow>
             </IonGrid>
-          </IonContent>
-          <IonFooter>
-            <IonToolbar>
-              <div className='account-setup-footer'>
-                <IonButton onClick={() => setPage(2)}>Comenzar</IonButton>
+            <IonFab slot="fixed" vertical="bottom" horizontal="center">
+              <div className='account-setup-fab-button'>
+                <IonButton color={"medium"} shape='round' onClick={() => setPage(2)}>Comenzar</IonButton>
               </div>
-            </IonToolbar>
-          </IonFooter>
+            </IonFab>
+          </IonContent>
         </>
       )}
 
@@ -230,14 +223,12 @@ const AccountSetup: React.FC = () => {
                 </IonCol>
               </IonRow>
             </IonGrid>
-          </IonContent>
-          <IonFooter>
-            <IonToolbar>
-              <div className='account-setup-footer'>
-                <IonButton onClick={() => setPage(3)}>Siguiente</IonButton>
+            <IonFab slot="fixed" vertical="bottom" horizontal="center">
+              <div className='account-setup-fab-button'>
+                <IonButton color={"medium"} shape="round" onClick={() => setPage(3)}>Siguiente</IonButton>
               </div>
-            </IonToolbar>
-          </IonFooter>
+            </IonFab>
+          </IonContent>
         </>
       )}
 
@@ -280,14 +271,12 @@ const AccountSetup: React.FC = () => {
                 </IonCol>
               </IonRow>
             </IonGrid>
-          </IonContent>
-          <IonFooter>
-            <IonToolbar>
-              <div className='account-setup-footer'>
-                <IonButton onClick={() => setPage(4)}>Siguiente</IonButton>
+            <IonFab slot="fixed" vertical="bottom" horizontal="center">
+              <div className='account-setup-fab-button'>
+                <IonButton color={"medium"} shape='round' onClick={() => setPage(4)}>Siguiente</IonButton>
               </div>
-            </IonToolbar>
-          </IonFooter>
+            </IonFab>
+          </IonContent>
         </>
       )}
 
@@ -315,14 +304,12 @@ const AccountSetup: React.FC = () => {
                 </IonCol>
               </IonRow>
             </IonGrid>
-          </IonContent>
-          <IonFooter>
-            <IonToolbar>
-              <div className='account-setup-footer'>
-                <IonButton onClick={handleSaveAccountSetup}>Finalizar</IonButton>
+            <IonFab slot="fixed" vertical="bottom" horizontal="center">
+              <div className='account-setup-fab-button'>
+                <IonButton color={"medium"} shape='round' onClick={handleSaveAccountSetup}>Finalizar</IonButton>
               </div>
-            </IonToolbar>
-          </IonFooter>
+            </IonFab>
+          </IonContent>
         </>
       )}
     </IonPage>
