@@ -5,18 +5,34 @@ import { faCommentDollar, faDatabase, faUser } from '@fortawesome/free-solid-svg
 import { useHistory } from 'react-router';
 import { useEffect, useState } from 'react';
 import { getAuth } from 'firebase/auth';
-import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { collection, doc, getDocs, onSnapshot, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import { database } from '../configurations/firebase';
+import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import * as XLSX from 'xlsx';
 
 interface Currency {
     code: string;
     name: string;
 }
 
+interface Transaction {
+    transaction_id: string,
+    user_id: string,
+    type: string,
+    category_id: string,
+    account_id: string,
+    amount: number,
+    currency: string,
+    date: Timestamp,
+    note: string,
+    image: string[]
+}
+
 const Settings: React.FC = () => {
     const history = useHistory();
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [preferredCurrency, setPreferredCurrency] = useState<string>("EUR");
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [alert, setAlert] = useState<string>('');
     const [showAlert, setShowAlert] = useState(false);
 
@@ -66,6 +82,89 @@ const Settings: React.FC = () => {
 
         fetchCurrencies();
     }, []);
+
+    /* Leemos las transacciones realizadas por el usuario de la base de datos */
+    useEffect(() => {
+        const fetchTransactions = () => {
+            try {
+
+                /* Obtenemos los datos del usuario autenticado */
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                /* Obtenemos las categorías asociadas al usuario autenticado */
+                const transactionsRef = collection(database, 'transactions');
+                const q = query(transactionsRef, where('user_id', '==', currentUser?.uid), orderBy('date', 'desc'));
+
+                const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const fetchedTransactions = querySnapshot.docs.map((doc) => ({
+                        ...doc.data(),
+                        transaction_id: doc.id,
+                    })) as Transaction[];
+                    setTransactions(fetchedTransactions);
+                });
+                return unsubscribe;
+
+            } catch (error) {
+                console.error("Error al obtener las transacciones: ", error);
+            }
+        };
+        const unsubscribe = fetchTransactions();
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, []);
+
+    /* Exportamos los datos de las cuentas, transacciones y transferencias */
+    const exportToExcel = async () => {
+
+        if (transactions.length === 0) {
+            setAlert("No hay transacciones para exportar");
+            setShowAlert(true);
+            return;
+        }
+
+        /* Pedimos permisos de almacenamiento al usuario */
+        await Filesystem.requestPermissions();
+
+        /* Formateamos el nombre de las columnas y los datos de las transferencias */
+        const formattedTransactions = transactions.map(transaction => ({
+            ID: transaction.transaction_id,
+            Tipo: transaction.type,
+            Categoría: transaction.category_id,
+            Cuenta: transaction.account_id,
+            Monto: transaction.amount,
+            Divisa: transaction.currency,
+            Fecha: new Date(transaction.date.toDate()).toLocaleDateString(),
+            Nota: transaction.note
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(formattedTransactions);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Transacciones");
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const uint8Array = new Uint8Array(excelBuffer);
+
+        try {
+            let binary = '';
+            uint8Array.forEach(byte => binary += String.fromCharCode(byte));
+            const base64Data = btoa(binary);
+
+            await Filesystem.writeFile({
+                path: 'Documents/ExpenseTrack/transacciones.xlsx',
+                data: base64Data,
+                directory: Directory.ExternalStorage
+            });
+
+            setAlert("Archivo exportado correctamente en Documentos/ExpenseTrack");
+            setShowAlert(true);
+        } catch (error) {
+            console.error("Error al guardar el archivo:", error);
+            setAlert("No se ha podido exportar el archivo correctamente");
+            setShowAlert(true);
+        }
+    };
 
     /* Guardamos la divisa seleccionada en la base de datos */
     const handleSaveProfile = async (currency: string) => {
@@ -123,7 +222,7 @@ const Settings: React.FC = () => {
                             <div slot="start">
                                 <FontAwesomeIcon icon={faDatabase}></FontAwesomeIcon>
                             </div>
-                            <IonLabel>Datos</IonLabel>
+                            <IonLabel onClick={exportToExcel}>Exportar datos</IonLabel>
                         </IonItem>
                         <IonItem>
                             <div slot="start">
