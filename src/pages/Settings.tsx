@@ -1,14 +1,14 @@
-import { IonAlert, IonButtons, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
-import './Settings.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Directory, Filesystem } from '@capacitor/filesystem';
 import { faCommentDollar, faDatabase, faUser } from '@fortawesome/free-solid-svg-icons';
-import { useHistory } from 'react-router';
-import { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IonAlert, IonButtons, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
-import { collection, doc, getDocs, onSnapshot, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
-import { database } from '../configurations/firebase';
-import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
+import { collection, doc, getDocs, onSnapshot, or, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import * as XLSX from 'xlsx';
+import { database } from '../configurations/firebase';
+import './Settings.css';
 
 interface Currency {
     code: string;
@@ -28,13 +28,50 @@ interface Transaction {
     image: string[]
 }
 
+interface Transfer {
+    transfer_id: string,
+    user_id: string,
+    source_account_id: string,
+    destination_account_id: string,
+    amount: number,
+    converted_amount: number,
+    source_currency: string,
+    destination_currency: string,
+    date: Timestamp,
+    note: string
+};
+
+interface Account {
+    account_id: string,
+    user_id: string,
+    name: string,
+    currency: string,
+    balance: number,
+    icon: string,
+    color: string
+}
+
+interface Category {
+    category_id: string,
+    user_id: string,
+    name: string,
+    mensualBudget: number,
+    type: string,
+    icon: string,
+    color: string
+}
+
 const Settings: React.FC = () => {
     const history = useHistory();
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [preferredCurrency, setPreferredCurrency] = useState<string>("EUR");
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [transfers, setTransfers] = useState<Transfer[]>([]);
+    const [accounts, setAccounts] = useState<Account[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [alert, setAlert] = useState<string>('');
     const [showAlert, setShowAlert] = useState(false);
+    const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
 
     /* Leemos las divisa preferida del usuario de la base de datos */
     useEffect(() => {
@@ -115,8 +152,108 @@ const Settings: React.FC = () => {
         };
     }, []);
 
-    /* Exportamos los datos de las cuentas, transacciones y transferencias */
-    const exportToExcel = async () => {
+    /* Leemos las transferencias del usuario de la base de datos */
+    useEffect(() => {
+        const fetchTransfers = () => {
+            try {
+
+                /* Obtenemos los datos del usuario autenticado */
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                /* Obtenemos las transferencias asociadas al usuario autenticado */
+                const transfersRef = collection(database, 'transfers');
+                const q = query(transfersRef, where('user_id', '==', currentUser?.uid), orderBy('date', 'desc'));
+
+                const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const fetchedTransfers = querySnapshot.docs.map((doc) => ({
+                        ...doc.data(),
+                        transfer_id: doc.id,
+                    })) as Transfer[];
+                    setTransfers(fetchedTransfers);
+                });
+                return unsubscribe;
+
+            } catch (error) {
+                console.error("Error al obtener las transferencias: ", error);
+            }
+        };
+        const unsubscribe = fetchTransfers();
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, []);
+
+    /* Leemos las cuentas del usuario de la base de datos */
+    useEffect(() => {
+        const fetchAccounts = () => {
+            try {
+
+                /* Obtenemos los datos del usuario autenticado */
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                /* Obtenemos las cuentas asociadas al usuario autenticado */
+                const transactionsRef = collection(database, 'accounts');
+                const q = query(transactionsRef, where('user_id', '==', currentUser?.uid));
+
+                const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const fetchedAccounts = querySnapshot.docs.map((doc) => ({
+                        ...doc.data(),
+                        account_id: doc.id,
+                    })) as Account[];
+                    setAccounts(fetchedAccounts);
+                });
+                return unsubscribe;
+
+            } catch (error) {
+                console.error("Error al obtener las transacciones: ", error);
+            }
+        };
+        const unsubscribe = fetchAccounts();
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, []);
+
+    useEffect(() => {
+        const fetchCategories = () => {
+            try {
+
+                /* Obtenemos los datos del usuario autenticado */
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                /* Obtenemos las categorías asociadas al usuario autenticado y los globales */
+                const categoriesRef = collection(database, 'categories');
+                const q = query(
+                    categoriesRef,
+                    or(
+                        where('user_id', '==', currentUser?.uid),
+                        where('user_id', '==', null)
+                    )
+                );
+
+                const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const fetchedCategories = querySnapshot.docs.map((doc) => ({
+                        ...doc.data(),
+                        category_id: doc.id,
+                    })) as Category[];
+                    setCategories(fetchedCategories);
+                });
+                return unsubscribe;
+            } catch (error) {
+                console.error("Error al obtener las categorías: ", error);
+            }
+        };
+        const unsubscribe = fetchCategories();
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, []);
+
+    /* Exportamos los datos de las transacciones */
+    const exportTransactionsToExcel = async () => {
 
         if (transactions.length === 0) {
             setAlert("No hay transacciones para exportar");
@@ -129,30 +266,98 @@ const Settings: React.FC = () => {
 
         /* Formateamos el nombre de las columnas y los datos de las transferencias */
         const formattedTransactions = transactions.map(transaction => ({
-            ID: transaction.transaction_id,
-            Tipo: transaction.type,
-            Categoría: transaction.category_id,
-            Cuenta: transaction.account_id,
-            Monto: transaction.amount,
-            Divisa: transaction.currency,
-            Fecha: new Date(transaction.date.toDate()).toLocaleDateString(),
-            Nota: transaction.note
+            "Fecha": new Date(transaction.date.toDate()).toLocaleDateString(),
+            "Tipo": transaction.type,
+            "Categoría": categories.find(cat => cat.category_id === transaction.category_id)?.name,
+            "Cuenta": accounts.find(acc => acc.account_id === transaction.account_id)?.name,
+            "Monto": transaction.amount,
+            "Divisa": transaction.currency,
+            "Nota": transaction.note
         }));
 
+        /* Creamos el archivo excel */
         const ws = XLSX.utils.json_to_sheet(formattedTransactions);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Transacciones");
 
+        /* Convertimos el archivo excel a un array binario para que sea legible */
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
         const uint8Array = new Uint8Array(excelBuffer);
 
         try {
+
+            /* Pasamos las cadenas binarias a base64 para que pueda almacenarse en sistemas operativos Android */
             let binary = '';
             uint8Array.forEach(byte => binary += String.fromCharCode(byte));
             const base64Data = btoa(binary);
 
+            /* Generamos la fecha actual y la añadimos al nombre del archivo */
+            const date = new Date().toISOString().split('T')[0];
+            const fileName = `expensetrack_transactions_${date}.xlsx`;
+
+            /* Almacenamos el archivo excel en la carpeta 'Documentos' que viene por defecto en Android */
             await Filesystem.writeFile({
-                path: 'Documents/ExpenseTrack/transacciones.xlsx',
+                path: `Documents/${fileName}`,
+                data: base64Data,
+                directory: Directory.ExternalStorage
+            });
+
+            setAlert("Archivo exportado correctamente en Documentos/ExpenseTrack");
+            setShowAlert(true);
+        } catch (error) {
+            console.error("Error al guardar el archivo:", error);
+            setAlert("No se ha podido exportar el archivo correctamente");
+            setShowAlert(true);
+        }
+    };
+
+    /* Exportamos los datos de las transacciones */
+    const exportTransfersToExcel = async () => {
+
+        if (transfers.length === 0) {
+            setAlert("No hay transferencias para exportar");
+            setShowAlert(true);
+            return;
+        }
+
+        /* Pedimos permisos de almacenamiento al usuario */
+        await Filesystem.requestPermissions();
+
+        /* Formateamos el nombre de las columnas y los datos de las transferencias */
+        const formattedTransfers = transfers.map(transfer => ({
+            "Fecha": new Date(transfer.date.toDate()).toLocaleDateString(),
+            "Cuenta origen": accounts.find(acc => acc.account_id === transfer.source_account_id)?.name,
+            "Divisa origen": transfer.source_currency,
+            "Cuenta destino": accounts.find(acc => acc.account_id === transfer.destination_account_id)?.name,
+            "Divisa destino": transfer.destination_currency,
+            "Monto": transfer.amount,
+            "Monto convertido": transfer.converted_amount,
+            "Nota": transfer.note
+        }));
+
+        /* Creamos el archivo excel */
+        const ws = XLSX.utils.json_to_sheet(formattedTransfers);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Transferencias");
+
+        /* Convertimos el archivo excel a un array binario para que sea legible */
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const uint8Array = new Uint8Array(excelBuffer);
+
+        try {
+
+            /* Pasamos las cadenas binarias a base64 para que pueda almacenarse en sistemas operativos Android */
+            let binary = '';
+            uint8Array.forEach(byte => binary += String.fromCharCode(byte));
+            const base64Data = btoa(binary);
+
+            /* Generamos la fecha actual y la añadimos al nombre del archivo */
+            const date = new Date().toISOString().split('T')[0];
+            const fileName = `expensetrack_transfers_${date}.xlsx`;
+
+            /* Almacenamos el archivo excel en la carpeta 'Documentos' que viene por defecto en Android */
+            await Filesystem.writeFile({
+                path: `Documents/${fileName}`,
                 data: base64Data,
                 directory: Directory.ExternalStorage
             });
@@ -210,6 +415,17 @@ const Settings: React.FC = () => {
             </IonHeader>
             <IonContent fullscreen>
                 {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} message={alert} buttons={['Aceptar']} />)}
+
+                <IonAlert
+                    isOpen={isExportAlertOpen}
+                    onDidDismiss={() => setIsExportAlertOpen(false)}
+                    header="¿Qué datos quieres exportar?"
+                    buttons={[
+                        { text: "Transacciones", handler: () => exportTransactionsToExcel() },
+                        { text: "Transferencias", handler: () => exportTransfersToExcel() },
+                        { text: "Cancelar", role: "cancel" }
+                    ]}
+                />
                 <IonGrid>
                     <IonList className='settings-list'>
                         <IonItem onClick={() => history.push('/profile', { from: window.location.pathname })}>
@@ -222,7 +438,7 @@ const Settings: React.FC = () => {
                             <div slot="start">
                                 <FontAwesomeIcon icon={faDatabase}></FontAwesomeIcon>
                             </div>
-                            <IonLabel onClick={exportToExcel}>Exportar datos</IonLabel>
+                            <IonLabel onClick={() => setIsExportAlertOpen(true)}>Exportar datos</IonLabel>
                         </IonItem>
                         <IonItem>
                             <div slot="start">
