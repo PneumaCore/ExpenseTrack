@@ -279,6 +279,7 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
             setToastConfig({ isOpen: true, message: 'Transacción editada con éxito', type: 'success' });
 
             /* Cerramos el modal automáticamente al editar la transacción */
+            setShowUpdateAlert(false);
             onClose();
         } catch (error) {
             setToastConfig({ isOpen: true, message: 'No se pudo editar la transacción', type: 'error' });
@@ -315,6 +316,7 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
             setToastConfig({ isOpen: true, message: 'Transacción eliminada con éxito', type: 'success' });
 
             /* Cerramos el modal automáticamente al eliminar la cuenta */
+            setShowDeleteAlert(false);
             onClose();
         } catch (error) {
             setToastConfig({ isOpen: true, message: 'No se pudo eliminar la transacción', type: 'error' });

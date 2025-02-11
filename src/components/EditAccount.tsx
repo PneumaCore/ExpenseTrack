@@ -155,6 +155,7 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
             setToastConfig({ isOpen: true, message: 'Cuenta editada con éxito', type: 'success' });
 
             /* Cerramos el modal automáticamente al editar la cuenta */
+            setShowUpdateAlert(false);
             onClose();
 
         } catch (error) {
@@ -207,6 +208,7 @@ const EditAccount: React.FC<EditAccountProps> = ({ isOpen, onClose, account }) =
             setToastConfig({ isOpen: true, message: 'Cuenta eliminada con éxito', type: 'success' });
 
             /* Cerramos el modal automáticamente al eliminar la cuenta */
+            setShowDeleteAlert(false);
             onClose();
         } catch (error) {
             setToastConfig({ isOpen: true, message: 'No se pudo eliminar la cuenta', type: 'error' });

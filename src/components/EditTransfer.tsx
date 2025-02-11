@@ -218,8 +218,10 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                 updateDoc(destinationAccountRef, { balance: updatedDestinationBalance }),
             ]);
 
-            /* Cerramos el modal automáticamente al editar la transferencia */
             setToastConfig({ isOpen: true, message: 'Transferencia editada con éxito', type: 'success' });
+
+            /* Cerramos el modal automáticamente al editar la transferencia */
+            setShowUpdateAlert(false);
             onClose();
         } catch (error) {
             setToastConfig({ isOpen: true, message: 'No se pudo editar la transferencia', type: 'error' });
@@ -239,8 +241,10 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
             /* Eliminamos la transferencia de la base de datos */
             await deleteDoc(transferRef);
 
-            /* Cerramos el modal automáticamente al eliminar la transferencia */
             setToastConfig({ isOpen: true, message: 'Transferencia eliminada con éxito', type: 'success' });
+
+            /* Cerramos el modal automáticamente al eliminar la transferencia */
+            setShowDeleteAlert(false);
             onClose();
         } catch (error) {
             setToastConfig({ isOpen: true, message: 'No se pudo eliminar la transferencia', type: 'error' });

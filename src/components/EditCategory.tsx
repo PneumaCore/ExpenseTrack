@@ -125,6 +125,7 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
             setToastConfig({ isOpen: true, message: 'Categoría editada con éxito', type: 'success' });
 
             /* Cerramos el modal automáticamente al editar la categoría */
+            setShowUpdateAlert(false);
             onClose();
 
         } catch (error) {
@@ -162,6 +163,7 @@ const EditCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose, category })
             setToastConfig({ isOpen: true, message: 'Categoría eliminada con éxito', type: 'success' });
 
             /* Cerramos el modal automáticamente al editar la categoría */
+            setShowDeleteAlert(false);
             onClose();
 
         } catch (error) {
