@@ -285,7 +285,6 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
                                 </IonItem>
                             </IonCol>
                         </IonRow>
-
                     </IonGrid>
 
                     {/* Popover para seleccionar la fecha de la transacción */}

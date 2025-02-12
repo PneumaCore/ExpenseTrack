@@ -337,7 +337,6 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                                 </IonItem>
                             </IonCol>
                         </IonRow>
-
                     </IonGrid>
 
                     {/* Popover para seleccionar la fecha de la transacción */}

@@ -340,64 +340,64 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
                 </IonItem>
               </IonCol>
             </IonRow>
-          </IonGrid>
 
-          {/* Campo para seleccionar la categoría de la transacción */}
-          <IonRow>
-            <IonCol size="12" size-md="8" offset-md="2">
-              <IonItem>
-                <IonSelect interface="popover" label="Categoría" labelPlacement="floating" placeholder="Selecciona una categoría" value={selectedCategory} onIonChange={(e) => setSelectedCategory(e.detail.value)}>
-                  {filteredCategories.map(category => (
-                    <IonSelectOption key={category.category_id} value={category.category_id}>
-                      {category.name}
-                    </IonSelectOption>
+            {/* Campo para seleccionar la categoría de la transacción */}
+            <IonRow>
+              <IonCol size="12" size-md="8" offset-md="2">
+                <IonItem>
+                  <IonSelect interface="popover" label="Categoría" labelPlacement="floating" placeholder="Selecciona una categoría" value={selectedCategory} onIonChange={(e) => setSelectedCategory(e.detail.value)}>
+                    {filteredCategories.map(category => (
+                      <IonSelectOption key={category.category_id} value={category.category_id}>
+                        {category.name}
+                      </IonSelectOption>
+                    ))}
+                  </IonSelect>
+                </IonItem>
+              </IonCol>
+            </IonRow>
+
+            {/* Campo para seleccionar la fecha de la transacción */}
+            <IonRow>
+              <IonCol size="12" size-md="8" offset-md="2">
+                <IonItem>
+                  <IonInput label='Fecha' labelPlacement='floating' placeholder='Selecciona una fecha' readonly value={selectedDate}></IonInput>
+
+                  {/* Abrir el popover para seleccionar la fecha de la transacción */}
+                  <div slot='end'>
+                    <FontAwesomeIcon icon={faCalendar} onClick={() => setDatePickerOpen(true)}></FontAwesomeIcon>
+                  </div>
+                </IonItem>
+              </IonCol>
+            </IonRow>
+
+            {/* Campo para añadir una nota o descripción de la transacción */}
+            <IonRow>
+              <IonCol size="12" size-md="8" offset-md="2">
+                <IonItem>
+                  <IonTextarea label='Nota' labelPlacement='floating' placeholder='Introduce una descripción' rows={5} value={note} onIonInput={(e) => setNote(e.detail.value!)}></IonTextarea>
+                </IonItem>
+              </IonCol>
+            </IonRow>
+
+            {/* Campo añadir fotos de la cámara o galería */}
+            <IonRow>
+              <IonCol size="12" size-md="8" offset-md="2">
+                <div className="image-container">
+                  {images.map((image, index) => (
+                    <div key={index} className="image-preview">
+                      <img src={image} alt={`Imagen ${index + 1}`} />
+                      <IonIcon icon={closeCircle} className="close-icon" onClick={() => removeImage(index)} />
+                    </div>
                   ))}
-                </IonSelect>
-              </IonItem>
-            </IonCol>
-          </IonRow>
-
-          {/* Campo para seleccionar la fecha de la transacción */}
-          <IonRow>
-            <IonCol size="12" size-md="8" offset-md="2">
-              <IonItem>
-                <IonInput label='Fecha' labelPlacement='floating' placeholder='Selecciona una fecha' readonly value={selectedDate}></IonInput>
-
-                {/* Abrir el popover para seleccionar la fecha de la transacción */}
-                <div slot='end'>
-                  <FontAwesomeIcon icon={faCalendar} onClick={() => setDatePickerOpen(true)}></FontAwesomeIcon>
+                  {images.length < 5 && (
+                    <div className="add-image-button" onClick={handlePhoto}>
+                      <IonIcon icon={addOutline} />
+                    </div>
+                  )}
                 </div>
-              </IonItem>
-            </IonCol>
-          </IonRow>
-
-          {/* Campo para añadir una nota o descripción de la transacción */}
-          <IonRow>
-            <IonCol size="12" size-md="8" offset-md="2">
-              <IonItem>
-                <IonTextarea label='Nota' labelPlacement='floating' placeholder='Introduce una descripción' rows={5} value={note} onIonInput={(e) => setNote(e.detail.value!)}></IonTextarea>
-              </IonItem>
-            </IonCol>
-          </IonRow>
-
-          {/* Campo añadir fotos de la cámara o galería */}
-          <IonRow>
-            <IonCol size="12" size-md="8" offset-md="2">
-              <div className="image-container">
-                {images.map((image, index) => (
-                  <div key={index} className="image-preview">
-                    <img src={image} alt={`Imagen ${index + 1}`} />
-                    <IonIcon icon={closeCircle} className="close-icon" onClick={() => removeImage(index)} />
-                  </div>
-                ))}
-                {images.length < 5 && (
-                  <div className="add-image-button" onClick={handlePhoto}>
-                    <IonIcon icon={addOutline} />
-                  </div>
-                )}
-              </div>
-            </IonCol>
-          </IonRow>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
 
           {/* Popover para seleccionar la fecha de la transacción */}
           {/* Cerrar el popover para seleccionar la fecha de la transacción */}
