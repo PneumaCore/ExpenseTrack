@@ -186,7 +186,7 @@ const Transfers: React.FC = () => {
 
                     {/* Filtramos el tipo de transferencia según el período */}
                     <IonRow>
-                        <IonCol size="12">
+                        <IonCol size="12" size-md="8" offset-md="2">
                             <IonSegment value={timeRange} onIonChange={(e: CustomEvent) => setTimeRange(e.detail.value)}>
                                 <IonSegmentButton value="today">
                                     <IonLabel>Hoy</IonLabel>
@@ -224,7 +224,7 @@ const Transfers: React.FC = () => {
                                         <IonRow>
                                             <IonCol size="12" size-md="8" offset-md="2">
                                                 <IonItem>
-                                                    <IonDatetime presentation="date" value={startDate || new Date().toISOString()}
+                                                    <IonDatetime presentation="date" value={startDate || new Date().toISOString()} max={new Date().toISOString().split('T')[0]}
                                                         onIonChange={(e) => {
                                                             if (typeof e.detail.value === 'string') {
                                                                 setStartDate(e.detail.value);
@@ -237,7 +237,7 @@ const Transfers: React.FC = () => {
                                         <IonRow>
                                             <IonCol size="12" size-md="8" offset-md="2">
                                                 <IonItem>
-                                                    <IonDatetime presentation="date" value={endDate || new Date().toISOString()}
+                                                    <IonDatetime presentation="date" value={endDate || new Date().toISOString()} max={new Date().toISOString().split('T')[0]}
                                                         onIonChange={(e) => {
                                                             if (typeof e.detail.value === 'string') {
                                                                 setEndDate(e.detail.value);
@@ -248,23 +248,21 @@ const Transfers: React.FC = () => {
                                             </IonCol>
                                         </IonRow>
                                     </IonGrid>
-                                </IonContent>
-                                <IonFooter>
-                                    <IonToolbar>
-                                        <div className='date-period-picker-footer'>
+                                    <IonFab slot="fixed" vertical="bottom" horizontal="center">
+                                        <div>
 
                                             {/* Botón para aplicar el filtro */}
-                                            <IonButton onClick={() => setIsDateModalOpen(false)}>Aplicar</IonButton>
+                                            <IonButton className='transfer-calendar-fab-button' color={"medium"} shape="round" onClick={() => setIsDateModalOpen(false)}>Aplicar</IonButton>
                                         </div>
-                                    </IonToolbar>
-                                </IonFooter>
+                                    </IonFab>
+                                </IonContent>
                             </IonModal>
                         </div>
                     )}
 
                     {/* Listado de transferencias */}
                     <IonRow>
-                        <IonCol>
+                        <IonCol size="12" size-md="8" offset-md="2">
                             <IonList className='transfer-list'>
                                 {filteredTransfers.length === 0 ? (
                                     <IonItem className="transfer-message">

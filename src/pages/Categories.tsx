@@ -161,38 +161,41 @@ const Categories: React.FC = () => {
             </IonHeader>
             <IonContent fullscreen>
                 {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} message={alert} buttons={['Aceptar']} />)}
-
-                {/* Seleccionamos el tipo de transacción */}
-                <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
-                    <IonSegmentButton value="gasto">
-                        <IonLabel>Gasto</IonLabel>
-                    </IonSegmentButton>
-                    <IonSegmentButton value="ingreso">
-                        <IonLabel>Ingreso</IonLabel>
-                    </IonSegmentButton>
-                </IonSegment>
                 <IonGrid>
-                    <IonRow>
 
-                        {/* Se mapean las categorías, si no hay, se muestra que no hay categorías */}
-                        {categories.length === 0 ? (
-                            <IonCol>
+                    {/* Seleccionamos el tipo de transacción */}
+                    <IonRow>
+                        <IonCol size="12" size-md="8" offset-md="2">
+                            <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
+                                <IonSegmentButton value="gasto">
+                                    <IonLabel>Gasto</IonLabel>
+                                </IonSegmentButton>
+                                <IonSegmentButton value="ingreso">
+                                    <IonLabel>Ingreso</IonLabel>
+                                </IonSegmentButton>
+                            </IonSegment>
+                        </IonCol>
+                    </IonRow>
+                    <IonRow className="category-row">
+                        <IonCol size="12" size-md="8" offset-md="2" className="category-col">
+                            {/* Se mapean las categorías, si no hay, se muestra que no hay categorías */}
+                            {categories.length === 0 ? (
                                 <IonList className="category-list">
                                     <IonItem className="category-message">
                                         <IonLabel>No hay categorías</IonLabel>
                                     </IonItem>
                                 </IonList>
-                            </IonCol>
-                        ) : (
-                            filteredCategories.map((category) => (
-                                <IonCol key={category.category_id} size="3" className="category-col" onClick={() => handleEditCategory(category)}>
-                                    <div className="category-circle" style={{ backgroundColor: category.color }}>
-                                        <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
+                            ) : (
+                                filteredCategories.map((category) => (
+                                    <div key={category.category_id} className="category-item" onClick={() => handleEditCategory(category)}>
+                                        <div className="category-circle" style={{ backgroundColor: category.color }}>
+                                            <FontAwesomeIcon icon={getFontAwesomeIcon(category.icon)} className="category-icon" />
+                                        </div>
+                                        <IonLabel className="category-label">{category.name}</IonLabel>
                                     </div>
-                                    <IonLabel className="category-label">{category.name}</IonLabel>
-                                </IonCol>
-                            ))
-                        )}
+                                ))
+                            )}
+                        </IonCol>
                     </IonRow>
                 </IonGrid>
                 <IonFab slot="fixed" vertical="bottom" horizontal="center">

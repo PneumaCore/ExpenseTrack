@@ -1,6 +1,6 @@
 import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faSackDollar, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonAlert, IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import axios from 'axios';
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
@@ -390,7 +390,7 @@ const Charts: React.FC = () => {
 
                     {/* Seleccionamos la cuenta de las transacciones */}
                     <IonRow>
-                        <IonCol>
+                        <IonCol size="12" size-md="8" offset-md="2">
                             <IonAlert
                                 isOpen={isAccountAlertOpen}
                                 onDidDismiss={() => setIsAccountAlertOpen(false)}
@@ -421,7 +421,7 @@ const Charts: React.FC = () => {
 
                     {/* Mostramos el saldo total de la cuenta seleccionada por el usuario */}
                     <IonRow>
-                        <IonCol>
+                        <IonCol size="12" size-md="8" offset-md="2">
                             <div className='chart-total-balance'>
                                 <IonLabel>
                                     <b>
@@ -437,20 +437,24 @@ const Charts: React.FC = () => {
                 </IonGrid>
 
                 {/* Seleccionamos el tipo de transacción */}
-                <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
-                    <IonSegmentButton value="gasto">
-                        <IonLabel>Gasto</IonLabel>
-                    </IonSegmentButton>
-                    <IonSegmentButton value="ingreso">
-                        <IonLabel>Ingreso</IonLabel>
-                    </IonSegmentButton>
-                </IonSegment>
+                <IonRow>
+                    <IonCol size="12" size-md="8" offset-md="2">
+                        <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
+                            <IonSegmentButton value="gasto">
+                                <IonLabel>Gasto</IonLabel>
+                            </IonSegmentButton>
+                            <IonSegmentButton value="ingreso">
+                                <IonLabel>Ingreso</IonLabel>
+                            </IonSegmentButton>
+                        </IonSegment>
+                    </IonCol>
+                </IonRow>
 
                 <IonGrid>
 
                     {/* Filtramos el tipo de transacción según el período */}
                     <IonRow>
-                        <IonCol size="12">
+                        <IonCol size="12" size-md="8" offset-md="2">
                             <IonSegment value={timeRange} onIonChange={(e: CustomEvent) => setTimeRange(e.detail.value)}>
                                 <IonSegmentButton value="today">
                                     <IonLabel>Hoy</IonLabel>
@@ -487,7 +491,7 @@ const Charts: React.FC = () => {
                                     <IonGrid>
                                         <IonRow>
                                             <IonCol size="12" size-md="8" offset-md="2">
-                                                <IonItem>
+                                                <IonItem lines='none'>
                                                     <IonDatetime presentation="date" value={startDate || new Date().toISOString()} max={new Date().toISOString().split('T')[0]}
                                                         onIonChange={(e) => {
                                                             if (typeof e.detail.value === 'string') {
@@ -500,7 +504,7 @@ const Charts: React.FC = () => {
                                         </IonRow>
                                         <IonRow>
                                             <IonCol size="12" size-md="8" offset-md="2">
-                                                <IonItem>
+                                                <IonItem lines='none'>
                                                     <IonDatetime presentation="date" value={endDate || new Date().toISOString()} max={new Date().toISOString().split('T')[0]}
                                                         onIonChange={(e) => {
                                                             if (typeof e.detail.value === 'string') {
@@ -512,23 +516,21 @@ const Charts: React.FC = () => {
                                             </IonCol>
                                         </IonRow>
                                     </IonGrid>
-                                </IonContent>
-                                <IonFooter>
-                                    <IonToolbar>
-                                        <div className='chart-date-period-picker-footer'>
+                                    <IonFab slot="fixed" vertical="bottom" horizontal="center">
+                                        <div>
 
                                             {/* Botón para aplicar el filtro */}
-                                            <IonButton onClick={() => setIsDateModalOpen(false)}>Aplicar</IonButton>
+                                            <IonButton className='chart-calendar-fab-button' color={"medium"} shape="round" onClick={() => setIsDateModalOpen(false)}>Aplicar</IonButton>
                                         </div>
-                                    </IonToolbar>
-                                </IonFooter>
+                                    </IonFab>
+                                </IonContent>
                             </IonModal>
                         </div>
                     )}
 
                     {/* Gráfico de transacciones */}
                     <IonRow>
-                        <IonCol size="12">
+                        <IonCol size="12" size-md="8" offset-md="2">
                             <div className='chart-bar-chart'>
                                 <Bar data={barData} options={{
                                     responsive: true, plugins: {
@@ -543,7 +545,7 @@ const Charts: React.FC = () => {
 
                     {/* Listado de transacciones */}
                     <IonRow>
-                        <IonCol>
+                        <IonCol size="12" size-md="8" offset-md="2">
                             <IonList className='chart-list'>
                                 {filteredByRange.length === 0 ? (
                                     <IonItem className="chart-message">

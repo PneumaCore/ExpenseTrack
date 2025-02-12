@@ -8,6 +8,17 @@
     border-radius: 10px;
 }
 
+.transfer-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: white;
+}
+
+.transfer-calendar-fab-button {
+    --box-shadow: none;
+}
+
 .transfer-fab-button {
     --box-shadow: none;
 }

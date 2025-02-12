@@ -10,16 +10,18 @@
     flex-direction: row;
 }
 
-.account-historial-transfer-button {
+.account-transfer-container {
     display: flex;
+    align-items: center;
     justify-content: center;
+    gap: 8px;
+    padding: 8px;
+    text-align: center;
     flex-direction: column;
 }
 
-.account-new-transfer-button {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+.account-transfer-button {
+    --box-shadow: none;
 }
 
 .account-item {

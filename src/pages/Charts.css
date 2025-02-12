@@ -1,12 +1,9 @@
 .chart-total-balance {
     text-align: center;
-}	
+}
 
-.chart-date-period-picker-footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+.chart-calendar-fab-button {
+    --box-shadow: none;
 }
 
 .chart-item {

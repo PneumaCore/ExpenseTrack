@@ -1,12 +1,9 @@
 .transaction-total-balance {
     text-align: center;
-}	
+}
 
-.transaction-date-period-picker-footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+.transaction-calendar-fab-button {
+    --box-shadow: none;
 }
 
 .transaction-item {

@@ -1,7 +1,7 @@
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { faCommentDollar, faDatabase, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonAlert, IonButtons, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, doc, getDocs, onSnapshot, or, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -427,33 +427,37 @@ const Settings: React.FC = () => {
                     ]}
                 />
                 <IonGrid>
-                    <IonList className='settings-list'>
-                        <IonItem onClick={() => history.push('/profile', { from: window.location.pathname })}>
-                            <div slot="start">
-                                <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
-                            </div>
-                            <IonLabel>Perfil</IonLabel>
-                        </IonItem>
-                        <IonItem>
-                            <div slot="start">
-                                <FontAwesomeIcon icon={faDatabase}></FontAwesomeIcon>
-                            </div>
-                            <IonLabel onClick={() => setIsExportAlertOpen(true)}>Exportar datos</IonLabel>
-                        </IonItem>
-                        <IonItem>
-                            <div slot="start">
-                                <FontAwesomeIcon icon={faCommentDollar}></FontAwesomeIcon>
-                            </div>
-                            <IonLabel>Divisa</IonLabel>
-                            <IonSelect slot='end' value={preferredCurrency} placeholder="Selecciona una divisa" onIonChange={e => { const currency = e.detail.value; setPreferredCurrency(currency); handleSaveProfile(currency); }}>
-                                {currencies.map(currency => (
-                                    <IonSelectOption key={currency.code} value={currency.code}>
-                                        {currency.name} ({currency.code})
-                                    </IonSelectOption>
-                                ))}
-                            </IonSelect>
-                        </IonItem>
-                    </IonList>
+                    <IonRow>
+                        <IonCol size="12" size-md="8" offset-md="2">
+                            <IonList className='settings-list'>
+                                <IonItem onClick={() => history.push('/profile', { from: window.location.pathname })}>
+                                    <div slot="start">
+                                        <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
+                                    </div>
+                                    <IonLabel>Perfil</IonLabel>
+                                </IonItem>
+                                <IonItem>
+                                    <div slot="start">
+                                        <FontAwesomeIcon icon={faDatabase}></FontAwesomeIcon>
+                                    </div>
+                                    <IonLabel onClick={() => setIsExportAlertOpen(true)}>Exportar datos</IonLabel>
+                                </IonItem>
+                                <IonItem>
+                                    <div slot="start">
+                                        <FontAwesomeIcon icon={faCommentDollar}></FontAwesomeIcon>
+                                    </div>
+                                    <IonLabel>Divisa</IonLabel>
+                                    <IonSelect slot='end' value={preferredCurrency} placeholder="Selecciona una divisa" onIonChange={e => { const currency = e.detail.value; setPreferredCurrency(currency); handleSaveProfile(currency); }}>
+                                        {currencies.map(currency => (
+                                            <IonSelectOption key={currency.code} value={currency.code}>
+                                                {currency.name} ({currency.code})
+                                            </IonSelectOption>
+                                        ))}
+                                    </IonSelect>
+                                </IonItem>
+                            </IonList>
+                        </IonCol>
+                    </IonRow>
                 </IonGrid>
             </IonContent>
         </IonPage>

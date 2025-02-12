@@ -167,26 +167,25 @@ const Accounts: React.FC = () => {
 
                     {/* Mostramos el saldo total de todas las cuentas */}
                     <IonRow>
-                        <IonCol>
+                        <IonCol size="12" size-md="8" offset-md="2">
                             <div className="account-total-balance">
-                                <IonLabel>Total:</IonLabel>
-                                <IonLabel>{totalBalanceInPreferredCurrency.toFixed(2)} {preferredCurrency}</IonLabel>
+                                <IonLabel><b>{totalBalanceInPreferredCurrency.toFixed(2)} {preferredCurrency}</b></IonLabel>
                             </div>
                         </IonCol>
                     </IonRow>
 
                     {/* Apartado transferencias */}
                     <IonRow>
-                        <IonCol>
+                        <IonCol size="12" size-md="8" offset-md="2">
                             <div className="account-historial-new-transfer-buttons">
-                                <div className="account-historial-transfer-button">
-                                    <IonButton onClick={() => history.push('/transfers', { from: window.location.pathname })}>
+                                <div className="account-transfer-container">
+                                    <IonButton className="account-transfer-button" color={"medium"} shape="round" onClick={() => history.push('/transfers', { from: window.location.pathname })}>
                                         <FontAwesomeIcon icon={faHistory}></FontAwesomeIcon>
                                     </IonButton>
                                     <IonLabel>Historial de transferencias</IonLabel>
                                 </div>
-                                <div className="account-new-transfer-button">
-                                    <IonButton onClick={() => setIsAddTransferModalOpen(true)}>
+                                <div className="account-transfer-container">
+                                    <IonButton className="account-transfer-button" color={"medium"} shape="round" onClick={() => setIsAddTransferModalOpen(true)}>
                                         <FontAwesomeIcon icon={faArrowRightArrowLeft}></FontAwesomeIcon>
                                     </IonButton>
                                     <IonLabel>Nueva transferencia</IonLabel>
@@ -197,7 +196,7 @@ const Accounts: React.FC = () => {
 
                     {/* Listado de cuentas */}
                     <IonRow>
-                        <IonCol>
+                        <IonCol size="12" size-md="8" offset-md="2">
                             <IonList className="account-list">
                                 {accounts.length === 0 ? (
                                     <IonItem className="account-message">
