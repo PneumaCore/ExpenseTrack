@@ -1,6 +1,6 @@
-import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faSackDollar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, onSnapshot, orderBy, query, Timestamp, where } from 'firebase/firestore';
 import { add, chevronBack, search } from 'ionicons/icons';
@@ -34,6 +34,8 @@ interface Transfer {
 };
 
 const Transfers: React.FC = () => {
+    const [isAccountAlertOpen, setIsAccountAlertOpen] = useState(false);
+    const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [searchText, setSearchText] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -149,7 +151,8 @@ const Transfers: React.FC = () => {
             (matchesSourceAccountName.includes(matchesSearchText) ||
                 matchesDestinationAccountName.includes(matchesSearchText) ||
                 matchesNote.includes(matchesSearchText)) &&
-            filteredByRange.includes(transfer)
+            filteredByRange.includes(transfer) &&
+            (selectedAccountId === null || transfer.source_account_id === selectedAccountId)
         );
     });
 
@@ -169,6 +172,9 @@ const Transfers: React.FC = () => {
                             </IonButtons>
                             <IonTitle>Transferencias</IonTitle>
                             <IonButtons slot='end'>
+                                <IonButton onClick={() => setIsAccountAlertOpen(true)}>
+                                    <FontAwesomeIcon icon={faSackDollar} />
+                                </IonButton>
                                 <IonButton onClick={() => setIsSearchActive(true)} size='default'>
                                     <IonIcon icon={search} />
                                 </IonButton>
@@ -183,6 +189,37 @@ const Transfers: React.FC = () => {
             </IonHeader>
             <IonContent fullscreen>
                 <IonGrid>
+
+                    {/* Seleccionamos la cuenta de las transferencias */}
+                    <IonRow>
+                        <IonCol size="12" size-md="8" offset-md="2">
+                            <IonAlert
+                                isOpen={isAccountAlertOpen}
+                                onDidDismiss={() => setIsAccountAlertOpen(false)}
+                                header="Filtrar por cuenta"
+                                inputs={[
+                                    { label: 'Total', type: 'radio' as const, value: null, checked: selectedAccountId === null },
+                                    ...accounts.map(account => ({
+                                        label: account.name,
+                                        type: 'radio' as const,
+                                        value: account.account_id,
+                                        checked: selectedAccountId === account.account_id
+                                    }))
+                                ]}
+                                buttons={[
+                                    {
+                                        text: 'Cancelar',
+                                        role: 'cancel',
+                                        handler: () => setIsAccountAlertOpen(false)
+                                    },
+                                    {
+                                        text: 'Aceptar',
+                                        handler: (selected) => setSelectedAccountId(selected)
+                                    }
+                                ]}
+                            />
+                        </IonCol>
+                    </IonRow>
 
                     {/* Filtramos el tipo de transferencia según el período */}
                     <IonRow>
