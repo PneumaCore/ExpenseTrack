@@ -1,6 +1,6 @@
-import { faArrowDown, faSackDollar } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faCalendarPlus, faSackDollar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonAlert, IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonFooter, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
 import { collection, onSnapshot, orderBy, query, Timestamp, where } from 'firebase/firestore';
 import { add, chevronBack, search } from 'ionicons/icons';
@@ -224,21 +224,21 @@ const Transfers: React.FC = () => {
                     {/* Filtramos el tipo de transferencia según el período */}
                     <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
-                            <IonSegment value={timeRange} onIonChange={(e: CustomEvent) => setTimeRange(e.detail.value)}>
-                                <IonSegmentButton value="today">
-                                    <IonLabel>Hoy</IonLabel>
+                            <IonSegment className='transfer-segment' color="medium" value={timeRange} onIonChange={(e: CustomEvent) => setTimeRange(e.detail.value)}>
+                                <IonSegmentButton className='transfer-segment-button' value="today">
+                                    <IonLabel><b>Hoy</b></IonLabel>
                                 </IonSegmentButton>
-                                <IonSegmentButton value="week">
-                                    <IonLabel>Semana</IonLabel>
+                                <IonSegmentButton className='transfer-segment-button' value="week">
+                                    <IonLabel><b>Semana</b></IonLabel>
                                 </IonSegmentButton>
-                                <IonSegmentButton value="month">
-                                    <IonLabel>Mes</IonLabel>
+                                <IonSegmentButton className='transfer-segment-button' value="month">
+                                    <IonLabel><b>Mes</b></IonLabel>
                                 </IonSegmentButton>
-                                <IonSegmentButton value="year">
-                                    <IonLabel>Año</IonLabel>
+                                <IonSegmentButton className='transfer-segment-button' value="year">
+                                    <IonLabel><b>Año</b></IonLabel>
                                 </IonSegmentButton>
-                                <IonSegmentButton value="custom" onClick={() => setIsDateModalOpen(true)}>
-                                    <IonLabel>Período</IonLabel>
+                                <IonSegmentButton className='transfer-segment-button' value="custom" onClick={() => setIsDateModalOpen(true)}>
+                                    <IonLabel><FontAwesomeIcon icon={faCalendarPlus}></FontAwesomeIcon></IonLabel>
                                 </IonSegmentButton>
                             </IonSegment>
                         </IonCol>

@@ -4,6 +4,17 @@
     align-items: center;
 }
 
+.category-segment {
+    --background: #F2E1D0;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+.category-segment-button {
+    --ion-segment-button-width: auto;
+    min-width: fit-content;
+}
+
 .category-list {
     width: 100%;
     padding: 8px;

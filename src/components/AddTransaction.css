@@ -1,3 +1,14 @@
+.add-transaction-segment {
+    --background: #F2E1D0;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+.add-transaction-segment-button {
+    --ion-segment-button-width: auto;
+    min-width: fit-content;
+}
+
 .image-container {
     display: flex;
     gap: 10px;

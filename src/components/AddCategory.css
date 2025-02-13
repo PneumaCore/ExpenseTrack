@@ -1,3 +1,14 @@
+.add-category-segment {
+    --background: #F2E1D0;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+.add-category-segment-button {
+    --ion-segment-button-width: auto;
+    min-width: fit-content;
+}
+
 .icon-picker-container {
     margin-top: 15px;
 }

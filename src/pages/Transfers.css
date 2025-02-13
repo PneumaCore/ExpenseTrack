@@ -1,3 +1,14 @@
+.transfer-segment {
+    --background: #F2E1D0;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+.transfer-segment-button {
+    --ion-segment-button-width: auto;
+    min-width: fit-content;
+}
+
 .transfer-message {
     text-align: center;
     padding: 16px;

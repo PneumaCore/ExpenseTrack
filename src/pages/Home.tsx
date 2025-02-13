@@ -1,4 +1,4 @@
-import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faSackDollar, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faBriefcase, faBriefcaseMedical, faBuilding, faBus, faCalendarPlus, faCar, faChalkboardTeacher, faChartBar, faChartLine, faCoins, faCreditCard, faFilm, faGasPump, faGift, faGraduationCap, faHandHoldingHeart, faHandHoldingUsd, faHome, faLaptop, faLightbulb, faMoneyBillWave, faMusic, faPiggyBank, faPills, faPuzzlePiece, faQuestion, faReceipt, faSackDollar, faShoppingBag, faShoppingBasket, faShoppingCart, faSyncAlt, faTools, faTrophy, faUserMd, faUtensils, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonAlert, IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
 import axios from 'axios';
@@ -438,12 +438,12 @@ const Home: React.FC = () => {
         {/* Seleccionamos el tipo de transacción */}
         <IonRow>
           <IonCol size="12" size-md="8" offset-md="2">
-            <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
-              <IonSegmentButton value="gasto">
-                <IonLabel>Gasto</IonLabel>
+            <IonSegment className='transaction-segment' color="medium" value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
+              <IonSegmentButton className='transaction-segment-button' value="gasto">
+                <IonLabel><b>Gasto</b></IonLabel>
               </IonSegmentButton>
-              <IonSegmentButton value="ingreso">
-                <IonLabel>Ingreso</IonLabel>
+              <IonSegmentButton className='transaction-segment-button' value="ingreso">
+                <IonLabel><b>Ingreso</b></IonLabel>
               </IonSegmentButton>
             </IonSegment>
           </IonCol>
@@ -454,21 +454,21 @@ const Home: React.FC = () => {
           {/* Filtramos el tipo de transacción según el período */}
           <IonRow>
             <IonCol size="12" size-md="8" offset-md="2">
-              <IonSegment value={timeRange} onIonChange={(e: CustomEvent) => setTimeRange(e.detail.value)}>
-                <IonSegmentButton value="today">
-                  <IonLabel>Hoy</IonLabel>
+              <IonSegment className='transaction-segment' color="medium" value={timeRange} onIonChange={(e: CustomEvent) => setTimeRange(e.detail.value)}>
+                <IonSegmentButton className='transaction-segment-button' value="today">
+                  <IonLabel><b>Hoy</b></IonLabel>
                 </IonSegmentButton>
-                <IonSegmentButton value="week">
-                  <IonLabel>Semana</IonLabel>
+                <IonSegmentButton className='transaction-segment-button' value="week">
+                  <IonLabel><b>Semana</b></IonLabel>
                 </IonSegmentButton>
-                <IonSegmentButton value="month">
-                  <IonLabel>Mes</IonLabel>
+                <IonSegmentButton className='transaction-segment-button' value="month">
+                  <IonLabel><b>Mes</b></IonLabel>
                 </IonSegmentButton>
-                <IonSegmentButton value="year">
-                  <IonLabel>Año</IonLabel>
+                <IonSegmentButton className='transaction-segment-button' value="year">
+                  <IonLabel><b>Año</b></IonLabel>
                 </IonSegmentButton>
-                <IonSegmentButton value="custom" onClick={() => setIsDateModalOpen(true)}>
-                  <IonLabel>Período</IonLabel>
+                <IonSegmentButton className='transaction-segment-button' value="custom" onClick={() => setIsDateModalOpen(true)}>
+                  <IonLabel><FontAwesomeIcon icon={faCalendarPlus}></FontAwesomeIcon></IonLabel>
                 </IonSegmentButton>
               </IonSegment>
             </IonCol>

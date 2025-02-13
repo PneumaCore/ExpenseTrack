@@ -140,18 +140,21 @@ const AddCategory: React.FC<AddCategoryProps> = ({ isOpen, onClose }) => {
         </IonHeader>
         <IonContent>
           {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} header={'Datos inválidos'} message={error} buttons={['Aceptar']} />)}
-
-          {/* Seleccionamos el tipo de categoría */}
-          <IonSegment value={type} onIonChange={(e: CustomEvent) => { setType(e.detail.value); setName(''); setIcon(faDollarSign); setColor('#000000'); }}>
-            <IonSegmentButton value="gasto">
-              <IonLabel>Gasto</IonLabel>
-            </IonSegmentButton>
-            <IonSegmentButton value="ingreso">
-              <IonLabel>Ingreso</IonLabel>
-            </IonSegmentButton>
-          </IonSegment>
-
           <IonGrid>
+
+            {/* Seleccionamos el tipo de categoría */}
+            <IonRow>
+              <IonCol size="12" size-md="8" offset-md="2">
+                <IonSegment className='add-category-segment' color="medium" value={type} onIonChange={(e: CustomEvent) => { setType(e.detail.value); setName(''); setIcon(faDollarSign); setColor('#000000'); }}>
+                  <IonSegmentButton className='add-category-segment-button' value="gasto">
+                    <IonLabel><b>Gasto</b></IonLabel>
+                  </IonSegmentButton>
+                  <IonSegmentButton className='add-category-segment-button' value="ingreso">
+                    <IonLabel><b>Ingreso</b></IonLabel>
+                  </IonSegmentButton>
+                </IonSegment>
+              </IonCol>
+            </IonRow>
 
             {/* Campo para añadir el nombre de la categoría */}
             <IonRow>

@@ -166,12 +166,12 @@ const Categories: React.FC = () => {
                     {/* Seleccionamos el tipo de transacción */}
                     <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
-                            <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
-                                <IonSegmentButton value="gasto">
-                                    <IonLabel>Gasto</IonLabel>
+                            <IonSegment className='category-segment' color="medium" value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
+                                <IonSegmentButton className='category-segment-button' value="gasto">
+                                    <IonLabel><b>Gasto</b></IonLabel>
                                 </IonSegmentButton>
-                                <IonSegmentButton value="ingreso">
-                                    <IonLabel>Ingreso</IonLabel>
+                                <IonSegmentButton className='category-segment-button' value="ingreso">
+                                    <IonLabel><b>Ingreso</b></IonLabel>
                                 </IonSegmentButton>
                             </IonSegment>
                         </IonCol>

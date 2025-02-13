@@ -304,18 +304,21 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
         </IonHeader>
         <IonContent>
           {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} header={'Datos inválidos'} message={error} buttons={['Aceptar']} />)}
-
-          {/* Seleccionamos el tipo de transacción */}
-          <IonSegment value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
-            <IonSegmentButton value="gasto">
-              <IonLabel>Gasto</IonLabel>
-            </IonSegmentButton>
-            <IonSegmentButton value="ingreso">
-              <IonLabel>Ingreso</IonLabel>
-            </IonSegmentButton>
-          </IonSegment>
-
           <IonGrid>
+
+            {/* Seleccionamos el tipo de transacción */}
+            <IonRow>
+              <IonCol>
+                <IonSegment className='add-transaction-segment' color="medium" value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
+                  <IonSegmentButton className='add-transaction-segment-button' value="gasto">
+                    <IonLabel><b>Gasto</b></IonLabel>
+                  </IonSegmentButton>
+                  <IonSegmentButton className='add-transaction-segment-button' value="ingreso">
+                    <IonLabel><b>Ingreso</b></IonLabel>
+                  </IonSegmentButton>
+                </IonSegment>
+              </IonCol>
+            </IonRow>
 
             {/* Campo para seleccionar la cuenta de la transacción */}
             <IonRow>
