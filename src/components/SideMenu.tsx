@@ -1,4 +1,4 @@
-import { faArrowRightArrowLeft, faBarsProgress, faBell, faChartColumn, faGear, faHome, faIcons, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightArrowLeft, faBarsProgress, faBell, faChartColumn, faGear, faHome, faIcons, faRotate, faSackDollar, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IonAlert, IonAvatar, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonRow, IonTitle, IonToolbar } from "@ionic/react";
 import { getAuth, signOut } from "firebase/auth";
@@ -132,6 +132,16 @@ const SideMenu: React.FC = () => {
                                             <FontAwesomeIcon icon={faBarsProgress}></FontAwesomeIcon>
                                         </div>
                                         <IonLabel><b>Presupuestos</b></IonLabel>
+                                    </IonItem>
+                                </IonCol>
+                            </IonRow>
+                            <IonRow>
+                                <IonCol>
+                                    <IonItem onClick={() => history.push('/recurring_transactions', { from: window.location.pathname })}>
+                                        <div slot="start">
+                                            <FontAwesomeIcon icon={faRotate}></FontAwesomeIcon>
+                                        </div>
+                                        <IonLabel><b>Pagos recurrentes</b></IonLabel>
                                     </IonItem>
                                 </IonCol>
                             </IonRow>

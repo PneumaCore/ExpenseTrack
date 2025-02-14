@@ -4,7 +4,7 @@ import { IonAlert, IonButton, IonButtons, IonCol, IonContent, IonDatetime, IonFa
 import axios from 'axios';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { getAuth } from 'firebase/auth';
-import { collection, onSnapshot, or, orderBy, query, Timestamp, where } from 'firebase/firestore';
+import { collection, doc, getDocs, onSnapshot, or, orderBy, query, runTransaction, Timestamp, where } from 'firebase/firestore';
 import { add, chevronBack, search } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
@@ -351,6 +351,82 @@ const Home: React.FC = () => {
     setSelectedTransaction(transaction);
     setIsEditModalOpen(true);
   };
+
+  let isProcessing = false;
+
+  const processRecurringTransactions = async () => {
+
+    if (isProcessing) return;
+    isProcessing = true;
+
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      if (!currentUser) return;
+
+      const recurringRef = collection(database, "recurringTransactions");
+      const q = query(recurringRef, where("user_id", "==", currentUser.uid));
+
+      const querySnapshot = await getDocs(q);
+      const today = new Date();
+
+      for (const docSnap of querySnapshot.docs) {
+        const recurringTransaction = docSnap.data();
+        const nextExecution = new Date(recurringTransaction.next_execution.toDate());
+
+        if (nextExecution <= today) {
+          const transactionsRef = doc(collection(database, "transactions"));
+          const transactionId = transactionsRef.id;
+          const accountRef = doc(database, "accounts", recurringTransaction.account_id);
+
+          await runTransaction(database, async (transaction) => {
+            const accountDoc = await transaction.get(accountRef);
+            if (!accountDoc.exists()) throw new Error("La cuenta no existe.");
+
+            const currentBalance = accountDoc.data().balance;
+            const newBalance =
+              recurringTransaction.type === "gasto"
+                ? Number(currentBalance) - Number(recurringTransaction.amount)
+                : Number(currentBalance) + Number(recurringTransaction.amount);
+
+            transaction.update(accountRef, { balance: newBalance });
+
+            const newTransaction = {
+              transaction_id: transactionId,
+              user_id: recurringTransaction.user_id,
+              type: recurringTransaction.type,
+              category_id: recurringTransaction.category_id,
+              account_id: recurringTransaction.account_id,
+              amount: recurringTransaction.amount,
+              currency: recurringTransaction.currency,
+              date: Timestamp.fromDate(today),
+              note: "",
+              image: []
+            };
+
+            transaction.set(transactionsRef, newTransaction);
+
+            let nextDate = new Date(nextExecution);
+            if (recurringTransaction.frequency === "diaria") nextDate.setDate(nextDate.getDate() + 1);
+            if (recurringTransaction.frequency === "semanal") nextDate.setDate(nextDate.getDate() + 7);
+            if (recurringTransaction.frequency === "mensual") nextDate.setMonth(nextDate.getMonth() + 1);
+
+            transaction.update(docSnap.ref, { next_execution: Timestamp.fromDate(nextDate) });
+          });
+
+          console.log(`Transacción recurrente ${transactionId} creada.`);
+        }
+      }
+    } catch (error) {
+      console.error("Error procesando transacciones recurrentes:", error);
+    } finally {
+      isProcessing = false;
+    }
+  };
+
+  useEffect(() => {
+    processRecurringTransactions();
+  }, []);
 
   return (
     <IonPage id="main-content">
