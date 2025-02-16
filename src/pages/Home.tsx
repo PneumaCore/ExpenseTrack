@@ -352,18 +352,23 @@ const Home: React.FC = () => {
     setIsEditModalOpen(true);
   };
 
+  /* Comprobamos en la base de datos las transacciones recurrentes para crear transacciones normales */
   let isProcessing = false;
 
   const processRecurringTransactions = async () => {
 
+    /* Evitamos que se comprueben las transacciones recurrentes más de una vez */
     if (isProcessing) return;
     isProcessing = true;
 
     try {
+
+      /* Comprobamos que el usuario siga logeado en la aplicación */
       const auth = getAuth();
       const currentUser = auth.currentUser;
       if (!currentUser) return;
 
+      /* Obtenemos las transacciones recurrentes asociadas al usuario */
       const recurringRef = collection(database, "recurringTransactions");
       const q = query(recurringRef, where("user_id", "==", currentUser.uid));
 
@@ -372,13 +377,17 @@ const Home: React.FC = () => {
 
       for (const docSnap of querySnapshot.docs) {
         const recurringTransaction = docSnap.data();
-        const nextExecution = new Date(recurringTransaction.next_execution.toDate());
+        let nextExecution = new Date(recurringTransaction.next_execution.toDate());
 
-        if (nextExecution <= today) {
-          const transactionsRef = doc(collection(database, "transactions"));
-          const transactionId = transactionsRef.id;
-          const accountRef = doc(database, "accounts", recurringTransaction.account_id);
+        const transactionsRef = collection(database, "transactions");
+        const accountRef = doc(database, "accounts", recurringTransaction.account_id);
 
+        /* En caso de haber transacciones recurrentes atrasadas, las creamos */
+        while (nextExecution <= today) {
+          const transactionId = doc(transactionsRef).id;
+          const executionDate = new Date(nextExecution);
+
+          /* Actualizamos el saldo de la cuenta utilizada para la transacción, si la transacción es de tipo gasto disminuimos y si no, aumentamos */
           await runTransaction(database, async (transaction) => {
             const accountDoc = await transaction.get(accountRef);
             if (!accountDoc.exists()) throw new Error("La cuenta no existe.");
@@ -391,6 +400,7 @@ const Home: React.FC = () => {
 
             transaction.update(accountRef, { balance: newBalance });
 
+            /* Creamos una nueva transacción con la fecha correspondiente en la que se debería haber creado */
             const newTransaction = {
               transaction_id: transactionId,
               user_id: recurringTransaction.user_id,
@@ -399,23 +409,23 @@ const Home: React.FC = () => {
               account_id: recurringTransaction.account_id,
               amount: recurringTransaction.amount,
               currency: recurringTransaction.currency,
-              date: Timestamp.fromDate(today),
+              date: Timestamp.fromDate(executionDate),
               note: "",
-              image: []
+              image: [],
             };
 
-            transaction.set(transactionsRef, newTransaction);
-
-            let nextDate = new Date(nextExecution);
-            if (recurringTransaction.frequency === "diaria") nextDate.setDate(nextDate.getDate() + 1);
-            if (recurringTransaction.frequency === "semanal") nextDate.setDate(nextDate.getDate() + 7);
-            if (recurringTransaction.frequency === "mensual") nextDate.setMonth(nextDate.getMonth() + 1);
-
-            transaction.update(docSnap.ref, { next_execution: Timestamp.fromDate(nextDate) });
+            transaction.set(doc(transactionsRef, transactionId), newTransaction);
           });
 
-          console.log(`Transacción recurrente ${transactionId} creada.`);
+          /* Actualizamos la fecha de la próxima ejecución de la transacción recurrente según la frecuencia */
+          if (recurringTransaction.frequency === "diaria") nextExecution.setDate(nextExecution.getDate() + 1);
+          if (recurringTransaction.frequency === "semanal") nextExecution.setDate(nextExecution.getDate() + 7);
+          if (recurringTransaction.frequency === "mensual") nextExecution.setMonth(nextExecution.getMonth() + 1);
         }
+
+        await runTransaction(database, async (transaction) => {
+          transaction.update(docSnap.ref, { next_execution: Timestamp.fromDate(nextExecution) });
+        });
       }
     } catch (error) {
       console.error("Error procesando transacciones recurrentes:", error);
@@ -424,6 +434,7 @@ const Home: React.FC = () => {
     }
   };
 
+  /* Al cargar la pantalla, se comprueban las transacciones recurrentes */
   useEffect(() => {
     processRecurringTransactions();
   }, []);
