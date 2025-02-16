@@ -418,8 +418,6 @@ const Charts: React.FC = () => {
                         transaction.set(doc(transactionsRef, transactionId), newTransaction);
                     });
 
-                    console.log(`Transacción recurrente creada con fecha: ${executionDate.toISOString()}`);
-
                     /* Actualizamos la fecha de la próxima ejecución de la transacción recurrente según la frecuencia */
                     if (recurringTransaction.frequency === "diaria") nextExecution.setDate(nextExecution.getDate() + 1);
                     if (recurringTransaction.frequency === "semanal") nextExecution.setDate(nextExecution.getDate() + 7);
@@ -429,8 +427,6 @@ const Charts: React.FC = () => {
                 await runTransaction(database, async (transaction) => {
                     transaction.update(docSnap.ref, { next_execution: Timestamp.fromDate(nextExecution) });
                 });
-
-                console.log(`Próxima ejecución programada para: ${nextExecution.toISOString()}`);
             }
         } catch (error) {
             console.error("Error procesando transacciones recurrentes:", error);

@@ -1,12 +1,12 @@
-import { faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faFloppyDisk, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonFab, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCol, IonContent, IonDatetime, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPopover, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
-import { collection, doc, onSnapshot, or, query, setDoc, Timestamp, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, onSnapshot, or, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import { chevronBack } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { database } from '../configurations/firebase';
-import './AddRecurringTransaction.css';
+import './EditRecurringTransaction.css';
 import GlobalToast from './GlobalToast';
 
 interface Account {
@@ -29,14 +29,31 @@ interface Category {
     color: string
 }
 
-interface AddRecurringTransactionProps {
-    isOpen: boolean;
-    onClose: () => void;
+interface RecurringTransaction {
+    recurring_transaction_id: string,
+    user_id: string,
+    type: string,
+    name: string,
+    category_id: string,
+    account_id: string,
+    amount: number,
+    currency: number,
+    date: Timestamp,
+    frequency: string,
+    next_execution: Timestamp
 }
 
-const AddRecurringTransaction: React.FC<AddRecurringTransactionProps> = ({ isOpen, onClose }) => {
+interface EditRecurringTransactionProps {
+    isOpen: boolean;
+    onClose: () => void;
+    recurringTransaction: RecurringTransaction | null;
+}
+
+const EditRecurringTransaction: React.FC<EditRecurringTransactionProps> = ({ isOpen, onClose, recurringTransaction }) => {
     const [error, setError] = useState<string>('');
     const [showAlert, setShowAlert] = useState(false);
+    const [showUpdateAlert, setShowUpdateAlert] = useState(false);
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
     const [type, setType] = useState('gasto');
     const [name, setName] = useState('');
     const [selectedAccount, setSelectedAccount] = useState<string | undefined>();
@@ -45,6 +62,7 @@ const AddRecurringTransaction: React.FC<AddRecurringTransactionProps> = ({ isOpe
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
     const [selectedDate, setSelectedDate] = useState('');
     const [isDatePickerOpen, setDatePickerOpen] = useState(false);
+    const [nextExecutionDate, setNextExecutionDate] = useState('');
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
 
@@ -54,6 +72,20 @@ const AddRecurringTransaction: React.FC<AddRecurringTransactionProps> = ({ isOpe
         message: string;
         type: 'success' | 'error';
     }>({ isOpen: false, message: '', type: 'error' });
+
+    /* Actualizamos los campos con la información del pago recurrente seleccionado */
+    useEffect(() => {
+        if (recurringTransaction) {
+            setType(recurringTransaction.type);
+            setName(recurringTransaction.name);
+            setSelectedAccount(recurringTransaction.account_id);
+            setAmount(parseFloat(recurringTransaction.amount.toFixed(2)));
+            setFrequency(recurringTransaction.frequency);
+            setSelectedDate(recurringTransaction.date.toDate().toISOString());
+            setSelectedCategory(recurringTransaction.category_id);
+            setNextExecutionDate(recurringTransaction.next_execution.toDate().toISOString());
+        }
+    }, [recurringTransaction]);
 
     /* Leemos las cuentas asociadas al usuario de la base de datos */
     useEffect(() => {
@@ -133,21 +165,6 @@ const AddRecurringTransaction: React.FC<AddRecurringTransactionProps> = ({ isOpe
         setDatePickerOpen(false);
     };
 
-    /* Al guardar el pago recurrente en la base de datos, reseteamos a sus valores por defecto todos los campos del formulario */
-    const resetForm = () => {
-        setError('');
-        setShowAlert(false);
-        setName('');
-        setType('gasto');
-        setSelectedAccount(undefined);
-        setAmount(0);
-        setFrequency('');
-        setSelectedDate('');
-        setDatePickerOpen(false);
-        setSelectedCategory(undefined);
-        setToastConfig({ isOpen: false, message: '', type: 'error' });
-    };
-
     /* Guardamos la transacción en la base de datos */
     const handleSaveRecurringTransaction = async () => {
 
@@ -184,13 +201,11 @@ const AddRecurringTransaction: React.FC<AddRecurringTransactionProps> = ({ isOpe
 
         try {
 
-            /* Obtenemos los datos del usuario autenticado */
-            const auth = getAuth();
-            const currentUser = auth.currentUser;
+            if (!recurringTransaction?.recurring_transaction_id) {
+                throw new Error("El ID del pago recurrente no está definido");
+            }
 
-            /* Generamos un ID automático con Firestore */
-            const transactionsRef = doc(collection(database, 'recurringTransactions'));
-            const transactionId = transactionsRef.id;
+            const recurringTransactionsRef = doc(database, 'recurringTransactions', recurringTransaction?.recurring_transaction_id);
 
             /* Buscamos la cuenta seleccionada, para posteriormente acceder a su id y su divisa */
             const account = accounts.find((acc) => acc.account_id === selectedAccount);
@@ -199,45 +214,72 @@ const AddRecurringTransaction: React.FC<AddRecurringTransactionProps> = ({ isOpe
                 return;
             }
 
-            /* Pasamos la fecha a Timestamp, ya que así la acepta Firestore */
-            const dateObject = new Date(selectedDate);
-            const dateTimestamp = Timestamp.fromDate(dateObject);
-
-            const newRecurringTransaction = {
-                recurring_transaction_id: transactionId,
-                user_id: currentUser?.uid,
+            const updateRecurringTransaction = {
                 type: type,
                 name: name,
                 category_id: selectedCategory,
                 account_id: account.account_id,
                 amount: parseFloat(amount.toFixed(2)),
                 currency: account.currency,
-                date: dateTimestamp,
+                date: Timestamp.fromDate(new Date(selectedDate)),
                 frequency: frequency,
-                next_execution: dateTimestamp
+                next_execution: Timestamp.fromDate(new Date(selectedDate))
             }
 
             /* Guardamos el pago recurrente en la base de datos */
-            await setDoc(transactionsRef, newRecurringTransaction);
+            await updateDoc(recurringTransactionsRef, updateRecurringTransaction);
 
             setToastConfig({ isOpen: true, message: 'Pago recurrente añadida con éxito', type: 'success' });
 
             /* Cerramos el modal automáticamente al guardar el pago recurrente */
-            resetForm();
+            setShowUpdateAlert(false);
             onClose();
+
         } catch (error) {
             setToastConfig({ isOpen: true, message: 'No se pudo añadir el pago recurrente', type: 'error' });
         }
     };
+
+    const handleDeleteRecurringTransaction = async () => {
+        try {
+
+            if (!recurringTransaction?.recurring_transaction_id) {
+                throw new Error("El ID del pago recurrente no está definido");
+            }
+
+            const recurringTransactionRef = doc(database, 'recurringTransactions', recurringTransaction?.recurring_transaction_id);
+
+            /* Eliminamos el pago recurrente de la base de datos */
+            await deleteDoc(recurringTransactionRef);
+
+            setToastConfig({ isOpen: true, message: 'Pago recurrente eliminado con éxito', type: 'success' });
+
+            /* Cerramos el modal automáticamente al eliminar el pago recurrente */
+            setShowDeleteAlert(false);
+            onClose();
+        } catch (error) {
+            setToastConfig({ isOpen: true, message: 'No se pudo eliminar el pago recurrente', type: 'error' });
+        }
+    }
 
     return (
         <>
             <IonModal isOpen={isOpen} onDidDismiss={onClose}>
                 <IonHeader>
                     <IonToolbar>
-                        <IonTitle>Añadir pago recurrente</IonTitle>
+                        <IonTitle>Editar pago recurrente</IonTitle>
                         <IonButton slot="start" onClick={onClose} fill='clear'>
                             <IonIcon icon={chevronBack}></IonIcon>
+                        </IonButton>
+
+                        {/* Botón para guardar la transacción */}
+                        <IonButton slot='end' fill='clear' onClick={() => setShowUpdateAlert(true)}>
+                            <FontAwesomeIcon icon={faFloppyDisk} />
+                        </IonButton>
+
+                        {/* Botón para eliminar la cuenta */}
+                        <IonButton slot='end' className='handle-delete-transaction-button' color='danger' fill='clear' onClick={() => setShowDeleteAlert(true)}>
+                            <FontAwesomeIcon icon={faTrashCan} />
                         </IonButton>
                     </IonToolbar>
                 </IonHeader>
@@ -248,11 +290,11 @@ const AddRecurringTransaction: React.FC<AddRecurringTransactionProps> = ({ isOpe
                         {/* Seleccionamos el tipo de pago recurrente */}
                         <IonRow>
                             <IonCol size="12" size-md="8" offset-md="2">
-                                <IonSegment className='add-recurring-transaction-segment' color="medium" value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
-                                    <IonSegmentButton className='add-recurring-transaction-segment-button' value="gasto">
+                                <IonSegment className='edit-recurring-transaction-segment' color="medium" value={type} onIonChange={(e: CustomEvent) => setType(e.detail.value)}>
+                                    <IonSegmentButton className='edit-recurring-transaction-segment-button' value="gasto">
                                         <IonLabel><b>Gasto</b></IonLabel>
                                     </IonSegmentButton>
-                                    <IonSegmentButton className='add-recurring-transaction-segment-button' value="ingreso">
+                                    <IonSegmentButton className='edit-recurring-transaction-segment-button' value="ingreso">
                                         <IonLabel><b>Ingreso</b></IonLabel>
                                     </IonSegmentButton>
                                 </IonSegment>
@@ -333,6 +375,15 @@ const AddRecurringTransaction: React.FC<AddRecurringTransactionProps> = ({ isOpe
                                 </IonItem>
                             </IonCol>
                         </IonRow>
+
+                        {/* Campo para visualizar la próxima fecha del pago recurrente */}
+                        <IonRow>
+                            <IonCol size="12" size-md="8" offset-md="2">
+                                <IonItem>
+                                    <IonInput label='Próxima fecha' labelPlacement='floating' placeholder='Próxima fecha' readonly value={nextExecutionDate ? new Date(nextExecutionDate).toLocaleString('es-ES') : ''} />
+                                </IonItem>
+                            </IonCol>
+                        </IonRow>
                     </IonGrid>
 
                     {/* Popover para seleccionar la fecha del pago recurrente */}
@@ -341,18 +392,17 @@ const AddRecurringTransaction: React.FC<AddRecurringTransactionProps> = ({ isOpe
                         <IonDatetime locale='es-ES' value={selectedDate} onIonChange={handleDateChange} max={new Date().toISOString().split('T')[0]} />
                         <IonButton expand="block" onClick={() => setDatePickerOpen(false)}>Cerrar</IonButton>
                     </IonPopover>
-                    <IonFab slot="fixed" vertical="bottom" horizontal="center">
-                        <div>
-
-                            {/* Botón para guardar el pago recurrente */}
-                            <IonButton className='add-recurring-transaction-fab-button' color={"medium"} shape='round' onClick={handleSaveRecurringTransaction}>Añadir</IonButton>
-                        </div>
-                    </IonFab>
                 </IonContent>
+
+                {/* Alerta para confirmar la edición de la transacción */}
+                <IonAlert isOpen={showUpdateAlert} onDidDismiss={() => setShowAlert(false)} header={'Editar pago recurrente'} message={'¿Estás seguro de que quieres editar el pago recurrente?'} buttons={[{ text: 'Cancelar', role: 'cancel', handler: () => { setShowUpdateAlert(false); } }, { text: 'Editar', handler: () => { handleSaveRecurringTransaction(); } }]} />
+
+                {/* Alerta para confirmar la eliminación de la transacción */}
+                <IonAlert isOpen={showDeleteAlert} onDidDismiss={() => setShowAlert(false)} header={'Eliminar pago recurrente'} message={'¿Estás seguro de que quieres eliminar el pago recurrente?'} buttons={[{ text: 'Cancelar', role: 'cancel', handler: () => { setShowDeleteAlert(false); } }, { text: 'Eliminar', handler: () => { handleDeleteRecurringTransaction(); } }]} />
             </IonModal>
             <GlobalToast isOpen={toastConfig.isOpen} message={toastConfig.message} type={toastConfig.type} onDidDismiss={() => { setToastConfig({ ...toastConfig, isOpen: false }); }}></GlobalToast>
         </>
     );
 };
 
-export default AddRecurringTransaction;
+export default EditRecurringTransaction;

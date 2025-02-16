@@ -1,10 +1,10 @@
-.add-recurring-transaction-segment {
+.edit-recurring-transaction-segment {
     --background: #F2E1D0;
     border-radius: 10px;
     text-decoration: none;
 }
 
-.add-recurring-transaction-segment-button {
+.edit-recurring-transaction-segment-button {
     --ion-segment-button-width: auto;
     min-width: fit-content;
 }
