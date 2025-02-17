@@ -319,7 +319,7 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                         <IonRow>
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
-                                    <IonInput label='Fecha' labelPlacement='floating' placeholder='Selecciona una fecha' readonly value={selectedDate}></IonInput>
+                                    <IonInput label='Fecha' labelPlacement='floating' placeholder='Selecciona una fecha' readonly value={selectedDate ? new Date(selectedDate).toLocaleString('es-ES') : ''}></IonInput>
 
                                     {/* Abrir el popover para seleccionar la fecha de la transacción */}
                                     <div slot='end'>
