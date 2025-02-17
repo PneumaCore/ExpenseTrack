@@ -184,8 +184,8 @@ const AccountSetup: React.FC = () => {
               </IonRow>
             </IonGrid>
             <IonFab slot="fixed" vertical="bottom" horizontal="center">
-              <div className='account-setup-fab-button'>
-                <IonButton color={"medium"} shape='round' onClick={() => setPage(2)}>Comenzar</IonButton>
+              <div>
+                <IonButton className='account-setup-fab-button' color={"medium"} shape='round' onClick={() => setPage(2)}>Comenzar</IonButton>
               </div>
             </IonFab>
           </IonContent>
@@ -207,25 +207,25 @@ const AccountSetup: React.FC = () => {
                   </div>
                 </IonCol>
               </IonRow>
-              <IonRow className='account-setup-row'>
+              <IonRow className='account-setup-input-row'>
                 <IonCol size="12" size-md="8" offset-md="2">
                   <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonInput={(e) => setName(e.detail.value!)} required />
                 </IonCol>
               </IonRow>
-              <IonRow className='account-setup-row'>
+              <IonRow className='account-setup-input-row'>
                 <IonCol size="12" size-md="8" offset-md="2">
                   <IonInput label='Primer apellido' labelPlacement='floating' placeholder='Primer apellido' value={surname1} onIonInput={(e) => setSurname1(e.detail.value!)} required />
                 </IonCol>
               </IonRow>
-              <IonRow className='account-setup-row'>
+              <IonRow className='account-setup-input-row'>
                 <IonCol size="12" size-md="8" offset-md="2">
                   <IonInput label='Segundo apellido' labelPlacement='floating' placeholder='Segundo apellido' value={surname2} onIonInput={(e) => setSurname2(e.detail.value!)} required />
                 </IonCol>
               </IonRow>
             </IonGrid>
             <IonFab slot="fixed" vertical="bottom" horizontal="center">
-              <div className='account-setup-fab-button'>
-                <IonButton color={"medium"} shape="round" onClick={() => setPage(3)}>Siguiente</IonButton>
+              <div>
+                <IonButton className='account-setup-fab-button' color={"medium"} shape="round" onClick={() => setPage(3)}>Siguiente</IonButton>
               </div>
             </IonFab>
           </IonContent>
@@ -242,7 +242,7 @@ const AccountSetup: React.FC = () => {
                   <h2>Elije tu divisa</h2>
                 </IonCol>
               </IonRow>
-              <IonRow className='account-setup-row'>
+              <IonRow className='account-setup-input-row'>
                 <IonCol size="12" size-md="8" offset-md="2">
                   <IonSearchbar
                     placeholder="Buscar..."
@@ -254,7 +254,7 @@ const AccountSetup: React.FC = () => {
                   />
                 </IonCol>
               </IonRow>
-              <IonRow className='account-setup-row'>
+              <IonRow className='account-setup-input-row'>
                 <IonCol size="12" size-md="8" offset-md="2">
                   <IonList className='account-setup-currencies-list'>
                     {loading ? (
@@ -272,8 +272,8 @@ const AccountSetup: React.FC = () => {
               </IonRow>
             </IonGrid>
             <IonFab slot="fixed" vertical="bottom" horizontal="center">
-              <div className='account-setup-fab-button'>
-                <IonButton color={"medium"} shape='round' onClick={() => setPage(4)}>Siguiente</IonButton>
+              <div>
+                <IonButton className='account-setup-fab-button' color={"medium"} shape='round' onClick={() => setPage(4)}>Siguiente</IonButton>
               </div>
             </IonFab>
           </IonContent>
@@ -295,7 +295,7 @@ const AccountSetup: React.FC = () => {
                   <IonLabel>Más tarde podrás añadir más cuentas en la sección Cuentas.</IonLabel>
                 </IonCol>
               </IonRow>
-              <IonRow className='account-setup-row'>
+              <IonRow className='account-setup-input-row'>
                 <IonCol size="12" size-md="8" offset-md="2" className='account-setup-currency'>
                   <IonItem>
                     <IonInput placeholder='0' type="number" value={balance} onIonInput={(e) => setBalance(parseFloat(e.detail.value!) || 0)} required />
@@ -305,8 +305,8 @@ const AccountSetup: React.FC = () => {
               </IonRow>
             </IonGrid>
             <IonFab slot="fixed" vertical="bottom" horizontal="center">
-              <div className='account-setup-fab-button'>
-                <IonButton color={"medium"} shape='round' onClick={handleSaveAccountSetup}>Finalizar</IonButton>
+              <div>
+                <IonButton className='account-setup-fab-button' color={"medium"} shape='round' onClick={handleSaveAccountSetup}>Finalizar</IonButton>
               </div>
             </IonFab>
           </IonContent>

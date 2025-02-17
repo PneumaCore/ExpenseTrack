@@ -7,6 +7,11 @@
 
 .account-setup-row {
     width: 100%;
+    text-align: center;
+}
+
+.account-setup-input-row {
+    width: 100%;
 }
 
 .account-setup-image-container {
