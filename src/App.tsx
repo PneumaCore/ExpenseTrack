@@ -50,6 +50,7 @@ import RecurringTransactions from './pages/RecurringTransactions';
 import Settings from './pages/Settings';
 import Transfers from './pages/Transfers';
 import './theme/variables.css';
+import ResetPassword from './pages/ResetPassword';
 
 setupIonicReact();
 
@@ -102,6 +103,7 @@ const App: React.FC = () => {
           {!isAuthenticated ? (
             <>
               <Route exact path="/signup" component={SignUp} />
+              <Route exact path="/reset_password" component={ResetPassword}></Route>
               <Route exact path="/" render={() => <Redirect to="/login" />} />
               <Route exact path="/login" component={LogIn} />
             </>
@@ -124,6 +126,7 @@ const App: React.FC = () => {
               <Route path="/recurring_transactions" component={RecurringTransactions}></Route>
               <Route path="/settings" component={Settings} />
               <Route path="/profile" component={Profile} />
+              <Route exact path="/reset_password" component={ResetPassword}></Route>
 
             </>
           )}

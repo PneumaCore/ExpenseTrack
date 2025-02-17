@@ -1,4 +1,4 @@
-import { IonAlert, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonLoading, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonLabel, IonLoading, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { eye, eyeOff } from 'ionicons/icons';
@@ -86,6 +86,15 @@ const LogIn: React.FC = () => {
 
         <IonGrid>
 
+          {/* Logo de la aplicación */}
+          <IonRow>
+            <IonCol size="12" size-md="8" offset-md="2">
+              <div className='login-image-container'>
+                <IonImg src='/assets/icon.png' className='login-image'></IonImg>
+              </div>
+            </IonCol>
+          </IonRow>
+
           {/* Campo de correo electrónico */}
           <IonRow>
             <IonCol size="12" size-md="8" offset-md="2">
@@ -120,6 +129,13 @@ const LogIn: React.FC = () => {
 
               {/* Si el usuario desea registrarse, se le redirige a la página de registro */}
               <IonLabel className="login-link" onClick={() => history.push('/signup')}>¿Aún no tienes una cuenta? Regístrate</IonLabel>
+            </IonCol>
+          </IonRow>
+
+          {/* Link para resetear la contraseña */}
+          <IonRow>
+            <IonCol size="12" size-md="8" offset-md="2">
+              <IonLabel className="reset-password-link" onClick={() => history.push('/reset_password')}>Recuperar contraseña</IonLabel>
             </IonCol>
           </IonRow>
         </IonGrid>

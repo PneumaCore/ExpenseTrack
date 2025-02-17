@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './SignUp.css';
 import { useHistory } from 'react-router';
-import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonLoading, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonIcon, IonAlert } from '@ionic/react';
+import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonLoading, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonIcon, IonAlert, IonImg } from '@ionic/react';
 import { chevronBack, eye, eyeOff } from 'ionicons/icons';
 import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth } from '../configurations/firebase';
@@ -84,6 +84,15 @@ const SignUp: React.FC = () => {
                 {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} header={'Registro inválido'} message={error} buttons={['Aceptar']} />)}
 
                 <IonGrid>
+
+                    {/* Logo de la aplicación */}
+                    <IonRow>
+                        <IonCol size="12" size-md="8" offset-md="2">
+                            <div className='signup-image-container'>
+                                <IonImg src='/assets/icon.png' className='signup-image'></IonImg>
+                            </div>
+                        </IonCol>
+                    </IonRow>
 
                     {/* Campo de correo electrónico */}
                     <IonRow>

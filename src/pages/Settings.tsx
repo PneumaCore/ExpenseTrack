@@ -1,5 +1,5 @@
 import { Directory, Filesystem } from '@capacitor/filesystem';
-import { faCommentDollar, faDatabase, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCommentDollar, faDatabase, faFileExcel, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonAlert, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
 import { getAuth } from 'firebase/auth';
@@ -436,9 +436,15 @@ const Settings: React.FC = () => {
                                     </div>
                                     <IonLabel>Perfil</IonLabel>
                                 </IonItem>
+                                <IonItem onClick={() => history.push('/reset_password', { from: window.location.pathname })}>
+                                    <div slot="start">
+                                        <FontAwesomeIcon icon={faLock}></FontAwesomeIcon>
+                                    </div>
+                                    <IonLabel>Restablecer contraseña</IonLabel>
+                                </IonItem>
                                 <IonItem>
                                     <div slot="start">
-                                        <FontAwesomeIcon icon={faDatabase}></FontAwesomeIcon>
+                                        <FontAwesomeIcon icon={faFileExcel}></FontAwesomeIcon>
                                     </div>
                                     <IonLabel onClick={() => setIsExportAlertOpen(true)}>Exportar datos</IonLabel>
                                 </IonItem>

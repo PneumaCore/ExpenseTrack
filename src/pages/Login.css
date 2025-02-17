@@ -1,3 +1,13 @@
+.login-image-container {
+  display: flex;
+  justify-content: center;
+  height: 256px;
+}
+
+.login-image {
+  width: 128px;
+}
+
 .login-button {
   --box-shadow: none;
 }
@@ -10,5 +20,16 @@
 }
 
 .login-link:hover {
+  text-decoration: underline;
+}
+
+.reset-password-link {
+  text-align: center;
+  display: block;
+  cursor: pointer;
+  color: #4A90E2;
+}
+
+.reset-password-link:hover {
   text-decoration: underline;
 }
