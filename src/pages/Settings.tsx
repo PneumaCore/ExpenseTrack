@@ -1,9 +1,9 @@
 import { Directory, Filesystem } from '@capacitor/filesystem';
-import { faCommentDollar, faDatabase, faFileExcel, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCommentDollar, faDatabase, faFileExcel, faLock, faTrashCan, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonAlert, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
-import { getAuth } from 'firebase/auth';
-import { collection, doc, getDocs, onSnapshot, or, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
+import { deleteUser, getAuth, signOut } from 'firebase/auth';
+import { collection, deleteDoc, doc, getDocs, onSnapshot, or, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import * as XLSX from 'xlsx';
@@ -72,6 +72,7 @@ const Settings: React.FC = () => {
     const [alert, setAlert] = useState<string>('');
     const [showAlert, setShowAlert] = useState(false);
     const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
+    const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
 
     /* Leemos las divisa preferida del usuario de la base de datos */
     useEffect(() => {
@@ -403,6 +404,66 @@ const Settings: React.FC = () => {
         }
     }
 
+    /* Borrar los datos del usuario autenticado de todas las colecciones de la base de datos */
+    const deleteUserData = async () => {
+
+        /* Obtenemos los datos del usuario autenticado */
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) return;
+        const userId = currentUser.uid;
+
+        const collections = ['transactions', 'transfers', 'accounts', 'categories', 'recurringTransactions'];
+
+        try {
+            for (const col of collections) {
+                const q = query(collection(database, col), where('user_id', '==', userId));
+                const snapshot = await getDocs(q);
+                snapshot.forEach(async (doc) => {
+                    await deleteDoc(doc.ref);
+                });
+            }
+
+            setAlert("Todos los datos han sido eliminados correctamente.");
+            setShowAlert(true);
+        } catch (error) {
+            setAlert("No se pudo eliminar los datos han sido eliminados correctamente.");
+            setShowAlert(true);
+        }
+    };
+
+    /* Borrar los datos del usuario autenticado de todas las colecciones de la base de datos y su cuenta */
+    const deleteAccount = async () => {
+
+        /* Obtenemos los datos del usuario autenticado */
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
+        /* Borramos los datos del usuario de todas las colecciones de la base de datos */
+        if (!currentUser) return;
+        await deleteUserData();
+
+        const userRef = doc(database, 'users', currentUser.uid);
+
+        /* Terminamos de borrar el rastro del usuario borrándolo de la colección de usuarios de la base de datos */
+        await deleteDoc(userRef);
+
+        try {
+            
+            /* Cerramos sesión, borramos al usuario de Firebase y lo devolvemos a la pantalla para iniciar sesión */
+            await signOut(auth);
+            await deleteUser(currentUser);
+            history.push('/login');
+
+            setAlert("Tu cuenta ha sido eliminada correctamente.");
+            setShowAlert(true);
+        } catch (error) {
+            setAlert("No se pudo eliminar tu cuenta correctamente.");
+            setShowAlert(true);
+        }
+    };
+
     return (
         <IonPage id="main-content">
             <IonHeader>
@@ -426,28 +487,39 @@ const Settings: React.FC = () => {
                         { text: "Cancelar", role: "cancel" }
                     ]}
                 />
+
+                <IonAlert
+                    isOpen={isDeleteAlertOpen}
+                    onDidDismiss={() => setIsDeleteAlertOpen(false)}
+                    header="¿Qué datos quieres eliminar?"
+                    buttons={[
+                        { text: "Eliminar datos", handler: () => deleteUserData() },
+                        { text: "Eliminar datos y cuenta", handler: () => deleteAccount() },
+                        { text: "Cancelar", role: "cancel" }
+                    ]}
+                />
                 <IonGrid>
                     <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
                             <IonList className='settings-list'>
+
+                                {/* Opción para cambiar la foto de perfil o el nombre y apellidos */}
                                 <IonItem onClick={() => history.push('/profile', { from: window.location.pathname })}>
                                     <div slot="start">
                                         <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
                                     </div>
                                     <IonLabel>Perfil</IonLabel>
                                 </IonItem>
+
+                                {/* Opción para restablecer la contraseña del usuario */}
                                 <IonItem onClick={() => history.push('/reset_password', { from: window.location.pathname })}>
                                     <div slot="start">
                                         <FontAwesomeIcon icon={faLock}></FontAwesomeIcon>
                                     </div>
                                     <IonLabel>Restablecer contraseña</IonLabel>
                                 </IonItem>
-                                <IonItem>
-                                    <div slot="start">
-                                        <FontAwesomeIcon icon={faFileExcel}></FontAwesomeIcon>
-                                    </div>
-                                    <IonLabel onClick={() => setIsExportAlertOpen(true)}>Exportar datos</IonLabel>
-                                </IonItem>
+
+                                {/* Opción para cambiar la divisa preferida del usuario */}
                                 <IonItem>
                                     <div slot="start">
                                         <FontAwesomeIcon icon={faCommentDollar}></FontAwesomeIcon>
@@ -460,6 +532,20 @@ const Settings: React.FC = () => {
                                             </IonSelectOption>
                                         ))}
                                     </IonSelect>
+                                </IonItem>
+
+                                {/* Opción para eliminar los datos del usuario o su cuenta */}
+                                <IonItem>
+                                    <div slot="start">
+                                        <FontAwesomeIcon icon={faFileExcel}></FontAwesomeIcon>
+                                    </div>
+                                    <IonLabel onClick={() => setIsExportAlertOpen(true)}>Exportar datos</IonLabel>
+                                </IonItem>
+                                <IonItem>
+                                    <div slot="start">
+                                        <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
+                                    </div>
+                                    <IonLabel onClick={() => setIsDeleteAlertOpen(true)}>Eliminar datos</IonLabel>
                                 </IonItem>
                             </IonList>
                         </IonCol>

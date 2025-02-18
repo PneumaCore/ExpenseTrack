@@ -142,6 +142,7 @@ const AccountSetup: React.FC = () => {
       const usersRef = doc(database, "users", currentUser?.uid);
 
       await updateDoc(usersRef, {
+        user_id: currentUser?.uid,
         profile_photo: profilePhoto,
         name: name,
         surname_1: surname1,
