@@ -1,5 +1,5 @@
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+import { faFloppyDisk, faPen, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonAlert, IonAvatar, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import ImageCompression from 'browser-image-compression';
@@ -132,29 +132,35 @@ const Profile = () => {
             </IonHeader>
             <IonContent fullscreen>
                 {showAlert && (<IonAlert isOpen={showAlert} onDidDismiss={() => setShowAlert(false)} message={alert} buttons={['Aceptar']} />)}
-                <IonGrid className='account-setup-grid'>
-                    <IonRow className='account-setup-row'>
+                <IonGrid>
+                    <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
-                            <div className='account-setup-profile-photo-container'>
-                                <IonAvatar className='account-setup-avatar'>
+                            <div className='profile-photo-container'>
+                                <IonAvatar className='profile-avatar'>
                                     <img src={profilePhoto} alt="Foto de perfil" />
                                 </IonAvatar>
-                                <IonButton expand="block" onClick={handlePhoto}>Cambiar foto</IonButton>
-                                <IonButton expand="block" color="danger" onClick={resetToDefaultPhoto}>Eliminar foto</IonButton>
+                                <div className='profile-button-container'>
+                                    <IonButton className='profile-edit-button' expand="block" shape='round' onClick={handlePhoto}>
+                                        <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
+                                    </IonButton>
+                                    <IonButton className='profile-delete-button' expand="block" color="danger" shape='round' onClick={resetToDefaultPhoto}>
+                                        <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
+                                    </IonButton>
+                                </div>
                             </div>
                         </IonCol>
                     </IonRow>
-                    <IonRow className='account-setup-row'>
+                    <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
                             <IonInput label='Nombre' labelPlacement='floating' placeholder='Nombre' value={name} onIonInput={(e) => setName(e.detail.value!)} required />
                         </IonCol>
                     </IonRow>
-                    <IonRow className='account-setup-row'>
+                    <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
                             <IonInput label='Primer apellido' labelPlacement='floating' placeholder='Primer apellido' value={surname1} onIonInput={(e) => setSurname1(e.detail.value!)} required />
                         </IonCol>
                     </IonRow>
-                    <IonRow className='account-setup-row'>
+                    <IonRow>
                         <IonCol size="12" size-md="8" offset-md="2">
                             <IonInput label='Segundo apellido' labelPlacement='floating' placeholder='Segundo apellido' value={surname2} onIonInput={(e) => setSurname2(e.detail.value!)} required />
                         </IonCol>

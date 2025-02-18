@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { database } from '../configurations/firebase';
 import './AccountSetup.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 interface Currency {
   code: string;
@@ -203,8 +205,14 @@ const AccountSetup: React.FC = () => {
                     <IonAvatar className='account-setup-avatar'>
                       <img src={profilePhoto} alt="Foto de perfil" />
                     </IonAvatar>
-                    <IonButton expand="block" onClick={handlePhoto}>Cambiar foto</IonButton>
-                    <IonButton expand="block" color="danger" onClick={resetToDefaultPhoto}>Eliminar foto</IonButton>
+                    <div className='account-setup-button-container'>
+                      <IonButton className='account-setup-edit-button' expand="block" shape='round' onClick={handlePhoto}>
+                        <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
+                      </IonButton>
+                      <IonButton className='account-setup-delete-button' expand="block" color="danger" shape='round' onClick={resetToDefaultPhoto}>
+                        <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
+                      </IonButton>
+                    </div>
                   </div>
                 </IonCol>
               </IonRow>

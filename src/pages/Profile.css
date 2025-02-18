@@ -1,0 +1,25 @@
+.profile-photo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 128px;
+    height: 128px;
+    margin: auto;
+}
+
+.profile-button-container {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.profile-edit-button {
+    --box-shadow: none;
+}
+
+.profile-delete-button {
+    --box-shadow: none;
+}

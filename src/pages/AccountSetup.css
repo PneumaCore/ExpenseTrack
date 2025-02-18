@@ -31,6 +31,21 @@
     margin: auto;
 }
 
+.account-setup-button-container {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.account-setup-edit-button {
+    --box-shadow: none;
+}
+
+.account-setup-delete-button {
+    --box-shadow: none;
+}
+
 .account-setup-image {
     width: 128px;
 }
