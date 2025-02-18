@@ -229,11 +229,15 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
                                     <IonSelect interface="popover" label="Cuenta de origen" labelPlacement="floating" placeholder="Selecciona la cuenta de origen" value={selectedSourceAccount} onIonChange={(e) => setSelectedSourceAccount(e.detail.value)}>
-                                        {accounts.map(account => (
-                                            <IonSelectOption key={account.account_id} value={account.account_id}>
-                                                <IonLabel>{account.name} ({account.balance.toFixed(2)} {account.currency})</IonLabel>
-                                            </IonSelectOption>
-                                        ))}
+                                        {accounts.length > 0 ? (
+                                            accounts.map(account => (
+                                                <IonSelectOption key={account.account_id} value={account.account_id}>
+                                                    <IonLabel>{account.name} ({account.balance.toFixed(2)} {account.currency})</IonLabel>
+                                                </IonSelectOption>
+                                            ))
+                                        ) : (
+                                            <IonSelectOption>No hay cuentas</IonSelectOption>
+                                        )}
                                     </IonSelect>
                                 </IonItem>
                             </IonCol>
@@ -244,11 +248,15 @@ const AddTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose }) => {
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
                                     <IonSelect interface="popover" label="Cuenta de destino" labelPlacement="floating" placeholder="Selecciona la cuenta de destino" value={selectedDestinationAccount} onIonChange={(e) => setSelectedDestinationAccount(e.detail.value)}>
-                                        {accounts.map(account => (
-                                            <IonSelectOption key={account.account_id} value={account.account_id}>
-                                                <IonLabel>{account.name} ({account.balance.toFixed(2)} {account.currency})</IonLabel>
-                                            </IonSelectOption>
-                                        ))}
+                                        {accounts.length > 0 ? (
+                                            accounts.map(account => (
+                                                <IonSelectOption key={account.account_id} value={account.account_id}>
+                                                    <IonLabel>{account.name} ({account.balance.toFixed(2)} {account.currency})</IonLabel>
+                                                </IonSelectOption>
+                                            ))
+                                        ) : (
+                                            <IonSelectOption>No hay cuentas</IonSelectOption>
+                                        )}
                                     </IonSelect>
                                 </IonItem>
                             </IonCol>

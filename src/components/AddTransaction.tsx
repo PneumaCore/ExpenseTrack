@@ -196,6 +196,13 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
   /* Guardamos la transacción en la base de datos */
   const handleSaveTransaction = async () => {
 
+    /* Buscamos la cuenta seleccionada, para posteriormente acceder a su id y su divisa */
+    const account = accounts.find((acc) => acc.account_id === selectedAccount);
+    if (!account) {
+      setToastConfig({ isOpen: true, message: 'La cuenta seleccionada no es válida', type: 'error' });
+      return;
+    }
+
     /* Validamos que los datos sean válidos */
     if (!selectedAccount) {
       setError('Selecciona una cuenta para la transacción');
@@ -205,6 +212,12 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
 
     if (amount <= 0) {
       setError('Introduce un monto válido para la transacción');
+      setShowAlert(true);
+      return;
+    }
+
+    if (type === "gasto" && account.balance < amount) {
+      setError('Saldo insuficiente en la cuenta para la transacción');
       setShowAlert(true);
       return;
     }
@@ -230,13 +243,6 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
       /* Generamos un ID automático con Firestore */
       const transactionsRef = doc(collection(database, 'transactions'));
       const transactionId = transactionsRef.id;
-
-      /* Buscamos la cuenta seleccionada, para posteriormente acceder a su id y su divisa */
-      const account = accounts.find((acc) => acc.account_id === selectedAccount);
-      if (!account) {
-        setToastConfig({ isOpen: true, message: 'La cuenta seleccionada no es válida', type: 'error' });
-        return;
-      }
 
       /* Pasamos la fecha a Timestamp, ya que así la acepta Firestore */
       const dateObject = new Date(selectedDate);
@@ -325,11 +331,15 @@ const AddTransaction: React.FC<AddTransactionProps> = ({ isOpen, onClose }) => {
               <IonCol size="12" size-md="8" offset-md="2">
                 <IonItem>
                   <IonSelect interface="popover" label="Cuenta" labelPlacement="floating" placeholder="Selecciona una cuenta" value={selectedAccount} onIonChange={(e) => setSelectedAccount(e.detail.value)}>
-                    {accounts.map(account => (
-                      <IonSelectOption key={account.account_id} value={account.account_id}>
-                        <IonLabel>{account.name} ({account.balance.toFixed(2)} {account.currency})</IonLabel>
-                      </IonSelectOption>
-                    ))}
+                    {accounts.length > 0 ? (
+                      accounts.map(account => (
+                        <IonSelectOption key={account.account_id} value={account.account_id}>
+                          <IonLabel>{account.name} ({account.balance.toFixed(2)} {account.currency})</IonLabel>
+                        </IonSelectOption>
+                      ))
+                    ) : (
+                      <IonSelectOption>No hay cuentas</IonSelectOption>
+                    )}
                   </IonSelect>
                 </IonItem>
               </IonCol>
