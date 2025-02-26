@@ -28,7 +28,7 @@ const Profile = () => {
                 const currentUser = auth.currentUser;
 
                 const usersRef = collection(database, 'users');
-                const q = query(usersRef, where('uid', '==', currentUser?.uid));
+                const q = query(usersRef, where('user_id', '==', currentUser?.uid));
                 const snapshot = await getDocs(q);
 
                 if (!snapshot.empty) {

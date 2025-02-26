@@ -4,7 +4,8 @@ import { useHistory } from 'react-router';
 import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonLoading, IonPage, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonIcon, IonAlert, IonImg } from '@ionic/react';
 import { chevronBack, eye, eyeOff } from 'ionicons/icons';
 import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { auth } from '../configurations/firebase';
+import { auth, database } from '../configurations/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 const SignUp: React.FC = () => {
     const history = useHistory();
@@ -53,7 +54,13 @@ const SignUp: React.FC = () => {
         setLoading(true);
 
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            await setDoc(doc(database, "users", user.uid), {
+                user_id: user.uid,
+                isAccountSetup: false
+            });
 
             /* Cerramos la sesión del usuario que acaba de ser creado, ya que quiero forzarlo a pasar por la pantalla de inicio de sesión */
             await signOut(auth);

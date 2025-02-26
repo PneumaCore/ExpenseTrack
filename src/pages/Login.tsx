@@ -62,7 +62,7 @@ const LogIn: React.FC = () => {
       } else {
 
         /* En caso de no existir el campo para realizar la comprobación, lo creamos y le redirigimos al formulario inicial */
-        await setDoc(userDocRef, { uid: user.uid, isAccountSetup: false });
+        await setDoc(userDocRef, { user_id: user.uid, isAccountSetup: false });
         history.push('/account_setup');
       }
     } catch (err: any) {

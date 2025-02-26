@@ -47,7 +47,7 @@ const Budgets: React.FC = () => {
                 }
 
                 const usersRef = collection(database, 'users');
-                const q = query(usersRef, where('uid', '==', currentUser.uid));
+                const q = query(usersRef, where('user_id', '==', currentUser.uid));
                 const unsubscribe = onSnapshot(q, (snapshot) => {
                     if (!snapshot.empty) {
                         const userData = snapshot.docs[0].data();

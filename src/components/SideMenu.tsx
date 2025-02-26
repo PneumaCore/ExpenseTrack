@@ -22,7 +22,7 @@ const SideMenu: React.FC = () => {
                 const currentUser = auth.currentUser;
 
                 const usersRef = collection(database, 'users');
-                const q = query(usersRef, where('uid', '==', currentUser?.uid));
+                const q = query(usersRef, where('user_id', '==', currentUser?.uid));
 
                 const unsubscribe = onSnapshot(q, (snapshot) => {
                     if (!snapshot.empty) {
@@ -38,7 +38,10 @@ const SideMenu: React.FC = () => {
             }
         };
 
-        fetchUserProfile();
+        const unsubscribe = fetchUserProfile();
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
     }, []);
 
     /* Se cierra la sesión actual del usuario y se le redirige a la pantalla de inicio de sesión */
