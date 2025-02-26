@@ -82,7 +82,7 @@ const Settings: React.FC = () => {
                 const currentUser = auth.currentUser;
 
                 const usersRef = collection(database, 'users');
-                const q = query(usersRef, where('uid', '==', currentUser?.uid));
+                const q = query(usersRef, where('user_id', '==', currentUser?.uid));
                 const snapshot = await getDocs(q);
 
                 if (!snapshot.empty) {
@@ -417,13 +417,15 @@ const Settings: React.FC = () => {
         const collections = ['transactions', 'transfers', 'accounts', 'categories', 'recurringTransactions'];
 
         try {
-            for (const col of collections) {
+            const deletePromises = collections.map(async (col) => {
                 const q = query(collection(database, col), where('user_id', '==', userId));
                 const snapshot = await getDocs(q);
-                snapshot.forEach(async (doc) => {
-                    await deleteDoc(doc.ref);
-                });
-            }
+                const deleteDocsPromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+                await Promise.all(deleteDocsPromises);
+            });
+
+            /* Esperamos a que se eliminen las colecciones por completo */
+            await Promise.all(deletePromises);
 
             setAlert("Todos los datos han sido eliminados correctamente.");
             setShowAlert(true);
@@ -450,7 +452,7 @@ const Settings: React.FC = () => {
         await deleteDoc(userRef);
 
         try {
-            
+
             /* Cerramos sesión, borramos al usuario de Firebase y lo devolvemos a la pantalla para iniciar sesión */
             await signOut(auth);
             await deleteUser(currentUser);
