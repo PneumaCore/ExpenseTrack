@@ -27,11 +27,15 @@ ExpenseTrack es una aplicación móvil para Android que te ayuda a gestionar tus
 
  - Clasificar transacciones en categorías de tipo gasto o ingreso (por defecto o personalizadas).
 
- - Visualización de gasto mensual de una categoría deseada (presupuesto).
+ - Visualización de gasto mensual de una categoría deseada (presupuestos).
+
+ - Distintos tipos de filtro (por cuenta, fecha, nombre, descripción).
 
  - Visualización del saldo total de todas las cuentas en la divisa preferida del usuario.
 
  - Estadísticas detalladas y gráficos sobre finanzas personales.
+
+ - Exportación de historial de transacciones y transferencias a archivo excel.
 
 
 ## Instalación
@@ -94,7 +98,123 @@ Para conectar la aplicación con Firebase, necesitarás las claves API de tu pro
 
 Además de las claves, necesitarás las colecciones de la base de datos que se manejan en la aplicación, para ello, vuelve nuevamente a la pantalla principal del proyecto de Firebase. Pulsa en 'Todos los productos' y busca en la lista 'Cloud Firestore' y pulsa en 'Crear base de datos'. Selecciona un servidor europeo e inicia la base de datos en modo de producción. A continuación, deberás crear las siugientes colecciones:
 
+#### - Colección 'users':
 
+Almacena los datos del usuario.
+
+```
+
+  {
+    user_id: Cadena,
+    profile_photo: Cadena,
+    name: Cadena,
+    surname_1: Cadena,
+    surname_2: Cadena,
+    currency: Cadena,
+    isAccountSetup: Boleano
+  }
+
+```
+
+#### - Colección 'accounts':
+
+Almacena las cuentas personales del usuario.
+
+```
+
+  {
+    account_id: Cadena,
+    user_id: Cadena,
+    name: Cadena,
+    currency: Cadena,
+    balance: Número,
+    icon: Cadena,
+    color: Cadena
+  }
+
+```
+
+#### - Colección 'categories':
+
+Almacena las categorías por defecto y las personalizadas por el usuario.
+
+```
+
+  {
+    category_id: Cadena,
+    user_id: Cadena,
+    name: Cadena,
+    mensualBudget: Número,
+    type: Cadena,
+    icon: Cadena,
+    color: Cadena
+  }
+
+```
+
+#### - Colección 'transactions':
+
+Almacena las transacciones realizadas por el usuario.
+
+```
+
+  {
+    transaction_id: Cadena,
+    user_id: Cadena,
+    type: Cadena,
+    category_id: Cadena,
+    account_id: Cadena,
+    amount: Número,
+    currency: Cadena,
+    date: Marca de tiempo,
+    note: Cadena,
+    image: Array
+  }
+
+```
+
+#### - Colección 'recurringTransactios':
+
+Almacena las transacciones recurrentes programadas por del usuario.
+
+```
+
+  {
+    recurring_transaction_id: Cadena,
+    user_id: Cadena,
+    type: Cadena,
+    name: Cadena,
+    category_id: Cadena,
+    account_id: Cadena,
+    amount: Número,
+    currency: Cadena,
+    date: Marca de tiempo,
+    frequency: Cadena,
+    next_execution: Marca de tiempo
+  }
+
+```
+
+#### - Colección 'transfers':
+
+Almacena las transferencias entre cuentas realizadas por del usuario.
+
+```
+
+  {
+    transfer_id: Cadena,
+    user_id: Cadena,
+    source_account_id: Cadena,
+    destination_account_id: Cadena,
+    amount: Número,
+    converted_amount: Número,
+    source_currency: Cadena,
+    destination_currency: Cadena,
+    date: Marca de tiempo,
+    note: Cadena
+  }
+
+```
 
 #### 5. Ejecuta la aplicación:
 
