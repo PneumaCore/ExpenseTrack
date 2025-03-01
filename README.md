@@ -1,7 +1,7 @@
 # ExpenseTrack
 
 <p align="center">
-  <img src="public/assets/icon.png" alt="ExpenseTrack Logo" />
+  <img src="public/assets/icon.png" alt="ExpenseTrack Logo" width="350" />
 </p>
 
 ExpenseTrack es una aplicación móvil para Android que te ayuda a gestionar tus finanzas personales de manera sencilla y eficiente. Permite registrar transacciones de ingresos y gastos, organizar categorías, gestionar cuentas y visualizar tu historial financiero en un solo lugar.
@@ -59,7 +59,17 @@ ExpenseTrack es una aplicación móvil para Android que te ayuda a gestionar tus
 
 ```
 
-#### 2. Instala las dependencias:
+#### 2. Instala Ionic:
+
+Antes de ejecutar la aplicación, deberás tener instalado [Node.js](https://nodejs.org/es/download) en tu equipo. Una vez hecho esto, instala el cliente de Ionic con el siguiente comando:
+
+```
+
+  npm install -g @ionic/cli
+
+```
+
+#### 3. Instala las dependencias:
 
 Navega al directorio de la aplicación y ejecuta el siguiente comando para instalar todas las dependencias:
 
@@ -71,7 +81,7 @@ Navega al directorio de la aplicación y ejecuta el siguiente comando para insta
 ```
 
 
-#### 3. Configurar Firebase:
+#### 4. Configurar Firebase:
 
 Para conectar la aplicación con Firebase, necesitarás las claves API de tu proyecto de Firebase. Sigue estos pasos para obtenerlas:
 
@@ -94,7 +104,7 @@ Para conectar la aplicación con Firebase, necesitarás las claves API de tu pro
 
 ```
 
-#### 4. Crear colecciones en Cloud Firestore:
+#### 5. Crear colecciones en Cloud Firestore:
 
 Además de las claves, necesitarás las colecciones de la base de datos que se manejan en la aplicación, para ello, vuelve nuevamente a la pantalla principal del proyecto de Firebase. Pulsa en 'Todos los productos' y busca en la lista 'Cloud Firestore' y pulsa en 'Crear base de datos'. Selecciona un servidor europeo e inicia la base de datos en modo de producción. A continuación, deberás crear las siugientes colecciones:
 
@@ -216,7 +226,7 @@ Almacena las transferencias entre cuentas realizadas por del usuario.
 
 ```
 
-#### 5. Ejecuta la aplicación:
+#### 6. Ejecuta la aplicación:
 
 ```
 
@@ -227,7 +237,71 @@ Almacena las transferencias entre cuentas realizadas por del usuario.
 
 ## Capturas de pantalla
 
+#### Pantalla de inicio de sesión
 
+<p align="center">
+  <img src="public/screenshots/login.jpg" alt="Login Screen" width="300" />
+</p>
+
+#### Pantalla de bienvenida al iniciar sesión por primera vez
+
+<p align="center">
+  <img src="public/screenshots/welcome.jpg" alt="Welcome Screen" width="300" />
+</p>
+
+#### Pantalla de inicio
+
+<p align="center">
+  <img src="public/screenshots/home.jpg" alt="Home Screen" width="300" />
+</p>
+
+#### Menú para añadir transferencias
+
+<p align="center">
+  <img src="public/screenshots/add_transaction.jpg" alt="Add Transaction Menu" width="300" />
+</p>
+
+#### Menú lateral desplegable y sus opciones
+
+<p align="center">
+  <img src="public/screenshots/home_side_menu.jpg" alt="Side Menu" width="300" />
+</p>
+
+#### Pantalla de cuentas
+
+<p align="center">
+  <img src="public/screenshots/accounts.jpg" alt="Accounts Screen" width="300" />
+</p>
+
+#### Pantalla de transferencias
+
+<p align="center">
+  <img src="public/screenshots/transfers.jpg" alt="Transfers Screen" width="300" />
+</p>
+
+#### Pantalla de categorías
+
+<p align="center">
+  <img src="public/screenshots/categories.jpg" alt="Categories Screen" width="300" />
+</p>
+
+#### Pantalla de presupuestos
+
+<p align="center">
+  <img src="public/screenshots/budgets.jpg" alt="Budgets Screen" width="300" />
+</p>
+
+#### Pantalla de transacciones recurrentes
+
+<p align="center">
+  <img src="public/screenshots/recurring_transactions.jpg" alt="Recurring Transactions Screen" width="300" />
+</p>
+
+#### Pantalla de ajustes y sus opciones
+
+<p align="center">
+  <img src="public/screenshots/export_historial.jpg" alt="Settings Screen" width="300" />
+</p>
 
 ## Licencia
 
