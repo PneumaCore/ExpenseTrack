@@ -1,10 +1,10 @@
 # ExpenseTrack
 
 <p align="center">
-  <img src="public/assets/icon.png" alt="ExpenseTrack Logo" width="350" />
+  <img src="public/documentation/expensetrack_logo.jpg" alt="ExpenseTrack Logo" />
 </p>
 
-ExpenseTrack es una aplicación para Android pensada para hacerte la vida más fácil a la hora de llevar el control de tus finanzas personales. Te permite registrar ingresos y gastos de manera sencilla, categorizar las transacciones con categorías personalizadas, crear y gestionar tus cuentas personales, realizar transferencias entre cuentas, visualizar el gasto mensual de las categorías deseadas, visualizar el historial de transacciones y transferencias con distintos gráficos y filtros, además de poder exportar los datos de dichos historiales a archivo excel.
+ExpenseTrack es una aplicación para Android pensada para hacerte la vida más fácil a la hora de llevar el control de tus finanzas personales. Permitiendo registrar ingresos y gastos de manera sencilla, categorizar las transacciones con categorías personalizadas, crear y gestionar tus cuentas personales, realizar transferencias entre cuentas, visualizar el gasto mensual de las categorías deseadas, visualizar el historial de transacciones y transferencias con distintos gráficos y filtros, además de poder exportar los datos de dichos historiales a archivo excel. Por último, es posible visualizar tu balance total convertido a tu divisa favorita en caso de tener cuentas con múltiples divisas.
 
 ## Tecnologías utilizadas
 
@@ -37,6 +37,12 @@ ExpenseTrack es una aplicación para Android pensada para hacerte la vida más f
 
  - Exportación de historial de transacciones y transferencias a archivo excel.
 
+
+## Prototipo Wireframe
+
+<p align="center">
+  <img src="public/documentation/expensetrack_wireframe_prototype.jpg" alt="ExpenseTrack Protoype" />
+</p>
 
 ## Instalación
 
