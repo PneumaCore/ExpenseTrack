@@ -2,7 +2,7 @@ import { Directory, Filesystem } from '@capacitor/filesystem';
 import { faCommentDollar, faDatabase, faFileExcel, faLock, faTrashCan, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IonAlert, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/react';
-import { deleteUser, getAuth, signOut } from 'firebase/auth';
+import { deleteUser, EmailAuthProvider, getAuth, reauthenticateWithCredential, signOut } from 'firebase/auth';
 import { collection, deleteDoc, doc, getDocs, onSnapshot, or, orderBy, query, Timestamp, updateDoc, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -73,6 +73,8 @@ const Settings: React.FC = () => {
     const [showAlert, setShowAlert] = useState(false);
     const [isExportAlertOpen, setIsExportAlertOpen] = useState(false);
     const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+    const [isDeleteDataAlertOpen, setIsDeleteDataAlertOpen] = useState(false);
+    const [isDeleteAccountAlertOpen, setIsDeleteAccountAlertOpen] = useState(false);
 
     /* Leemos las divisa preferida del usuario de la base de datos */
     useEffect(() => {
@@ -435,26 +437,43 @@ const Settings: React.FC = () => {
         }
     };
 
-    /* Borrar los datos del usuario autenticado de todas las colecciones de la base de datos y su cuenta */
-    const deleteAccount = async () => {
-
-        /* Obtenemos los datos del usuario autenticado */
+    const reauthenticateUser = async (password: string) => {
         const auth = getAuth();
         const currentUser = auth.currentUser;
 
-        /* Borramos los datos del usuario de todas las colecciones de la base de datos */
-        if (!currentUser) return;
-        await deleteUserData();
+        if (!currentUser || !currentUser.email) {
+            throw new Error("El usuario no está autenticado.");
+        }
 
-        const userRef = doc(database, 'users', currentUser.uid);
+        const credential = EmailAuthProvider.credential(currentUser.email, password);
+        await reauthenticateWithCredential(currentUser, credential);
+    };
 
-        /* Terminamos de borrar el rastro del usuario borrándolo de la colección de usuarios de la base de datos */
-        await deleteDoc(userRef);
+    /* Borrar los datos del usuario autenticado de todas las colecciones de la base de datos y su cuenta */
+    const deleteAccount = async (password: string) => {
 
         try {
 
+            /* Volvemos a autenticar al usuario, ya que eliminar su cuenta lo requiere */
+            await reauthenticateUser(password);
+
+            password = '';
+
+            /* Obtenemos los datos del usuario autenticado */
+            const auth = getAuth();
+            const currentUser = auth.currentUser;
+
+            if (!currentUser) return;
+
+            /* Borramos los datos del usuario de todas las colecciones de la base de datos */
+            await deleteUserData();
+
+            const userRef = doc(database, 'users', currentUser.uid);
+
+            /* Terminamos de borrar el rastro del usuario borrándolo de la colección de usuarios de la base de datos */
+            await deleteDoc(userRef);
+
             /* Cerramos sesión, borramos al usuario de Firebase y lo devolvemos a la pantalla para iniciar sesión */
-            await signOut(auth);
             await deleteUser(currentUser);
             history.push('/login');
 
@@ -495,9 +514,43 @@ const Settings: React.FC = () => {
                     onDidDismiss={() => setIsDeleteAlertOpen(false)}
                     header="¿Qué datos quieres eliminar?"
                     buttons={[
-                        { text: "Eliminar datos", handler: () => deleteUserData() },
-                        { text: "Eliminar datos y cuenta", handler: () => deleteAccount() },
-                        { text: "Cancelar", role: "cancel" }
+                        { text: "Eliminar datos", handler: () => setIsDeleteDataAlertOpen(true), },
+                        { text: "Eliminar datos y cuenta", handler: () => setIsDeleteAccountAlertOpen(true), },
+                        { text: "Cancelar", role: "cancel", },
+                    ]}
+                />
+
+                <IonAlert
+                    isOpen={isDeleteDataAlertOpen}
+                    onDidDismiss={() => setIsDeleteDataAlertOpen(false)}
+                    header="Confirmación"
+                    message="¿Estás seguro de que quieres eliminar todos tus datos?"
+                    buttons={[
+                        { text: "Eliminar", handler: () => deleteUserData(), },
+                        { text: "Cancelar", role: "cancel", },
+                    ]}
+                />
+
+                <IonAlert
+                    isOpen={isDeleteAccountAlertOpen}
+                    onDidDismiss={() => setIsDeleteAccountAlertOpen(false)}
+                    header="Eliminar cuenta"
+                    inputs={[
+                        {
+                            name: 'password',
+                            type: 'password',
+                            placeholder: 'Introduce tu contraseña',
+                        },
+                    ]}
+                    buttons={[
+                        {
+                            text: "Eliminar",
+                            handler: (data) => deleteAccount(data.password),
+                        },
+                        {
+                            text: "Cancelar",
+                            role: "cancel",
+                        },
                     ]}
                 />
                 <IonGrid>
