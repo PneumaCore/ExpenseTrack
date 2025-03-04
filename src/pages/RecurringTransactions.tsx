@@ -1,6 +1,6 @@
-import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButtons, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenuButton, IonPage, IonRow, IonTitle, IonToggle, IonToolbar } from "@ionic/react";
 import { getAuth } from "firebase/auth";
-import { collection, onSnapshot, query, Timestamp, where } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, Timestamp, updateDoc, where } from "firebase/firestore";
 import { add } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import AddRecurringTransaction from "../components/AddRecurringTransaction";
@@ -19,7 +19,8 @@ interface RecurringTransaction {
     currency: number,
     date: Timestamp,
     frequency: string,
-    next_execution: Timestamp
+    next_execution: Timestamp,
+    is_active: boolean
 }
 
 const RecurringTransactions: React.FC = () => {
@@ -65,6 +66,18 @@ const RecurringTransactions: React.FC = () => {
         setIsEditModalOpen(true);
     };
 
+    /*  */
+    const handleToggleChange = async (recurringTransaction: RecurringTransaction) => {
+        try {
+            const transactionRef = doc(database, 'recurringTransactions', recurringTransaction.recurring_transaction_id);
+            await updateDoc(transactionRef, {
+                is_active: !recurringTransaction.is_active
+            });
+        } catch (error) {
+            console.error("No se pudo editar el pago recurrente: ", error);
+        }
+    };
+
     return (
         <IonPage id="main-content">
             <IonHeader>
@@ -89,8 +102,9 @@ const RecurringTransactions: React.FC = () => {
                                 ) : (
                                     recurringTransactions.map((recurringTransaction) => {
                                         return (
-                                            <IonItem key={recurringTransaction.account_id} className="recurring-transaction-item" onClick={() => handleEditRecurringTransaction(recurringTransaction)}>
-                                                <IonLabel>{recurringTransaction.name}</IonLabel>
+                                            <IonItem key={recurringTransaction.account_id} className="recurring-transaction-item">
+                                                <IonLabel onClick={() => handleEditRecurringTransaction(recurringTransaction)}>{recurringTransaction.name}</IonLabel>
+                                                <IonToggle slot="end" checked={recurringTransaction.is_active} onIonChange={() => handleToggleChange(recurringTransaction)} />
                                             </IonItem>
                                         );
                                     })

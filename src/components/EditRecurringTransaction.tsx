@@ -40,7 +40,8 @@ interface RecurringTransaction {
     currency: number,
     date: Timestamp,
     frequency: string,
-    next_execution: Timestamp
+    next_execution: Timestamp,
+    is_active: boolean
 }
 
 interface EditRecurringTransactionProps {
@@ -214,6 +215,10 @@ const EditRecurringTransaction: React.FC<EditRecurringTransactionProps> = ({ isO
                 return;
             }
 
+            /* Reseteamos la fecha y la fecha de ejecución solo si la fecha ha sido modificada */
+            const updatedDate = selectedDate !== recurringTransaction.date.toDate().toISOString() ? Timestamp.fromDate(new Date(selectedDate)) : recurringTransaction.date;
+            const updatedNextExecution = selectedDate !== recurringTransaction.date.toDate().toISOString() ? updatedDate : (nextExecutionDate !== recurringTransaction.next_execution.toDate().toISOString() ? Timestamp.fromDate(new Date(nextExecutionDate)) : recurringTransaction.next_execution);
+
             const updateRecurringTransaction = {
                 type: type,
                 name: name,
@@ -221,22 +226,22 @@ const EditRecurringTransaction: React.FC<EditRecurringTransactionProps> = ({ isO
                 account_id: account.account_id,
                 amount: parseFloat(amount.toFixed(2)),
                 currency: account.currency,
-                date: Timestamp.fromDate(new Date(selectedDate)),
+                date: updatedDate,
                 frequency: frequency,
-                next_execution: Timestamp.fromDate(new Date(selectedDate))
+                next_execution: updatedNextExecution
             }
 
             /* Guardamos el pago recurrente en la base de datos */
             await updateDoc(recurringTransactionsRef, updateRecurringTransaction);
 
-            setToastConfig({ isOpen: true, message: 'Pago recurrente añadida con éxito', type: 'success' });
+            setToastConfig({ isOpen: true, message: 'Pago recurrente editado con éxito', type: 'success' });
 
             /* Cerramos el modal automáticamente al guardar el pago recurrente */
             setShowUpdateAlert(false);
             onClose();
 
         } catch (error) {
-            setToastConfig({ isOpen: true, message: 'No se pudo añadir el pago recurrente', type: 'error' });
+            setToastConfig({ isOpen: true, message: 'No se pudo editar el pago recurrente', type: 'error' });
         }
     };
 

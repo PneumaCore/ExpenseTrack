@@ -214,7 +214,8 @@ const AddRecurringTransaction: React.FC<AddRecurringTransactionProps> = ({ isOpe
                 currency: account.currency,
                 date: dateTimestamp,
                 frequency: frequency,
-                next_execution: dateTimestamp
+                next_execution: dateTimestamp,
+                is_active: true
             }
 
             /* Guardamos el pago recurrente en la base de datos */

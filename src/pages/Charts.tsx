@@ -371,7 +371,7 @@ const Charts: React.FC = () => {
 
             /* Obtenemos las transacciones recurrentes asociadas al usuario */
             const recurringRef = collection(database, "recurringTransactions");
-            const q = query(recurringRef, where("user_id", "==", currentUser.uid));
+            const q = query(recurringRef, where("user_id", "==", currentUser.uid), where("is_active", "==", true));
 
             const querySnapshot = await getDocs(q);
             const today = new Date();
