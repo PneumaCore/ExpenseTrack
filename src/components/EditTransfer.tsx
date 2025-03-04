@@ -280,7 +280,7 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                         <IonRow>
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
-                                    <IonSelect interface="popover" label="Cuenta de origen" labelPlacement="floating" placeholder="Selecciona la cuenta de origen" value={selectedSourceAccount} onIonChange={(e) => setSelectedSourceAccount(e.detail.value)}>
+                                    <IonSelect interface="popover" label="Cuenta de origen" labelPlacement="floating" placeholder="Selecciona la cuenta de origen" value={selectedSourceAccount} onIonChange={(e) => setSelectedSourceAccount(e.detail.value)} disabled>
                                         {accounts.length > 0 ? (
                                             accounts.map(account => (
                                                 <IonSelectOption key={account.account_id} value={account.account_id}>
@@ -299,7 +299,7 @@ const EditTransfer: React.FC<AddTransferProps> = ({ isOpen, onClose, transfer })
                         <IonRow>
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
-                                    <IonSelect interface="popover" label="Cuenta de destino" labelPlacement="floating" placeholder="Selecciona la cuenta de destino" value={selectedDestinationAccount} onIonChange={(e) => setSelectedDestinationAccount(e.detail.value)}>
+                                    <IonSelect interface="popover" label="Cuenta de destino" labelPlacement="floating" placeholder="Selecciona la cuenta de destino" value={selectedDestinationAccount} onIonChange={(e) => setSelectedDestinationAccount(e.detail.value)} disabled>
                                         {accounts.length > 0 ? (
                                             accounts.map(account => (
                                                 <IonSelectOption key={account.account_id} value={account.account_id}>

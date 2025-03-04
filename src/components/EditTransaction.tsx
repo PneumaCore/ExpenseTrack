@@ -366,7 +366,7 @@ const EditTransaction: React.FC<EditTransactionProps> = ({ isOpen, onClose, tran
                         <IonRow>
                             <IonCol size="12" size-md="8" offset-md="2">
                                 <IonItem>
-                                    <IonSelect interface="popover" label="Cuenta" labelPlacement="floating" placeholder="Selecciona una cuenta" value={selectedAccount} onIonChange={(e) => setSelectedAccount(e.detail.value)}>
+                                    <IonSelect interface="popover" label="Cuenta" labelPlacement="floating" placeholder="Selecciona una cuenta" value={selectedAccount} onIonChange={(e) => setSelectedAccount(e.detail.value)} disabled>
                                         {accounts.length > 0 ? (
                                             accounts.map(account => (
                                                 <IonSelectOption key={account.account_id} value={account.account_id}>
